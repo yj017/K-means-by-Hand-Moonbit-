@@ -3,8 +3,6 @@ import {
 }
 
 import {
-  "ihb2032/MoonFrame" @moonframe,
-  "ihb2032/MoonFrame/io",
   "Lampese/mathplotlib",
   "moonbitlang/x/fs",
 }

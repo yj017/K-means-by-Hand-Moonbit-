@@ -26,7 +26,6 @@ preferred_target = "wasm"
 description = ""
 
 import {
-  "ihb2032/MoonFrame@0.8.1",
   "Lampese/mathplotlib@0.18.0",
   "moonbitlang/x@0.5.7",
   "moonbit-community/NyaCSV@0.3.4",

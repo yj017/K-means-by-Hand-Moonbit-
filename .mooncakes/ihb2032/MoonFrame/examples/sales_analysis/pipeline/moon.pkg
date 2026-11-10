@@ -1,8 +1,0 @@
-import {
-  "ihb2032/MoonFrame" @moonframe,
-}
-
-import {
-  "ihb2032/MoonFrame/io",
-  "moonbitlang/core/test",
-} for "test"
