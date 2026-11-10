@@ -1,0 +1,44 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "caijiewei295/tzif-engine/parser"
+
+import {
+  "caijiewei295/tzif-engine/types",
+}
+
+// Values
+pub fn data_block_end(Bytes, TzifHeader, Int, Int) -> Result[Int, @types.TzifError]
+
+pub fn parse_body(Bytes, TzifHeader, Int) -> Result[ParsedBody, @types.TzifError]
+
+pub fn parse_footer(Bytes, offset~ : Int, version~ : Byte) -> Result[@types.PosixTzRule?, @types.TzifError]
+
+pub fn parse_header(Bytes, Int) -> Result[(TzifHeader, Int), @types.TzifError]
+
+pub fn validate_header_counts(TzifHeader) -> Result[Unit, @types.TzifError]
+
+// Errors
+
+// Types and methods
+pub(all) struct ParsedBody {
+  time_types : Array[@types.TimeType]
+  transitions : Array[@types.Transition]
+  leap_seconds : Array[@types.LeapSecond]
+  standard_indicators : Array[Bool]?
+  utc_indicators : Array[Bool]?
+  end_offset : Int
+}
+
+pub(all) struct TzifHeader {
+  version : Byte
+  isutcnt : UInt
+  isstdcnt : UInt
+  leapcnt : UInt
+  timecnt : UInt
+  typecnt : UInt
+  charcnt : UInt
+}
+
+// Type aliases
+
+// Traits
+

@@ -1,0 +1,81 @@
+// The row-window and row-order verbs: `head` / `tail` / `slice` /
+// `gather` / `reverse` — the transforms that keep a series' name and dtype verbatim and
+// move, trim, or reorder *cells*, the `Series` twin of the frame row-window
+// family. The saturating
+// cap `head` / `tail` share is `clamp_take`, the same limit behind
+// `DataFrame::head` / `tail`; `gather` re-converges an all-valid numeric
+// result onto the unboxed fast path.
+
+///|
+/// A length-first cell window — the `Series` twin of `DataFrame::slice`.
+/// A negative `offset` counts from the end, saturating at the first cell;
+/// an omitted `length` runs to the end; a given one saturates at what
+/// remains, a negative one is empty. Total — never fails.
+pub fn Series::slice(self : Series, offset : Int32, length? : Int32) -> Series {
+  let start = @order.slice_start(offset, self.len())
+  self.slice_series(start, @order.slice_len(start, self.len(), length))
+}
+
+///|
+/// The bracket-slice sugar — the `Series` twin of `DataFrame::slice_between`:
+/// a half-open `[start, end)` cell window where an omitted bound runs to
+/// that end and a negative one counts from it, with crossed bounds an empty
+/// series. The bounds normalize
+/// (`between_bounds`) into the one `(offset, length)` window kernel `slice`
+/// runs, so the two spellings cannot disagree. Total — never fails. Reached
+/// as `s[a:b]`.
+#alias("_[_:_]")
+pub fn Series::slice_between(
+  self : Series,
+  start? : Int32,
+  end? : Int32,
+) -> Series {
+  let (s, l) = @order.between_bounds(start, end, self.len())
+  self.slice_series(s, l)
+}
+
+///|
+/// Gather: produce a new series whose i-th entry is `self[indices[i]]`.
+/// Out-of-bounds indices surface as `IndexOutOfBounds(idx)`. The result is
+/// canonicalised onto the `Numeric` fast path when the gathered rows leave an
+/// Int / Float column all-valid (the same invariant `gather_series` keeps), so
+/// the backend is a function of the gathered content, not the source.
+pub fn Series::gather(
+  self : Series,
+  indices : Array[Int32],
+) -> Series raise @types.DataError {
+  { name: self.name, storage: self.storage.take(indices), }.try_column_to_numeric()
+}
+
+///|
+/// The first `n` cells, or every cell when `n` exceeds the length — the
+/// `Series` twin of `DataFrame::head`. A negative `n` keeps every cell but
+/// the last `|n|`. Total.
+pub fn Series::head(self : Series, n : Int32) -> Series {
+  self.slice_series(0, @order.window_take(n, self.len()))
+}
+
+///|
+/// The last `n` cells, or every cell when `n` exceeds the length — the
+/// `Series` twin of `DataFrame::tail`. A negative `n` keeps every cell but
+/// the first `|n|`. Total.
+pub fn Series::tail(self : Series, n : Int32) -> Series {
+  let len = self.len()
+  let take = @order.window_take(n, len)
+  // `slice_series`' third argument is the window *length*, not the end index —
+  // pass `take` (as `DataFrame::tail` does), so `start + take == len` stays in
+  // bounds. Passing `len` here relied on the slice clamping an over-large end
+  // back down, and `start + len` overflows `Int` for a column past ~2^30 rows,
+  // wrapping negative and yielding an empty result.
+  self.slice_series(len - take, take)
+}
+
+///|
+/// The cells in reverse order, name unchanged.
+/// Total. Reads the series back to front through the same gather machine
+/// the window verbs above trim with — one spelling over the shared
+/// row-gather path, the `Series` twin of `DataFrame::reverse`.
+pub fn Series::reverse(self : Series) -> Series {
+  let len = self.len()
+  self.gather_series(Array::makei(len, i => len - 1 - i))
+}

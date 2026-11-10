@@ -1,0 +1,148 @@
+{
+  "version": "0.3.0",
+  "source_commit": "2fb8bcfc54a6a071dec0a83e9ba1d054db823c4c",
+  "production_archive_sha256": "cb737aa10e4948ae5e238493550fd0cdccdddc02d0d5bb28f1485d2f31833792",
+  "scope": "19 representative inputs, not whole-chart parameter acceptance",
+  "targets": [
+    "native",
+    "wasm",
+    "wasm-gc",
+    "js"
+  ],
+  "all_target_results_identical": true,
+  "results": [
+    {
+      "chart": "line",
+      "points": 3,
+      "targets": 3,
+      "svg_bytes": 2516,
+      "svg_parses": true
+    },
+    {
+      "chart": "scatter",
+      "points": 3,
+      "targets": 3,
+      "svg_bytes": 2576,
+      "svg_parses": true
+    },
+    {
+      "chart": "bar",
+      "points": 3,
+      "targets": 3,
+      "svg_bytes": 2030,
+      "svg_parses": true
+    },
+    {
+      "chart": "barh",
+      "points": 3,
+      "targets": 3,
+      "svg_bytes": 2007,
+      "svg_parses": true
+    },
+    {
+      "chart": "histogram",
+      "points": 3,
+      "targets": 3,
+      "svg_bytes": 2713,
+      "svg_parses": true
+    },
+    {
+      "chart": "pie",
+      "points": 3,
+      "targets": 3,
+      "svg_bytes": 2309,
+      "svg_parses": true
+    },
+    {
+      "chart": "heatmap",
+      "points": 0,
+      "targets": 0,
+      "svg_bytes": 2853,
+      "svg_parses": true
+    },
+    {
+      "chart": "pcolormesh",
+      "points": 0,
+      "targets": 0,
+      "svg_bytes": 3833,
+      "svg_parses": true
+    },
+    {
+      "chart": "hist2d",
+      "points": 0,
+      "targets": 0,
+      "svg_bytes": 3105,
+      "svg_parses": true
+    },
+    {
+      "chart": "hexbin",
+      "points": 0,
+      "targets": 0,
+      "svg_bytes": 2769,
+      "svg_parses": true
+    },
+    {
+      "chart": "boxplot",
+      "points": 0,
+      "targets": 0,
+      "svg_bytes": 3860,
+      "svg_parses": true
+    },
+    {
+      "chart": "violin",
+      "points": 0,
+      "targets": 0,
+      "svg_bytes": 17978,
+      "svg_parses": true
+    },
+    {
+      "chart": "errorbar",
+      "points": 0,
+      "targets": 0,
+      "svg_bytes": 3215,
+      "svg_parses": true
+    },
+    {
+      "chart": "fill_between",
+      "points": 0,
+      "targets": 0,
+      "svg_bytes": 2376,
+      "svg_parses": true
+    },
+    {
+      "chart": "stackplot",
+      "points": 0,
+      "targets": 0,
+      "svg_bytes": 2543,
+      "svg_parses": true
+    },
+    {
+      "chart": "contour",
+      "points": 18,
+      "targets": 18,
+      "svg_bytes": 3283,
+      "svg_parses": true
+    },
+    {
+      "chart": "quiver",
+      "points": 0,
+      "targets": 0,
+      "svg_bytes": 3161,
+      "svg_parses": true
+    },
+    {
+      "chart": "stem",
+      "points": 9,
+      "targets": 9,
+      "svg_bytes": 3020,
+      "svg_parses": true
+    },
+    {
+      "chart": "ecdf",
+      "points": 6,
+      "targets": 6,
+      "svg_bytes": 2333,
+      "svg_parses": true
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+import {
+  "moonbitlang/moonback",
+  "moonbitlang/core/env",
+  "moonbitlang/async/http",
+  "moonbitlang/async/io",
+}
+
+import {
+  "moonbitlang/async",
+  "moonbitlang/async/http",
+  "moonbitlang/core/encoding/utf8",
+} for "test"

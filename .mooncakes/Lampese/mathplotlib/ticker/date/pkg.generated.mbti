@@ -1,0 +1,688 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Lampese/mathplotlib/ticker/date"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn auto_date_formatter(Double, Double) -> DateFormatter
+
+pub fn auto_date_unit(Double, Double, count? : Int) -> Double
+
+pub fn business_day_locator(weekdays? : Array[Int], holidays? : Array[DateTime], interval? : Int, tz? : String, timezone? : DateTimeZone) -> DateLocator raise DateError
+
+pub fn concise_date_formatter(tz? : String, timezone? : DateTimeZone, formats? : Array[String], zero_formats? : Array[String], offset_formats? : Array[String], show_offset? : Bool, usetex? : Bool) -> ConciseDateFormatter raise DateError
+
+pub fn date2num(DateTime) -> Double
+
+pub fn date_formatter(String, tz? : String, timezone? : DateTimeZone) -> DateFormatter raise DateError
+
+pub fn date_locator(interval? : Int, tz? : String, timezone? : DateTimeZone) -> DateLocator raise DateError
+
+pub fn date_parse_warnings() -> Array[DateParseWarning]
+
+pub fn date_tick_values(Double, Double, count? : Int, offset_minutes? : Int, timezone? : DateTimeZone) -> Array[Double]
+
+pub fn datestr2num(String, default_date? : DateTime, parser? : DateStringParser) -> Double raise DateError
+
+pub fn datestrs2num(Array[String], default_date? : DateTime, parser? : DateStringParser) -> Array[Double] raise DateError
+
+pub fn datetime(Int, Int, Int, hour? : Int, minute? : Int, second? : Int, microsecond? : Int, offset_minutes? : Int, offset_seconds? : Int) -> DateTime raise DateError
+
+pub fn day_locator(day? : Int, interval? : Int, bymonthday? : Array[Int], tz? : String, timezone? : DateTimeZone) -> DateLocator raise DateError
+
+pub fn default_date_converter() -> DateConverter
+
+pub fn drange(DateTime, DateTime, TimeDelta) -> Array[Double] raise DateError
+
+pub fn fixed_timezone(Int) -> DateTimeZone raise DateError
+
+pub fn fixed_timezone_seconds(Int) -> DateTimeZone raise DateError
+
+pub fn format_date(DateTime, String) -> String
+
+pub fn format_date_ticks(Array[Double], format? : String, offset_minutes? : Int, timezone? : DateTimeZone) -> Array[String]
+
+pub let fr : RelativeWeekday
+
+pub fn from_ordinal(Double, offset_minutes? : Int, offset_seconds? : Int) -> DateTime raise DateError
+
+pub fn get_epoch() -> String
+
+pub fn get_timezone(name? : String) -> DateTimeZone raise DateError
+
+pub fn hour_locator(hour? : Int, interval? : Int, byhour? : Array[Int], tz? : String, timezone? : DateTimeZone) -> DateLocator raise DateError
+
+pub fn hour_locator_at(Int, interval? : Int, tz? : String, timezone? : DateTimeZone) -> DateLocator raise DateError
+
+pub fn microsecond_locator(interval? : Int, tz? : String, timezone? : DateTimeZone) -> DateLocator raise DateError
+
+pub fn minute_locator(minute? : Int, interval? : Int, byminute? : Array[Int], tz? : String, timezone? : DateTimeZone) -> DateLocator raise DateError
+
+pub fn minute_locator_at(Int, interval? : Int, tz? : String, timezone? : DateTimeZone) -> DateLocator raise DateError
+
+pub let mo : RelativeWeekday
+
+pub fn month_locator(interval? : Int, bymonth? : Array[Int], bymonthday? : Int, tz? : String, timezone? : DateTimeZone) -> DateLocator raise DateError
+
+pub fn month_locator_on(Int, interval? : Int, bymonthday? : Int, tz? : String, timezone? : DateTimeZone) -> DateLocator raise DateError
+
+pub fn nth_weekday_locator(weekday? : Int, ordinal? : Int, interval? : Int, bymonth? : Array[Int], byweekday? : Array[Int], tz? : String, timezone? : DateTimeZone) -> DateLocator raise DateError
+
+pub fn num2date(Double, tz? : String, timezone? : DateTimeZone, offset_minutes? : Int, offset_seconds? : Int) -> DateTime raise DateError
+
+pub fn num2timedelta(Double) -> TimeDelta raise DateError
+
+pub fn num2timedeltas(Array[Double]) -> Array[TimeDelta] raise DateError
+
+pub fn parse_iso(String) -> DateTime raise DateError
+
+pub fn register_timezone(String, Bytes) -> Unit raise DateError
+
+pub fn rrule(RRuleFrequency, DateTime, interval? : Int, wkst? : Int, bymonth? : Array[Int], bymonthday? : Array[Int], byyearday? : Array[Int], byweekno? : Array[Int], byeaster? : Array[Int], byweekday? : Array[Int], byhour? : Array[Int], byminute? : Array[Int], bysecond? : Array[Int], bysetpos? : Array[Int], count? : Int, until? : DateTime, cache? : Bool) -> RRule raise DateError
+
+pub fn rrule_locator(RRuleFrequency, tz? : String, timezone? : DateTimeZone, interval? : Int, wkst? : Int, bymonth? : Array[Int], bymonthday? : Array[Int], byyearday? : Array[Int], byweekno? : Array[Int], byeaster? : Array[Int], byweekday? : Array[Int], byhour? : Array[Int], byminute? : Array[Int], bysecond? : Array[Int], bysetpos? : Array[Int], dtstart? : DateTime, count? : Int, until? : DateTime) -> DateLocator raise DateError
+
+pub fn rruleset(cache? : Bool) -> RRuleSet
+
+pub let sa : RelativeWeekday
+
+pub fn second_locator(second? : Int, interval? : Int, bysecond? : Array[Int], tz? : String, timezone? : DateTimeZone) -> DateLocator raise DateError
+
+pub fn second_locator_at(Int, interval? : Int, tz? : String, timezone? : DateTimeZone) -> DateLocator raise DateError
+
+pub fn set_epoch(String) -> Unit raise DateError
+
+pub let su : RelativeWeekday
+
+pub let th : RelativeWeekday
+
+pub fn timedelta(days? : Int, seconds? : Int64, microseconds? : Int64, milliseconds? : Int64, minutes? : Int, hours? : Int, weeks? : Int) -> TimeDelta raise DateError
+
+pub fn timezone(Int, transitions? : Array[TimeZoneTransition]) -> DateTimeZone raise DateError
+
+pub fn timezone_seconds(Int, transitions? : Array[TimeZoneTransition]) -> DateTimeZone raise DateError
+
+pub fn timezone_transition(DateTime, Int) -> TimeZoneTransition raise DateError
+
+pub fn timezone_transition_seconds(DateTime, Int) -> TimeZoneTransition raise DateError
+
+pub let tu : RelativeWeekday
+
+pub fn tzif_timezone(Bytes) -> DateTimeZone raise DateError
+
+pub fn unregister_timezone(String) -> Unit
+
+pub let we : RelativeWeekday
+
+pub fn weekday_locator(weekday? : Int, interval? : Int, byweekday? : Array[Int], tz? : String, timezone? : DateTimeZone) -> DateLocator raise DateError
+
+pub fn year_locator(base? : Int, month? : Int, day? : Int, tz? : String, timezone? : DateTimeZone) -> DateLocator raise DateError
+
+// Errors
+pub(all) suberror DateError {
+  InvalidDate(message~ : String)
+  InvalidFormat(message~ : String)
+}
+
+// Types and methods
+pub struct AutoDateFormatter {
+  // private fields
+}
+pub fn AutoDateFormatter::as_formatter(Self) -> DateFormatter
+pub fn AutoDateFormatter::default_format(Self) -> String
+pub fn AutoDateFormatter::format_array(Self, Array[Double], pos? : Int) -> Array[String] raise DateError
+pub fn AutoDateFormatter::format_dates(Self, Array[DateTime], pos? : Int) -> Array[String] raise DateError
+pub fn AutoDateFormatter::format_ticks(Self, Array[Double]) -> Array[String] raise DateError
+pub fn AutoDateFormatter::format_value(Self, Double, pos? : Int) -> String raise DateError
+pub fn AutoDateFormatter::new(locator? : DateLocator, tz? : String, timezone? : DateTimeZone, default_format? : String, usetex? : Bool) -> Self raise DateError
+pub fn AutoDateFormatter::scaled(Self) -> Array[(Double, DateScaleFormat)]
+pub fn AutoDateFormatter::unit_scale(Self) -> Double
+pub fn AutoDateFormatter::with_default_format(Self, String) -> Self
+pub fn AutoDateFormatter::with_locator(Self, DateLocator) -> Self
+pub fn AutoDateFormatter::with_locator_unit(Self, Double) -> Self
+pub fn AutoDateFormatter::with_offset(Self, Int) -> Self raise DateError
+pub fn AutoDateFormatter::with_scale(Self, Double, DateScaleFormat) -> Self raise DateError
+pub fn AutoDateFormatter::with_scaled(Self, Array[(Double, DateScaleFormat)]) -> Self raise DateError
+pub fn AutoDateFormatter::with_timezone(Self, DateTimeZone) -> Self
+pub fn AutoDateFormatter::with_usetex(Self, Bool) -> Self
+
+pub struct AutoDateLocator {
+  // private fields
+}
+pub fn AutoDateLocator::as_locator(Self) -> DateLocator
+pub fn AutoDateLocator::copy(Self) -> Self
+pub fn AutoDateLocator::frequency(Self) -> DateFrequency
+pub fn AutoDateLocator::get_locator(Self, DateTime, DateTime) -> DateLocator raise DateError
+pub fn AutoDateLocator::get_locator_for_range(Self, Double, Double) -> DateLocator raise DateError
+pub fn AutoDateLocator::interval_multiples(Self) -> Bool
+pub fn AutoDateLocator::intervals(Self, DateFrequency) -> Array[Int]
+pub fn AutoDateLocator::max_ticks(Self, DateFrequency) -> Int
+pub fn AutoDateLocator::maxticks(Self) -> Array[(DateFrequency, Int)]
+pub fn AutoDateLocator::minticks(Self) -> Int
+pub fn AutoDateLocator::new(context? : DateParserContext, tz? : String, timezone? : DateTimeZone, minticks? : Int, maxticks? : DateMaxTicks, interval_multiples? : Bool) -> Self raise DateError
+pub fn AutoDateLocator::nonsingular(Self, Double, Double) -> (Double, Double)
+pub fn AutoDateLocator::selected_interval(Self) -> Int
+pub fn AutoDateLocator::tick_values(Self, Double, Double) -> Array[Double] raise DateError
+pub fn AutoDateLocator::unit_scale(Self) -> Double
+pub fn AutoDateLocator::warnings(Self) -> Array[AutoDateWarning]
+pub fn AutoDateLocator::with_interval_multiples(Self, Bool) -> Self
+pub fn AutoDateLocator::with_intervals(Self, DateFrequency, Array[Int]) -> Self raise DateError
+pub fn AutoDateLocator::with_maxticks(Self, DateMaxTicks) -> Self raise DateError
+pub fn AutoDateLocator::with_minticks(Self, Int) -> Self raise DateError
+pub fn AutoDateLocator::with_offset(Self, Int) -> Self raise DateError
+pub fn AutoDateLocator::with_timezone(Self, DateTimeZone) -> Self
+
+pub(all) enum AutoDateWarning {
+  IntervalFallback(DateFrequency, Int)
+  DistantMicroseconds
+} derive(Eq, @debug.Debug)
+pub fn AutoDateWarning::equal(Self, Self) -> Bool
+pub fn AutoDateWarning::not_equal(Self, Self) -> Bool
+pub fn AutoDateWarning::to_repr(Self) -> @debug.Repr
+
+pub struct ConciseDateConverter {
+  // private fields
+}
+pub fn ConciseDateConverter::as_converter(Self) -> DateConverter
+pub fn ConciseDateConverter::axisinfo(Self, unit? : DateTimeZone) -> DateAxisInfo raise DateError
+pub fn ConciseDateConverter::convert(Self, Array[DateTime]) -> Array[Double]
+pub fn ConciseDateConverter::convert_value(Self, DateTime) -> Double
+pub fn ConciseDateConverter::default_unit(Self, DateTime) -> DateTimeZone
+pub fn ConciseDateConverter::default_units(Self, Array[DateTime]) -> DateTimeZone?
+pub fn ConciseDateConverter::new(formats? : Array[String], zero_formats? : Array[String], offset_formats? : Array[String], show_offset? : Bool, interval_multiples? : Bool) -> Self
+
+pub struct ConciseDateFormatter {
+  // private fields
+}
+pub fn ConciseDateFormatter::as_formatter(Self) -> DateFormatter
+pub fn ConciseDateFormatter::default_format(Self) -> String
+pub fn ConciseDateFormatter::format_data_short(Self, Double) -> String raise DateError
+pub fn ConciseDateFormatter::format_ticks(Self, Array[Double], inverted? : Bool) -> Array[String] raise DateError
+pub fn ConciseDateFormatter::format_value(Self, Double) -> String
+pub fn ConciseDateFormatter::formats(Self) -> Array[String]
+pub fn ConciseDateFormatter::get_offset(Self) -> String
+pub fn ConciseDateFormatter::offset_formats(Self) -> Array[String]
+pub fn ConciseDateFormatter::show_offset(Self) -> Bool
+pub fn ConciseDateFormatter::with_default_format(Self, String) -> Self
+pub fn ConciseDateFormatter::with_offset(Self, Int) -> Self raise DateError
+pub fn ConciseDateFormatter::with_show_offset(Self, Bool) -> Self
+pub fn ConciseDateFormatter::with_timezone(Self, DateTimeZone) -> Self
+pub fn ConciseDateFormatter::with_usetex(Self, Bool) -> Self
+pub fn ConciseDateFormatter::zero_formats(Self) -> Array[String]
+
+pub struct DateAxisInfo {
+  // private fields
+}
+pub fn DateAxisInfo::copy(Self) -> Self
+pub fn DateAxisInfo::default_limits(Self) -> (DateTime, DateTime)
+pub fn DateAxisInfo::label(Self) -> String
+pub fn DateAxisInfo::major_formatter(Self) -> DateFormatter
+pub fn DateAxisInfo::major_locator(Self) -> DateLocator
+
+pub struct DateConverter {
+  // private fields
+}
+pub fn DateConverter::axisinfo(Self, unit? : DateTimeZone) -> DateAxisInfo raise DateError
+pub fn DateConverter::convert(Self, Array[DateTime]) -> Array[Double]
+pub fn DateConverter::convert_value(Self, DateTime) -> Double
+pub fn DateConverter::copy(Self) -> Self
+pub fn DateConverter::default_unit(Self, DateTime) -> DateTimeZone
+pub fn DateConverter::default_units(Self, Array[DateTime]) -> DateTimeZone?
+pub fn DateConverter::interval_multiples(Self) -> Bool
+pub fn DateConverter::new(interval_multiples? : Bool) -> Self
+
+pub struct DateFormatter {
+  format : String
+  offset_minutes : Int
+  timezone : DateTimeZone?
+  // private fields
+}
+pub fn DateFormatter::copy(Self) -> Self
+pub fn DateFormatter::format(Self) -> String
+pub fn DateFormatter::format_value(Self, Double) -> String
+pub fn DateFormatter::format_values(Self, Array[Double], inverted? : Bool) -> Array[String]
+pub fn DateFormatter::offset_label(Self, Array[Double], inverted? : Bool) -> String
+pub fn DateFormatter::offset_minutes(Self) -> Int
+pub fn DateFormatter::timezone(Self) -> DateTimeZone?
+pub fn DateFormatter::with_locator_unit(Self, Double) -> Self
+pub fn DateFormatter::with_offset(Self, Int) -> Self raise DateError
+pub fn DateFormatter::with_timezone(Self, DateTimeZone) -> Self
+pub fn DateFormatter::with_usetex(Self, Bool) -> Self
+
+pub(all) enum DateFrequency {
+  Year
+  Month
+  Day
+  Hour
+  Minute
+  Second
+  Microsecond
+} derive(Compare, Eq, @debug.Debug)
+pub fn DateFrequency::compare(Self, Self) -> Int
+pub fn DateFrequency::equal(Self, Self) -> Bool
+pub fn DateFrequency::not_equal(Self, Self) -> Bool
+pub fn DateFrequency::op_ge(Self, Self) -> Bool
+pub fn DateFrequency::op_gt(Self, Self) -> Bool
+pub fn DateFrequency::op_le(Self, Self) -> Bool
+pub fn DateFrequency::op_lt(Self, Self) -> Bool
+pub fn DateFrequency::to_repr(Self) -> @debug.Repr
+
+pub struct DateLocator {
+  kind : LocatorKind
+  interval : Int
+  selector : Int
+  secondary : Int
+  selector_enabled : Bool
+  offset_minutes : Int
+  // private fields
+}
+pub fn DateLocator::automatic_locator(Self) -> AutoDateLocator?
+pub fn DateLocator::copy(Self) -> Self
+pub fn DateLocator::interval(Self) -> Int
+pub fn DateLocator::interval_value(Self) -> Double
+pub fn DateLocator::kind(Self) -> LocatorKind
+pub fn DateLocator::microsecond_locator(Self) -> MicrosecondLocator?
+pub fn DateLocator::nonsingular(Self, Double, Double) -> (Double, Double)
+pub fn DateLocator::offset_minutes(Self) -> Int
+pub fn DateLocator::rrule_locator(Self) -> RRuleLocator?
+pub fn DateLocator::selector(Self) -> Int
+pub fn DateLocator::tick_values(Self, Double, Double) -> Array[Double]
+pub fn DateLocator::tick_values_checked(Self, Double, Double) -> Array[Double] raise DateError
+pub fn DateLocator::timezone(Self) -> DateTimeZone?
+pub fn DateLocator::unit_scale(Self) -> Double
+pub fn DateLocator::with_offset(Self, Int) -> Self raise DateError
+pub fn DateLocator::with_timezone(Self, DateTimeZone) -> Self
+
+pub(all) enum DateMaxTicks {
+  All(Int)
+  ByFrequency(Array[(DateFrequency, Int)])
+} derive(Eq, @debug.Debug)
+pub fn DateMaxTicks::equal(Self, Self) -> Bool
+pub fn DateMaxTicks::not_equal(Self, Self) -> Bool
+pub fn DateMaxTicks::to_repr(Self) -> @debug.Repr
+
+pub(all) enum DateParseWarning {
+  UnknownTimezone(String)
+} derive(Eq, @debug.Debug)
+pub fn DateParseWarning::equal(Self, Self) -> Bool
+pub fn DateParseWarning::not_equal(Self, Self) -> Bool
+pub fn DateParseWarning::to_repr(Self) -> @debug.Repr
+
+pub struct DateParserContext {
+  // private fields
+}
+pub fn DateParserContext::from_posix(String, clock? : () -> Int64) -> Self raise DateError
+pub fn DateParserContext::from_tzif(Bytes, clock? : () -> Int64) -> Self raise DateError
+pub fn DateParserContext::system(clock? : () -> Int64) -> Self raise DateError
+pub fn DateParserContext::utc(clock? : () -> Int64) -> Self
+pub fn DateParserContext::with_local_info(Self, Int, Int, Array[String]) -> Self raise DateError
+
+pub(all) enum DateScaleFormat {
+  Text(String)
+  Func((Double, Int?) -> String)
+  ValuesFunc((Array[Double], Int?) -> Array[String])
+  DatesFunc((Array[DateTime], Int?) -> Array[String])
+}
+
+pub struct DateStringParser {
+  // private fields
+}
+pub fn DateStringParser::copy(Self) -> Self
+pub fn DateStringParser::local_names(Self) -> Array[String]
+pub fn DateStringParser::local_offsets(Self) -> (Int, Int)
+pub fn DateStringParser::new(context? : DateParserContext, reference_year? : Int) -> Self raise DateError
+pub fn DateStringParser::parse(Self, String, default_date? : DateTime) -> DateTime raise DateError
+pub fn DateStringParser::parse_many(Self, Array[String], default_date? : DateTime) -> Array[DateTime] raise DateError
+pub fn DateStringParser::reference_year(Self) -> Int
+pub fn DateStringParser::to_number(Self, String, default_date? : DateTime) -> Double raise DateError
+pub fn DateStringParser::to_numbers(Self, Array[String], default_date? : DateTime) -> Array[Double] raise DateError
+pub fn DateStringParser::warnings(Self) -> Array[DateParseWarning]
+
+pub struct DateTime {
+  year : Int
+  month : Int
+  day : Int
+  hour : Int
+  minute : Int
+  second : Int
+  microsecond : Int
+  offset_minutes : Int
+  // private fields
+}
+pub fn DateTime::add_relative_delta(Self, RelativeDelta) -> Self raise DateError
+pub fn DateTime::add_timedelta(Self, TimeDelta) -> Self raise DateError
+pub fn DateTime::day(Self) -> Int
+pub fn DateTime::hour(Self) -> Int
+pub fn DateTime::microsecond(Self) -> Int
+pub fn DateTime::minute(Self) -> Int
+pub fn DateTime::month(Self) -> Int
+pub fn DateTime::offset_minutes(Self) -> Int
+pub fn DateTime::offset_seconds(Self) -> Int
+pub fn DateTime::second(Self) -> Int
+pub fn DateTime::sub_relative_delta(Self, RelativeDelta) -> Self raise DateError
+pub fn DateTime::timezone(Self) -> DateTimeZone?
+pub fn DateTime::timezone_abbreviation(Self) -> String?
+pub fn DateTime::to_ordinal(Self) -> Double
+pub fn DateTime::weekday(Self) -> Int
+pub fn DateTime::with_offset(Self, Int) -> Self raise DateError
+pub fn DateTime::with_offset_seconds(Self, Int) -> Self raise DateError
+pub fn DateTime::with_timezone(Self, DateTimeZone) -> Self raise DateError
+pub fn DateTime::year(Self) -> Int
+
+pub struct DateTimeZone {
+  // private fields
+}
+pub fn DateTimeZone::initial_offset_minutes(Self) -> Int
+pub fn DateTimeZone::initial_offset_seconds(Self) -> Int
+pub fn DateTimeZone::offset_at(Self, Double) -> Int raise DateError
+pub fn DateTimeZone::offset_seconds_at(Self, Double) -> Int raise DateError
+pub fn DateTimeZone::to_datetime(Self, Double) -> DateTime raise DateError
+pub fn DateTimeZone::to_ordinal(Self, DateTime) -> Double raise DateError
+pub fn DateTimeZone::transitions(Self) -> Array[TimeZoneTransition]
+pub fn DateTimeZone::unit_equal(Self, Self) -> Bool
+
+pub struct DayLocator {
+  // private fields
+}
+pub fn DayLocator::as_locator(Self) -> DateLocator
+pub fn DayLocator::as_rrule_locator(Self) -> RRuleLocator
+pub fn DayLocator::interval(Self) -> Int
+pub fn DayLocator::new(bymonthday? : Array[Int], bymonthday_value? : Int, interval? : Int, tz? : String, timezone? : DateTimeZone, context? : DateParserContext, null? : Array[String]) -> Self raise DateError
+pub fn DayLocator::rule(Self) -> RRuleWrapper
+pub fn DayLocator::tick_values(Self, RRuleDateTime, RRuleDateTime) -> Array[Double] raise DateError
+pub fn DayLocator::timezone(Self) -> DateTimeZone
+pub fn DayLocator::unit_scale(Self) -> Double
+pub fn DayLocator::with_offset(Self, Int) -> Self raise DateError
+pub fn DayLocator::with_timezone(Self, DateTimeZone) -> Self
+
+pub struct HourLocator {
+  // private fields
+}
+pub fn HourLocator::as_locator(Self) -> DateLocator
+pub fn HourLocator::as_rrule_locator(Self) -> RRuleLocator
+pub fn HourLocator::interval(Self) -> Int
+pub fn HourLocator::new(byhour? : Array[Int], byhour_value? : Int, interval? : Int, tz? : String, timezone? : DateTimeZone, context? : DateParserContext, null? : Array[String]) -> Self raise DateError
+pub fn HourLocator::rule(Self) -> RRuleWrapper
+pub fn HourLocator::tick_values(Self, RRuleDateTime, RRuleDateTime) -> Array[Double] raise DateError
+pub fn HourLocator::timezone(Self) -> DateTimeZone
+pub fn HourLocator::unit_scale(Self) -> Double
+pub fn HourLocator::with_offset(Self, Int) -> Self raise DateError
+pub fn HourLocator::with_timezone(Self, DateTimeZone) -> Self
+
+pub(all) enum LocatorKind {
+  Automatic
+  Days
+  BusinessDays
+  Years
+  Months
+  Weekdays
+  NthWeekdays
+  Recurrence
+  Hours
+  Minutes
+  Seconds
+  Microseconds
+}
+
+pub struct MicrosecondLocator {
+  // private fields
+}
+pub fn MicrosecondLocator::as_locator(Self) -> DateLocator
+pub fn MicrosecondLocator::interval(Self) -> Double
+pub fn MicrosecondLocator::new(interval? : Double, tz? : String, timezone? : DateTimeZone, context? : DateParserContext) -> Self raise DateError
+pub fn MicrosecondLocator::nonsingular(Self, Double, Double) -> (Double, Double)
+pub fn MicrosecondLocator::tick_values(Self, RRuleDateTime, RRuleDateTime) -> Array[Double] raise DateError
+pub fn MicrosecondLocator::timezone(Self) -> DateTimeZone
+pub fn MicrosecondLocator::unit_scale(Self) -> Double
+pub fn MicrosecondLocator::with_offset(Self, Int) -> Self raise DateError
+pub fn MicrosecondLocator::with_timezone(Self, DateTimeZone) -> Self
+
+pub struct MinuteLocator {
+  // private fields
+}
+pub fn MinuteLocator::as_locator(Self) -> DateLocator
+pub fn MinuteLocator::as_rrule_locator(Self) -> RRuleLocator
+pub fn MinuteLocator::interval(Self) -> Int
+pub fn MinuteLocator::new(byminute? : Array[Int], byminute_value? : Int, interval? : Int, tz? : String, timezone? : DateTimeZone, context? : DateParserContext, null? : Array[String]) -> Self raise DateError
+pub fn MinuteLocator::rule(Self) -> RRuleWrapper
+pub fn MinuteLocator::tick_values(Self, RRuleDateTime, RRuleDateTime) -> Array[Double] raise DateError
+pub fn MinuteLocator::timezone(Self) -> DateTimeZone
+pub fn MinuteLocator::unit_scale(Self) -> Double
+pub fn MinuteLocator::with_offset(Self, Int) -> Self raise DateError
+pub fn MinuteLocator::with_timezone(Self, DateTimeZone) -> Self
+
+pub struct MonthLocator {
+  // private fields
+}
+pub fn MonthLocator::as_locator(Self) -> DateLocator
+pub fn MonthLocator::as_rrule_locator(Self) -> RRuleLocator
+pub fn MonthLocator::interval(Self) -> Int
+pub fn MonthLocator::new(bymonth? : Array[Int], bymonth_value? : Int, bymonthday? : Array[Int], bymonthday_value? : Int, interval? : Int, tz? : String, timezone? : DateTimeZone, context? : DateParserContext, null? : Array[String]) -> Self raise DateError
+pub fn MonthLocator::rule(Self) -> RRuleWrapper
+pub fn MonthLocator::tick_values(Self, RRuleDateTime, RRuleDateTime) -> Array[Double] raise DateError
+pub fn MonthLocator::timezone(Self) -> DateTimeZone
+pub fn MonthLocator::unit_scale(Self) -> Double
+pub fn MonthLocator::with_offset(Self, Int) -> Self raise DateError
+pub fn MonthLocator::with_timezone(Self, DateTimeZone) -> Self
+
+pub struct RRule {
+  // private fields
+}
+pub fn RRule::after(Self, DateTime, inc? : Bool) -> DateTime? raise DateError
+pub fn RRule::all(Self) -> Array[DateTime] raise DateError
+pub fn RRule::before(Self, DateTime, inc? : Bool) -> DateTime? raise DateError
+pub fn RRule::between(Self, DateTime, DateTime, inc? : Bool) -> Array[DateTime] raise DateError
+pub fn RRule::cache_enabled(Self) -> Bool
+pub fn RRule::count(Self) -> Int?
+pub fn RRule::dtstart(Self) -> DateTime
+pub fn RRule::frequency(Self) -> RRuleFrequency
+pub fn RRule::interval(Self) -> Int
+pub fn RRule::iter(Self) -> Iter[DateTime]
+pub fn RRule::iter_after(Self, DateTime, count? : Int, inc? : Bool) -> Iter[DateTime]
+pub fn RRule::locator(Self) -> DateLocator
+pub fn RRule::replace(Self, frequency? : RRuleFrequency, dtstart? : DateTime, interval? : Int, wkst? : Int, bymonth? : Array[Int], bymonthday? : Array[Int], byyearday? : Array[Int], byweekno? : Array[Int], byeaster? : Array[Int], byweekday? : Array[Int], byhour? : Array[Int], byminute? : Array[Int], bysecond? : Array[Int], bysetpos? : Array[Int], count? : Int, until? : DateTime, clear? : Array[String], cache? : Bool) -> Self raise DateError
+pub fn RRule::until(Self) -> DateTime?
+pub fn RRule::with_offset(Self, Int) -> Self raise DateError
+pub fn RRule::with_timezone(Self, DateTimeZone) -> Self
+pub fn RRule::wkst(Self) -> Int
+pub fn RRule::xafter(Self, DateTime, count? : Int, inc? : Bool) -> Array[DateTime] raise DateError
+
+pub struct RRuleDateIterator {
+  // private fields
+}
+pub fn RRuleDateIterator::next(Self) -> RRuleDateTime? raise DateError
+
+pub struct RRuleDateTime {
+  // private fields
+}
+pub fn RRuleDateTime::aware(DateTime) -> Self
+pub fn RRuleDateTime::date(Self) -> DateTime
+pub fn RRuleDateTime::from_local(DateTime, DateTimeZone, fold? : Bool) -> Self raise DateError
+pub fn RRuleDateTime::is_naive(Self) -> Bool
+pub fn RRuleDateTime::naive(DateTime) -> Self
+pub fn RRuleDateTime::timezone(Self) -> DateTimeZone?
+pub fn RRuleDateTime::to_ordinal(Self) -> Double raise DateError
+
+pub(all) enum RRuleFrequency {
+  Yearly
+  Monthly
+  Weekly
+  Daily
+  Hourly
+  Minutely
+  Secondly
+}
+
+pub struct RRuleLocator {
+  // private fields
+}
+pub fn RRuleLocator::as_locator(Self) -> DateLocator
+pub fn RRuleLocator::interval(Self) -> Int
+pub fn RRuleLocator::new(RRuleWrapper, tz? : String, timezone? : DateTimeZone) -> Self raise DateError
+pub fn RRuleLocator::rule(Self) -> RRuleWrapper
+pub fn RRuleLocator::tick_values(Self, RRuleDateTime, RRuleDateTime) -> Array[Double] raise DateError
+pub fn RRuleLocator::timezone(Self) -> DateTimeZone
+pub fn RRuleLocator::unit_for_frequency(RRuleFrequency) -> Double
+pub fn RRuleLocator::unit_scale(Self) -> Double
+pub fn RRuleLocator::with_offset(Self, Int) -> Self raise DateError
+pub fn RRuleLocator::with_timezone(Self, DateTimeZone) -> Self
+
+pub struct RRuleSet {
+  // private fields
+}
+pub fn RRuleSet::after(Self, DateTime, inc? : Bool) -> DateTime? raise DateError
+pub fn RRuleSet::all(Self) -> Array[DateTime] raise DateError
+pub fn RRuleSet::before(Self, DateTime, inc? : Bool) -> DateTime? raise DateError
+pub fn RRuleSet::between(Self, DateTime, DateTime, inc? : Bool) -> Array[DateTime] raise DateError
+pub fn RRuleSet::cache_enabled(Self) -> Bool
+pub fn RRuleSet::exdate(Self, DateTime) -> Unit
+pub fn RRuleSet::exrule(Self, RRule) -> Unit
+pub fn RRuleSet::iter(Self) -> Iter[DateTime]
+pub fn RRuleSet::iter_after(Self, DateTime, count? : Int, inc? : Bool) -> Iter[DateTime]
+pub fn RRuleSet::rdate(Self, DateTime) -> Unit
+pub fn RRuleSet::rrule(Self, RRule) -> Unit
+pub fn RRuleSet::xafter(Self, DateTime, count? : Int, inc? : Bool) -> Array[DateTime] raise DateError
+
+pub struct RRuleWrapper {
+  // private fields
+}
+pub fn RRuleWrapper::after(Self, RRuleDateTime, inc? : Bool) -> RRuleDateTime? raise DateError
+pub fn RRuleWrapper::base_timezone(Self) -> DateTimeZone?
+pub fn RRuleWrapper::before(Self, RRuleDateTime, inc? : Bool) -> RRuleDateTime? raise DateError
+pub fn RRuleWrapper::between(Self, RRuleDateTime, RRuleDateTime, inc? : Bool) -> Array[RRuleDateTime] raise DateError
+pub fn RRuleWrapper::cache_enabled(Self) -> Bool
+pub fn RRuleWrapper::checked_raw_iter(Self) -> RRuleDateIterator
+pub fn RRuleWrapper::copy(Self) -> Self
+pub fn RRuleWrapper::count_limit(Self) -> Int?
+pub fn RRuleWrapper::dtstart(Self) -> RRuleDateTime
+pub fn RRuleWrapper::frequency(Self) -> RRuleFrequency
+pub fn RRuleWrapper::interval(Self) -> Int
+pub fn RRuleWrapper::new(RRuleFrequency, timezone? : DateTimeZone, context? : DateParserContext, dtstart? : RRuleDateTime, until? : RRuleDateTime, interval? : Int, wkst? : Int, count? : Int, bymonth? : Array[Int], bymonthday? : Array[Int], bymonth_value? : Int, bymonthday_value? : Int, byyearday? : Array[Int], byweekno? : Array[Int], byeaster? : Array[Int], byweekday? : Array[Int], byhour? : Array[Int], byminute? : Array[Int], bysecond? : Array[Int], bysetpos? : Array[Int], byweekdays? : Array[RelativeWeekday], cache? : Bool, null? : Array[String]) -> Self raise DateError
+pub fn RRuleWrapper::occurrence_count(Self) -> Int64 raise DateError
+pub fn RRuleWrapper::raw_iter(Self) -> Iter[RRuleDateTime]
+pub fn RRuleWrapper::raw_rule(Self) -> RRule
+pub fn RRuleWrapper::set(Self, frequency? : RRuleFrequency, dtstart? : RRuleDateTime, until? : RRuleDateTime, interval? : Int, wkst? : Int, count? : Int, bymonth? : Array[Int], bymonthday? : Array[Int], bymonth_value? : Int, bymonthday_value? : Int, byyearday? : Array[Int], byweekno? : Array[Int], byeaster? : Array[Int], byweekday? : Array[Int], byhour? : Array[Int], byminute? : Array[Int], bysecond? : Array[Int], bysetpos? : Array[Int], byweekdays? : Array[RelativeWeekday], cache? : Bool, null? : Array[String]) -> Unit raise DateError
+pub fn RRuleWrapper::timezone(Self) -> DateTimeZone?
+pub fn RRuleWrapper::until(Self) -> RRuleDateTime?
+pub fn RRuleWrapper::xafter(Self, RRuleDateTime, count? : Int, inc? : Bool) -> Array[RRuleDateTime] raise DateError
+
+pub struct RelativeDelta {
+  // private fields
+} derive(@debug.Debug)
+pub fn RelativeDelta::abs(Self) -> Self raise DateError
+pub fn RelativeDelta::add(Self, Self) -> Self raise DateError
+pub fn RelativeDelta::add_timedelta(Self, TimeDelta) -> Self raise DateError
+pub fn RelativeDelta::between(DateTime, DateTime) -> Self raise DateError
+pub fn RelativeDelta::day(Self) -> Int?
+pub fn RelativeDelta::days(Self) -> Double
+pub fn RelativeDelta::divided(Self, Double) -> Self raise DateError
+pub fn RelativeDelta::equal(Self, Self) -> Bool
+pub fn RelativeDelta::has_time(Self) -> Bool
+pub fn RelativeDelta::hour(Self) -> Int?
+pub fn RelativeDelta::hours(Self) -> Double
+pub fn RelativeDelta::is_zero(Self) -> Bool
+pub fn RelativeDelta::leapdays(Self) -> Double
+pub fn RelativeDelta::microsecond(Self) -> Int?
+pub fn RelativeDelta::microseconds(Self) -> Double
+pub fn RelativeDelta::minute(Self) -> Int?
+pub fn RelativeDelta::minutes(Self) -> Double
+pub fn RelativeDelta::month(Self) -> Int?
+pub fn RelativeDelta::months(Self) -> Int
+pub fn RelativeDelta::negated(Self) -> Self raise DateError
+pub fn RelativeDelta::new(years? : Int64, months? : Int64, days? : Double, weeks? : Double, leapdays? : Double, hours? : Double, minutes? : Double, seconds? : Double, microseconds? : Double, year? : Int, month? : Int, day? : Int, hour? : Int, minute? : Int, second? : Int, microsecond? : Int, weekday? : Int, on_weekday? : RelativeWeekday, yearday? : Int, nlyearday? : Int) -> Self raise DateError
+pub fn RelativeDelta::normalized(Self) -> Self raise DateError
+pub fn RelativeDelta::not_equal(Self, Self) -> Bool
+pub fn RelativeDelta::scaled(Self, Double) -> Self raise DateError
+pub fn RelativeDelta::second(Self) -> Int?
+pub fn RelativeDelta::seconds(Self) -> Double
+pub fn RelativeDelta::subtract(Self, Self) -> Self raise DateError
+pub fn RelativeDelta::to_repr(Self) -> @debug.Repr
+pub fn RelativeDelta::weekday(Self) -> RelativeWeekday?
+pub fn RelativeDelta::weeks(Self) -> Double
+pub fn RelativeDelta::with_weeks(Self, Double) -> Self raise DateError
+pub fn RelativeDelta::year(Self) -> Int?
+pub fn RelativeDelta::years(Self) -> Int64
+pub impl Eq for RelativeDelta
+
+pub struct RelativeWeekday {
+  // private fields
+} derive(Eq, @debug.Debug)
+pub fn RelativeWeekday::equal(Self, Self) -> Bool
+pub fn RelativeWeekday::new(Int, nth? : Int) -> Self
+pub fn RelativeWeekday::not_equal(Self, Self) -> Bool
+pub fn RelativeWeekday::nth(Self) -> Int?
+pub fn RelativeWeekday::to_repr(Self) -> @debug.Repr
+pub fn RelativeWeekday::weekday(Self) -> Int
+pub fn RelativeWeekday::with_nth(Self, Int) -> Self
+
+pub struct SecondLocator {
+  // private fields
+}
+pub fn SecondLocator::as_locator(Self) -> DateLocator
+pub fn SecondLocator::as_rrule_locator(Self) -> RRuleLocator
+pub fn SecondLocator::interval(Self) -> Int
+pub fn SecondLocator::new(bysecond? : Array[Int], bysecond_value? : Int, interval? : Int, tz? : String, timezone? : DateTimeZone, context? : DateParserContext, null? : Array[String]) -> Self raise DateError
+pub fn SecondLocator::rule(Self) -> RRuleWrapper
+pub fn SecondLocator::tick_values(Self, RRuleDateTime, RRuleDateTime) -> Array[Double] raise DateError
+pub fn SecondLocator::timezone(Self) -> DateTimeZone
+pub fn SecondLocator::unit_scale(Self) -> Double
+pub fn SecondLocator::with_offset(Self, Int) -> Self raise DateError
+pub fn SecondLocator::with_timezone(Self, DateTimeZone) -> Self
+
+pub struct TimeDelta {
+  // private fields
+} derive(Compare, Eq, @debug.Debug)
+pub fn TimeDelta::compare(Self, Self) -> Int
+pub fn TimeDelta::days(Self) -> Int
+pub fn TimeDelta::equal(Self, Self) -> Bool
+pub fn TimeDelta::microseconds(Self) -> Int
+pub fn TimeDelta::not_equal(Self, Self) -> Bool
+pub fn TimeDelta::op_ge(Self, Self) -> Bool
+pub fn TimeDelta::op_gt(Self, Self) -> Bool
+pub fn TimeDelta::op_le(Self, Self) -> Bool
+pub fn TimeDelta::op_lt(Self, Self) -> Bool
+pub fn TimeDelta::seconds(Self) -> Int
+pub fn TimeDelta::to_repr(Self) -> @debug.Repr
+pub fn TimeDelta::total_seconds(Self) -> Double
+
+pub struct TimeZoneTransition {
+  // private fields
+}
+pub fn TimeZoneTransition::at(Self) -> Double
+pub fn TimeZoneTransition::offset_minutes(Self) -> Int
+pub fn TimeZoneTransition::offset_seconds(Self) -> Int
+
+pub struct WeekdayLocator {
+  // private fields
+}
+pub fn WeekdayLocator::as_locator(Self) -> DateLocator
+pub fn WeekdayLocator::as_rrule_locator(Self) -> RRuleLocator
+pub fn WeekdayLocator::interval(Self) -> Int
+pub fn WeekdayLocator::new(byweekday? : Array[Int], byweekday_value? : Int, byweekdays? : Array[RelativeWeekday], on_weekday? : RelativeWeekday, interval? : Int, tz? : String, timezone? : DateTimeZone, context? : DateParserContext, null? : Array[String]) -> Self raise DateError
+pub fn WeekdayLocator::rule(Self) -> RRuleWrapper
+pub fn WeekdayLocator::tick_values(Self, RRuleDateTime, RRuleDateTime) -> Array[Double] raise DateError
+pub fn WeekdayLocator::timezone(Self) -> DateTimeZone
+pub fn WeekdayLocator::unit_scale(Self) -> Double
+pub fn WeekdayLocator::with_offset(Self, Int) -> Self raise DateError
+pub fn WeekdayLocator::with_timezone(Self, DateTimeZone) -> Self
+
+pub struct YearLocator {
+  // private fields
+}
+pub fn YearLocator::as_locator(Self) -> DateLocator
+pub fn YearLocator::as_rrule_locator(Self) -> RRuleLocator
+pub fn YearLocator::base(Self) -> Int
+pub fn YearLocator::interval(Self) -> Int
+pub fn YearLocator::new(base? : Int, month? : Int, day? : Int, tz? : String, timezone? : DateTimeZone, context? : DateParserContext) -> Self raise DateError
+pub fn YearLocator::rule(Self) -> RRuleWrapper
+pub fn YearLocator::tick_values(Self, RRuleDateTime, RRuleDateTime) -> Array[Double] raise DateError
+pub fn YearLocator::timezone(Self) -> DateTimeZone
+pub fn YearLocator::unit_scale(Self) -> Double
+pub fn YearLocator::with_offset(Self, Int) -> Self raise DateError
+pub fn YearLocator::with_timezone(Self, DateTimeZone) -> Self
+
+// Type aliases
+
+// Traits

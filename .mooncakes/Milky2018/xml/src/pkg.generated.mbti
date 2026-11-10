@@ -1,0 +1,242 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Milky2018/xml"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn escape(String) -> String
+
+pub fn unescape(String) -> String raise XmlErrorKind
+
+// Errors
+pub(all) suberror WriterError {
+  InvalidName(String)
+  InvalidContent(String)
+  InvalidStructure(String)
+  InvalidDeclaration(String)
+} derive(Eq, @debug.Debug)
+pub fn WriterError::equal(Self, Self) -> Bool
+pub fn WriterError::not_equal(Self, Self) -> Bool
+pub fn WriterError::to_repr(Self) -> @debug.Repr
+
+pub(all) suberror XmlError {
+  At(error~ : XmlErrorKind, span~ : SourceSpan)
+} derive(Eq, @debug.Debug)
+pub fn XmlError::equal(Self, Self) -> Bool
+pub fn XmlError::not_equal(Self, Self) -> Bool
+pub fn XmlError::output(Self, &Logger) -> Unit
+pub fn XmlError::to_repr(Self) -> @debug.Repr
+pub fn XmlError::to_string(Self) -> String
+pub impl Show for XmlError
+
+pub(all) suberror XmlErrorKind {
+  UnexpectedEof
+  InvalidSyntax(String)
+  UnmatchedTag(expected~ : String, found~ : String)
+  InvalidAttribute(String)
+  InvalidEntity(String)
+} derive(Eq, @debug.Debug)
+pub fn XmlErrorKind::equal(Self, Self) -> Bool
+pub fn XmlErrorKind::not_equal(Self, Self) -> Bool
+pub fn XmlErrorKind::output(Self, &Logger) -> Unit
+pub fn XmlErrorKind::to_repr(Self) -> @debug.Repr
+pub fn XmlErrorKind::to_string(Self) -> String
+pub impl Show for XmlErrorKind
+
+// Types and methods
+pub struct Event {
+  kind : EventKind
+  span : SourceSpan
+} derive(Eq)
+pub fn Event::equal(Self, Self) -> Bool
+pub fn Event::not_equal(Self, Self) -> Bool
+pub fn Event::output(Self, &Logger) -> Unit
+pub fn Event::to_repr(Self) -> @debug.Repr
+pub fn Event::to_string(Self) -> String
+pub impl Show for Event
+pub impl @debug.Debug for Event
+
+pub(all) enum EventKind {
+  Start(XmlElement)
+  End(String)
+  Empty(XmlElement)
+  Text(String)
+  CData(String)
+  Comment(String)
+  PI(target~ : String, data~ : String)
+  Decl(version~ : String, encoding~ : String?, standalone~ : String?)
+  DocType(String)
+  Eof
+} derive(Eq, @debug.Debug)
+pub fn EventKind::equal(Self, Self) -> Bool
+pub fn EventKind::not_equal(Self, Self) -> Bool
+pub fn EventKind::output(Self, &Logger) -> Unit
+pub fn EventKind::to_repr(Self) -> @debug.Repr
+pub fn EventKind::to_string(Self) -> String
+pub impl Show for EventKind
+
+pub struct NamespaceAttribute {
+  name : XmlName
+  value : String
+  span : SourceSpan
+  name_span : SourceSpan
+  value_span : SourceSpan
+} derive(Eq, @debug.Debug)
+pub fn NamespaceAttribute::equal(Self, Self) -> Bool
+pub fn NamespaceAttribute::not_equal(Self, Self) -> Bool
+pub fn NamespaceAttribute::to_repr(Self) -> @debug.Repr
+
+pub struct NamespaceDeclaration {
+  prefix : String?
+  namespace_uri : String
+  span : SourceSpan
+  name_span : SourceSpan
+  value_span : SourceSpan
+} derive(Eq, @debug.Debug)
+pub fn NamespaceDeclaration::equal(Self, Self) -> Bool
+pub fn NamespaceDeclaration::not_equal(Self, Self) -> Bool
+pub fn NamespaceDeclaration::to_repr(Self) -> @debug.Repr
+
+pub struct NamespaceElement {
+  name : XmlName
+  attributes : Array[NamespaceAttribute]
+  namespace_declarations : Array[NamespaceDeclaration]
+} derive(Eq, @debug.Debug)
+pub fn NamespaceElement::equal(Self, Self) -> Bool
+pub fn NamespaceElement::not_equal(Self, Self) -> Bool
+pub fn NamespaceElement::to_repr(Self) -> @debug.Repr
+
+pub struct NamespaceEvent {
+  kind : NamespaceEventKind
+  span : SourceSpan
+} derive(Eq, @debug.Debug)
+pub fn NamespaceEvent::equal(Self, Self) -> Bool
+pub fn NamespaceEvent::not_equal(Self, Self) -> Bool
+pub fn NamespaceEvent::to_repr(Self) -> @debug.Repr
+
+pub(all) enum NamespaceEventKind {
+  Start(NamespaceElement)
+  End(XmlName)
+  Empty(NamespaceElement)
+  Text(String)
+  CData(String)
+  Comment(String)
+  PI(target~ : String, data~ : String)
+  Decl(version~ : String, encoding~ : String?, standalone~ : String?)
+  DocType(String)
+  Eof
+} derive(Eq, @debug.Debug)
+pub fn NamespaceEventKind::equal(Self, Self) -> Bool
+pub fn NamespaceEventKind::not_equal(Self, Self) -> Bool
+pub fn NamespaceEventKind::to_repr(Self) -> @debug.Repr
+
+pub struct NamespaceReader {
+  reader : Reader
+  scopes : Array[Map[String, String]]
+}
+pub fn NamespaceReader::column(Self) -> Int
+pub fn NamespaceReader::from_string(String) -> Self
+pub fn NamespaceReader::is_eof(Self) -> Bool
+pub fn NamespaceReader::line(Self) -> Int
+pub fn NamespaceReader::read_event(Self) -> NamespaceEvent raise XmlError
+pub fn NamespaceReader::read_events_until_eof(Self) -> Array[NamespaceEvent] raise XmlError
+
+pub struct Reader {
+  input : Array[Char]
+  mut pos : Int
+  mut offset : Int
+  mut line : Int
+  mut column : Int
+  entities : Map[String, String]
+  mut entity_expansion_remaining : Int
+  attr_types : Map[String, String]
+  tag_stack : Array[(String, SourceSpan)]
+  mut seen_root : Bool
+  mut root_closed : Bool
+  mut seen_content : Bool
+  mut just_saw_decl : Bool
+  pending_events : Array[Event]
+  internal_subset_events : Array[Event]
+  mut just_saw_doctype : Bool
+  had_bom : Bool
+}
+pub fn Reader::column(Self) -> Int
+pub fn Reader::from_string(String) -> Self
+pub fn Reader::is_eof(Self) -> Bool
+pub fn Reader::line(Self) -> Int
+pub fn Reader::read_event(Self) -> Event raise XmlError
+pub fn Reader::read_events_until_eof(Self) -> Array[Event] raise XmlError
+
+pub struct SourcePosition {
+  offset : Int
+  line : Int
+  column : Int
+} derive(Eq, @debug.Debug)
+pub fn SourcePosition::equal(Self, Self) -> Bool
+pub fn SourcePosition::not_equal(Self, Self) -> Bool
+pub fn SourcePosition::to_repr(Self) -> @debug.Repr
+
+pub struct SourceSpan {
+  start : SourcePosition
+  end : SourcePosition
+} derive(Eq, @debug.Debug)
+pub fn SourceSpan::equal(Self, Self) -> Bool
+pub fn SourceSpan::not_equal(Self, Self) -> Bool
+pub fn SourceSpan::to_repr(Self) -> @debug.Repr
+
+pub struct Writer {
+  buffer : StringBuilder
+  element_stack : Array[String]
+  mut seen_root : Bool
+  mut wrote_anything : Bool
+  mut doctype_root : String?
+}
+pub fn Writer::cdata(Self, String) -> Unit raise WriterError
+pub fn Writer::comment(Self, String) -> Unit raise WriterError
+pub fn Writer::empty_element(Self, String, Array[(String, String)]) -> Unit raise WriterError
+pub fn Writer::end_element(Self, String) -> Unit raise WriterError
+pub fn Writer::new() -> Self
+pub fn Writer::start_element(Self, String, Array[(String, String)]) -> Unit raise WriterError
+pub fn Writer::text(Self, String) -> Unit raise WriterError
+pub fn Writer::to_string(Self) -> String raise WriterError
+pub fn Writer::write_event(Self, Event) -> Unit raise WriterError
+
+pub struct XmlAttribute {
+  name : String
+  value : String
+  span : SourceSpan
+  name_span : SourceSpan
+  value_span : SourceSpan
+} derive(Eq, @debug.Debug)
+pub fn XmlAttribute::equal(Self, Self) -> Bool
+pub fn XmlAttribute::not_equal(Self, Self) -> Bool
+pub fn XmlAttribute::to_repr(Self) -> @debug.Repr
+
+pub struct XmlElement {
+  name : String
+  attributes : Array[XmlAttribute]
+} derive(Eq)
+pub fn XmlElement::equal(Self, Self) -> Bool
+pub fn XmlElement::get(Self, String) -> String?
+pub fn XmlElement::not_equal(Self, Self) -> Bool
+pub fn XmlElement::output(Self, &Logger) -> Unit
+pub fn XmlElement::to_repr(Self) -> @debug.Repr
+pub fn XmlElement::to_string(Self) -> String
+pub impl Show for XmlElement
+pub impl @debug.Debug for XmlElement
+
+pub struct XmlName {
+  qualified_name : String
+  prefix : String?
+  local_name : String
+  namespace_uri : String?
+} derive(Eq, @debug.Debug)
+pub fn XmlName::equal(Self, Self) -> Bool
+pub fn XmlName::not_equal(Self, Self) -> Bool
+pub fn XmlName::to_repr(Self) -> @debug.Repr
+
+// Type aliases
+
+// Traits

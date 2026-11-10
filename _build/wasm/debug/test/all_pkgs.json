@@ -1,0 +1,1459 @@
+{
+  "packages": [
+    {
+      "root": "Lampese/mathplotlib",
+      "rel": "",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/Lampese/mathplotlib/mathplotlib.mi"
+    },
+    {
+      "root": "Lampese/mathplotlib",
+      "rel": "backend/svg",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/Lampese/mathplotlib/backend/svg/svg.mi"
+    },
+    {
+      "root": "Lampese/mathplotlib",
+      "rel": "cmd/gallery",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/Lampese/mathplotlib/cmd/gallery/gallery.mi"
+    },
+    {
+      "root": "Lampese/mathplotlib",
+      "rel": "cmd/main",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/Lampese/mathplotlib/cmd/main/main.mi"
+    },
+    {
+      "root": "Lampese/mathplotlib",
+      "rel": "cmd/preview",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/Lampese/mathplotlib/cmd/preview/preview.mi"
+    },
+    {
+      "root": "Lampese/mathplotlib",
+      "rel": "config",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/Lampese/mathplotlib/config/config.mi"
+    },
+    {
+      "root": "Lampese/mathplotlib",
+      "rel": "core",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/Lampese/mathplotlib/core/core.mi"
+    },
+    {
+      "root": "Lampese/mathplotlib",
+      "rel": "core/colors",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/Lampese/mathplotlib/core/colors/colors.mi"
+    },
+    {
+      "root": "Lampese/mathplotlib",
+      "rel": "drawing",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/Lampese/mathplotlib/drawing/drawing.mi"
+    },
+    {
+      "root": "Lampese/mathplotlib",
+      "rel": "internal/color_names",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/Lampese/mathplotlib/internal/color_names/color_names.mi"
+    },
+    {
+      "root": "Lampese/mathplotlib",
+      "rel": "internal/date_epoch",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/Lampese/mathplotlib/internal/date_epoch/date_epoch.mi"
+    },
+    {
+      "root": "Lampese/mathplotlib",
+      "rel": "internal/date_host",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/Lampese/mathplotlib/internal/date_host/date_host.mi"
+    },
+    {
+      "root": "Lampese/mathplotlib",
+      "rel": "internal/png",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/Lampese/mathplotlib/internal/png/png.mi"
+    },
+    {
+      "root": "Lampese/mathplotlib",
+      "rel": "internal/render",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/Lampese/mathplotlib/internal/render/render.mi"
+    },
+    {
+      "root": "Lampese/mathplotlib",
+      "rel": "internal/tick_grid",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/Lampese/mathplotlib/internal/tick_grid/tick_grid.mi"
+    },
+    {
+      "root": "Lampese/mathplotlib",
+      "rel": "pyplot",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/Lampese/mathplotlib/pyplot/pyplot.mi"
+    },
+    {
+      "root": "Lampese/mathplotlib",
+      "rel": "rabbita",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/Lampese/mathplotlib/rabbita/rabbita.mi"
+    },
+    {
+      "root": "Lampese/mathplotlib",
+      "rel": "scene",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/Lampese/mathplotlib/scene/scene.mi"
+    },
+    {
+      "root": "Lampese/mathplotlib",
+      "rel": "scene/axis",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/Lampese/mathplotlib/scene/axis/axis.mi"
+    },
+    {
+      "root": "Lampese/mathplotlib",
+      "rel": "scene/boxplot",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/Lampese/mathplotlib/scene/boxplot/boxplot.mi"
+    },
+    {
+      "root": "Lampese/mathplotlib",
+      "rel": "scene/colorbar",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/Lampese/mathplotlib/scene/colorbar/colorbar.mi"
+    },
+    {
+      "root": "Lampese/mathplotlib",
+      "rel": "scene/gridspec",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/Lampese/mathplotlib/scene/gridspec/gridspec.mi"
+    },
+    {
+      "root": "Lampese/mathplotlib",
+      "rel": "ticker",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/Lampese/mathplotlib/ticker/ticker.mi"
+    },
+    {
+      "root": "Lampese/mathplotlib",
+      "rel": "ticker/category",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/Lampese/mathplotlib/ticker/category/category.mi"
+    },
+    {
+      "root": "Lampese/mathplotlib",
+      "rel": "ticker/date",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/Lampese/mathplotlib/ticker/date/date.mi"
+    },
+    {
+      "root": "Lampese/mathplotlib",
+      "rel": "ticker/date/tzdb",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/Lampese/mathplotlib/ticker/date/tzdb/tzdb.mi"
+    },
+    {
+      "root": "Lampese/mathplotlib",
+      "rel": "ticker/scale",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/Lampese/mathplotlib/ticker/scale/scale.mi"
+    },
+    {
+      "root": "Lampese/mathplotlib",
+      "rel": "transforms",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/Lampese/mathplotlib/transforms/transforms.mi"
+    },
+    {
+      "root": "Milky2018/xml",
+      "rel": "",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/Milky2018/xml/xml.mi"
+    },
+    {
+      "root": "caijiewei295/tzif-engine",
+      "rel": "",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/caijiewei295/tzif-engine/tzif-engine.mi"
+    },
+    {
+      "root": "caijiewei295/tzif-engine",
+      "rel": "bench",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/caijiewei295/tzif-engine/bench/bench.mi"
+    },
+    {
+      "root": "caijiewei295/tzif-engine",
+      "rel": "cli",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/caijiewei295/tzif-engine/cli/cli.mi"
+    },
+    {
+      "root": "caijiewei295/tzif-engine",
+      "rel": "converter",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/caijiewei295/tzif-engine/converter/converter.mi"
+    },
+    {
+      "root": "caijiewei295/tzif-engine",
+      "rel": "examples",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/caijiewei295/tzif-engine/examples/examples.mi"
+    },
+    {
+      "root": "caijiewei295/tzif-engine",
+      "rel": "golden",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/caijiewei295/tzif-engine/golden/golden.mi"
+    },
+    {
+      "root": "caijiewei295/tzif-engine",
+      "rel": "parser",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/caijiewei295/tzif-engine/parser/parser.mi"
+    },
+    {
+      "root": "caijiewei295/tzif-engine",
+      "rel": "posix",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/caijiewei295/tzif-engine/posix/posix.mi"
+    },
+    {
+      "root": "caijiewei295/tzif-engine",
+      "rel": "test/conformance",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/caijiewei295/tzif-engine/test/conformance/conformance.mi"
+    },
+    {
+      "root": "caijiewei295/tzif-engine",
+      "rel": "test/facade",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/caijiewei295/tzif-engine/test/facade/facade.mi"
+    },
+    {
+      "root": "caijiewei295/tzif-engine",
+      "rel": "test/fixtures",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/caijiewei295/tzif-engine/test/fixtures/fixtures.mi"
+    },
+    {
+      "root": "caijiewei295/tzif-engine",
+      "rel": "test/interop",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/caijiewei295/tzif-engine/test/interop/interop.mi"
+    },
+    {
+      "root": "caijiewei295/tzif-engine",
+      "rel": "test/mutation",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/caijiewei295/tzif-engine/test/mutation/mutation.mi"
+    },
+    {
+      "root": "caijiewei295/tzif-engine",
+      "rel": "text",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/caijiewei295/tzif-engine/text/text.mi"
+    },
+    {
+      "root": "caijiewei295/tzif-engine",
+      "rel": "types",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/caijiewei295/tzif-engine/types/types.mi"
+    },
+    {
+      "root": "ihb2032/MoonFrame",
+      "rel": "",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/ihb2032/MoonFrame/MoonFrame.mi"
+    },
+    {
+      "root": "ihb2032/MoonFrame",
+      "rel": "chart",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/ihb2032/MoonFrame/chart/chart.mi"
+    },
+    {
+      "root": "ihb2032/MoonFrame",
+      "rel": "examples/data_cleaning",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/ihb2032/MoonFrame/examples/data_cleaning/data_cleaning.mi"
+    },
+    {
+      "root": "ihb2032/MoonFrame",
+      "rel": "examples/data_cleaning/clean",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/ihb2032/MoonFrame/examples/data_cleaning/clean/clean.mi"
+    },
+    {
+      "root": "ihb2032/MoonFrame",
+      "rel": "examples/expressions",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/ihb2032/MoonFrame/examples/expressions/expressions.mi"
+    },
+    {
+      "root": "ihb2032/MoonFrame",
+      "rel": "examples/expressions/analysis",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/ihb2032/MoonFrame/examples/expressions/analysis/analysis.mi"
+    },
+    {
+      "root": "ihb2032/MoonFrame",
+      "rel": "examples/readme_install",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/ihb2032/MoonFrame/examples/readme_install/readme_install.mi"
+    },
+    {
+      "root": "ihb2032/MoonFrame",
+      "rel": "examples/reporting",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/ihb2032/MoonFrame/examples/reporting/reporting.mi"
+    },
+    {
+      "root": "ihb2032/MoonFrame",
+      "rel": "examples/reporting/report",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/ihb2032/MoonFrame/examples/reporting/report/report.mi"
+    },
+    {
+      "root": "ihb2032/MoonFrame",
+      "rel": "examples/sales_analysis",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/ihb2032/MoonFrame/examples/sales_analysis/sales_analysis.mi"
+    },
+    {
+      "root": "ihb2032/MoonFrame",
+      "rel": "examples/sales_analysis/pipeline",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/ihb2032/MoonFrame/examples/sales_analysis/pipeline/pipeline.mi"
+    },
+    {
+      "root": "ihb2032/MoonFrame",
+      "rel": "expr",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/ihb2032/MoonFrame/expr/expr.mi"
+    },
+    {
+      "root": "ihb2032/MoonFrame",
+      "rel": "frame",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/ihb2032/MoonFrame/frame/frame.mi"
+    },
+    {
+      "root": "ihb2032/MoonFrame",
+      "rel": "internal/buffer",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/ihb2032/MoonFrame/internal/buffer/buffer.mi"
+    },
+    {
+      "root": "ihb2032/MoonFrame",
+      "rel": "internal/column",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/ihb2032/MoonFrame/internal/column/column.mi"
+    },
+    {
+      "root": "ihb2032/MoonFrame",
+      "rel": "internal/ir",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/ihb2032/MoonFrame/internal/ir/ir.mi"
+    },
+    {
+      "root": "ihb2032/MoonFrame",
+      "rel": "internal/kernel",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/ihb2032/MoonFrame/internal/kernel/kernel.mi"
+    },
+    {
+      "root": "ihb2032/MoonFrame",
+      "rel": "internal/numeric",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/ihb2032/MoonFrame/internal/numeric/numeric.mi"
+    },
+    {
+      "root": "ihb2032/MoonFrame",
+      "rel": "internal/order",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/ihb2032/MoonFrame/internal/order/order.mi"
+    },
+    {
+      "root": "ihb2032/MoonFrame",
+      "rel": "internal/scan",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/ihb2032/MoonFrame/internal/scan/scan.mi"
+    },
+    {
+      "root": "ihb2032/MoonFrame",
+      "rel": "internal/text",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/ihb2032/MoonFrame/internal/text/text.mi"
+    },
+    {
+      "root": "ihb2032/MoonFrame",
+      "rel": "io",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/ihb2032/MoonFrame/io/io.mi"
+    },
+    {
+      "root": "ihb2032/MoonFrame",
+      "rel": "lazy",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/ihb2032/MoonFrame/lazy/lazy.mi"
+    },
+    {
+      "root": "ihb2032/MoonFrame",
+      "rel": "series",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/ihb2032/MoonFrame/series/series.mi"
+    },
+    {
+      "root": "ihb2032/MoonFrame",
+      "rel": "types",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/ihb2032/MoonFrame/types/types.mi"
+    },
+    {
+      "root": "moonbit-community/NyaCSV",
+      "rel": "",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbit-community/NyaCSV/NyaCSV.mi"
+    },
+    {
+      "root": "moonbit-community/rabbita",
+      "rel": "",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbit-community/rabbita/rabbita.mi"
+    },
+    {
+      "root": "moonbit-community/rabbita",
+      "rel": "clipboard",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbit-community/rabbita/clipboard/clipboard.mi"
+    },
+    {
+      "root": "moonbit-community/rabbita",
+      "rel": "cmd",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbit-community/rabbita/cmd/cmd.mi"
+    },
+    {
+      "root": "moonbit-community/rabbita",
+      "rel": "common",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbit-community/rabbita/common/common.mi"
+    },
+    {
+      "root": "moonbit-community/rabbita",
+      "rel": "dialog",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbit-community/rabbita/dialog/dialog.mi"
+    },
+    {
+      "root": "moonbit-community/rabbita",
+      "rel": "dom",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbit-community/rabbita/dom/dom.mi"
+    },
+    {
+      "root": "moonbit-community/rabbita",
+      "rel": "html",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbit-community/rabbita/html/html.mi"
+    },
+    {
+      "root": "moonbit-community/rabbita",
+      "rel": "html/canvas",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbit-community/rabbita/html/canvas/canvas.mi"
+    },
+    {
+      "root": "moonbit-community/rabbita",
+      "rel": "http",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbit-community/rabbita/http/http.mi"
+    },
+    {
+      "root": "moonbit-community/rabbita",
+      "rel": "internal/any",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbit-community/rabbita/internal/any/any.mi"
+    },
+    {
+      "root": "moonbit-community/rabbita",
+      "rel": "internal/duplix",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbit-community/rabbita/internal/duplix/duplix.mi"
+    },
+    {
+      "root": "moonbit-community/rabbita",
+      "rel": "internal/key",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbit-community/rabbita/internal/key/key.mi"
+    },
+    {
+      "root": "moonbit-community/rabbita",
+      "rel": "internal/runtime",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbit-community/rabbita/internal/runtime/runtime.mi"
+    },
+    {
+      "root": "moonbit-community/rabbita",
+      "rel": "internal/slotmap",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbit-community/rabbita/internal/slotmap/slotmap.mi"
+    },
+    {
+      "root": "moonbit-community/rabbita",
+      "rel": "internal/vdom",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbit-community/rabbita/internal/vdom/vdom.mi"
+    },
+    {
+      "root": "moonbit-community/rabbita",
+      "rel": "js",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbit-community/rabbita/js/js.mi"
+    },
+    {
+      "root": "moonbit-community/rabbita",
+      "rel": "nav",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbit-community/rabbita/nav/nav.mi"
+    },
+    {
+      "root": "moonbit-community/rabbita",
+      "rel": "server",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbit-community/rabbita/server/server.mi"
+    },
+    {
+      "root": "moonbit-community/rabbita",
+      "rel": "sub",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbit-community/rabbita/sub/sub.mi"
+    },
+    {
+      "root": "moonbit-community/rabbita",
+      "rel": "svg",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbit-community/rabbita/svg/svg.mi"
+    },
+    {
+      "root": "moonbit-community/rabbita",
+      "rel": "url",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbit-community/rabbita/url/url.mi"
+    },
+    {
+      "root": "moonbit-community/rabbita",
+      "rel": "variant",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbit-community/rabbita/variant/variant.mi"
+    },
+    {
+      "root": "moonbit-community/rabbita",
+      "rel": "websocket",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbit-community/rabbita/websocket/websocket.mi"
+    },
+    {
+      "root": "moonbitlang/async",
+      "rel": "",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbitlang/async/async.mi"
+    },
+    {
+      "root": "moonbitlang/async",
+      "rel": "aqueue",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbitlang/async/aqueue/aqueue.mi"
+    },
+    {
+      "root": "moonbitlang/async",
+      "rel": "cond_var",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbitlang/async/cond_var/cond_var.mi"
+    },
+    {
+      "root": "moonbitlang/async",
+      "rel": "external_loop_integration",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbitlang/async/external_loop_integration/external_loop_integration.mi"
+    },
+    {
+      "root": "moonbitlang/async",
+      "rel": "external_loop_integration/internal/external_loop_test",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbitlang/async/external_loop_integration/internal/external_loop_test/external_loop_test.mi"
+    },
+    {
+      "root": "moonbitlang/async",
+      "rel": "fs",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbitlang/async/fs/fs.mi"
+    },
+    {
+      "root": "moonbitlang/async",
+      "rel": "gzip",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbitlang/async/gzip/gzip.mi"
+    },
+    {
+      "root": "moonbitlang/async",
+      "rel": "http",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbitlang/async/http/http.mi"
+    },
+    {
+      "root": "moonbitlang/async",
+      "rel": "internal/bytes_util",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbitlang/async/internal/bytes_util/bytes_util.mi"
+    },
+    {
+      "root": "moonbitlang/async",
+      "rel": "internal/c_buffer",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbitlang/async/internal/c_buffer/c_buffer.mi"
+    },
+    {
+      "root": "moonbitlang/async",
+      "rel": "internal/cancellable_queue",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbitlang/async/internal/cancellable_queue/cancellable_queue.mi"
+    },
+    {
+      "root": "moonbitlang/async",
+      "rel": "internal/coroutine",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbitlang/async/internal/coroutine/coroutine.mi"
+    },
+    {
+      "root": "moonbitlang/async",
+      "rel": "internal/env_util",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbitlang/async/internal/env_util/env_util.mi"
+    },
+    {
+      "root": "moonbitlang/async",
+      "rel": "internal/event_loop",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbitlang/async/internal/event_loop/event_loop.mi"
+    },
+    {
+      "root": "moonbitlang/async",
+      "rel": "internal/fd_util",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbitlang/async/internal/fd_util/fd_util.mi"
+    },
+    {
+      "root": "moonbitlang/async",
+      "rel": "internal/gzip_internal",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbitlang/async/internal/gzip_internal/gzip_internal.mi"
+    },
+    {
+      "root": "moonbitlang/async",
+      "rel": "internal/io_buffer",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbitlang/async/internal/io_buffer/io_buffer.mi"
+    },
+    {
+      "root": "moonbitlang/async",
+      "rel": "internal/os_string",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbitlang/async/internal/os_string/os_string.mi"
+    },
+    {
+      "root": "moonbitlang/async",
+      "rel": "internal/test_util",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbitlang/async/internal/test_util/test_util.mi"
+    },
+    {
+      "root": "moonbitlang/async",
+      "rel": "io",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbitlang/async/io/io.mi"
+    },
+    {
+      "root": "moonbitlang/async",
+      "rel": "js_async",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbitlang/async/js_async/js_async.mi"
+    },
+    {
+      "root": "moonbitlang/async",
+      "rel": "os_error",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbitlang/async/os_error/os_error.mi"
+    },
+    {
+      "root": "moonbitlang/async",
+      "rel": "pipe",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbitlang/async/pipe/pipe.mi"
+    },
+    {
+      "root": "moonbitlang/async",
+      "rel": "process",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbitlang/async/process/process.mi"
+    },
+    {
+      "root": "moonbitlang/async",
+      "rel": "raw_fd",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbitlang/async/raw_fd/raw_fd.mi"
+    },
+    {
+      "root": "moonbitlang/async",
+      "rel": "semaphore",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbitlang/async/semaphore/semaphore.mi"
+    },
+    {
+      "root": "moonbitlang/async",
+      "rel": "shell",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbitlang/async/shell/shell.mi"
+    },
+    {
+      "root": "moonbitlang/async",
+      "rel": "signal",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbitlang/async/signal/signal.mi"
+    },
+    {
+      "root": "moonbitlang/async",
+      "rel": "socket",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbitlang/async/socket/socket.mi"
+    },
+    {
+      "root": "moonbitlang/async",
+      "rel": "stdio",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbitlang/async/stdio/stdio.mi"
+    },
+    {
+      "root": "moonbitlang/async",
+      "rel": "tls",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbitlang/async/tls/tls.mi"
+    },
+    {
+      "root": "moonbitlang/async",
+      "rel": "types",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbitlang/async/types/types.mi"
+    },
+    {
+      "root": "moonbitlang/async",
+      "rel": "websocket",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbitlang/async/websocket/websocket.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "abort",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/abort/abort.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "archive/zip",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/archive/zip/zip.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "argparse",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/argparse/argparse.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "array",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/array/array.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "async",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/async/async.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "async/aqueue",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/async/aqueue/aqueue.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "async/cond_var",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/async/cond_var/cond_var.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "async/external_loop_integration",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/async/external_loop_integration/external_loop_integration.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "async/external_loop_integration/internal/external_loop_test",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/async/external_loop_integration/internal/external_loop_test/external_loop_test.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "async/fs",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/async/fs/fs.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "async/gzip",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/async/gzip/gzip.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "async/http",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/async/http/http.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "async/internal/bytes_util",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/async/internal/bytes_util/bytes_util.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "async/internal/c_buffer",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/async/internal/c_buffer/c_buffer.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "async/internal/cancellable_queue",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/async/internal/cancellable_queue/cancellable_queue.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "async/internal/coroutine",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/async/internal/coroutine/coroutine.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "async/internal/env_util",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/async/internal/env_util/env_util.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "async/internal/errno_util",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/async/internal/errno_util/errno_util.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "async/internal/event_loop",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/async/internal/event_loop/event_loop.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "async/internal/fd_util",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/async/internal/fd_util/fd_util.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "async/internal/gzip_internal",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/async/internal/gzip_internal/gzip_internal.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "async/internal/io_buffer",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/async/internal/io_buffer/io_buffer.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "async/internal/test_util",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/async/internal/test_util/test_util.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "async/io",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/async/io/io.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "async/js_async",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/async/js_async/js_async.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "async/os_error",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/async/os_error/os_error.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "async/pipe",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/async/pipe/pipe.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "async/process",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/async/process/process.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "async/raw_fd",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/async/raw_fd/raw_fd.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "async/raw_fd/internal/raw_fd_test_util",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/async/raw_fd/internal/raw_fd_test_util/raw_fd_test_util.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "async/runtime_internal",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/async/runtime_internal/runtime_internal.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "async/semaphore",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/async/semaphore/semaphore.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "async/shell",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/async/shell/shell.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "async/signal",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/async/signal/signal.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "async/socket",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/async/socket/socket.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "async/stdio",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/async/stdio/stdio.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "async/tls",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/async/tls/tls.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "async/types",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/async/types/types.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "async/websocket",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/async/websocket/websocket.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "bench",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/bench/bench.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "bigint",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/bigint/bigint.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "bool",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/bool/bool.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "buffer",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/buffer/buffer.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "builtin",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/builtin/builtin.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "byte",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/byte/byte.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "bytes",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/bytes/bytes.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "bytes/internal/regex_engine",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/bytes/internal/regex_engine/regex_engine.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "bytes/internal/regex_engine/ast",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/bytes/internal/regex_engine/ast/ast.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "bytes/internal/regex_engine/shared_types",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/bytes/internal/regex_engine/shared_types/shared_types.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "bytes/internal/regex_engine/shared_types/byte_set",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/bytes/internal/regex_engine/shared_types/byte_set/byte_set.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "bytes/internal/regex_engine/symbol_map",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/bytes/internal/regex_engine/symbol_map/symbol_map.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "bytes/internal/regex_parser",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/bytes/internal/regex_parser/regex_parser.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "char",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/char/char.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "cmp",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/cmp/cmp.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "compress/flate",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/compress/flate/flate.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "compress/flate/inspect_test",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/compress/flate/inspect_test/inspect_test.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "compress/gzip",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/compress/gzip/gzip.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "compress/zlib",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/compress/zlib/zlib.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "coverage",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/coverage/coverage.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "debug",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/debug/debug.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "deque",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/deque/deque.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "diff",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/diff/diff.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "double",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/double/double.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "encoding/ascii",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/encoding/ascii/ascii.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "encoding/base64",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/encoding/base64/base64.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "encoding/hex",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/encoding/hex/hex.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "encoding/percent",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/encoding/percent/percent.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "encoding/utf16",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/encoding/utf16/utf16.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "encoding/utf8",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/encoding/utf8/utf8.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "env",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/env/env.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "error",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/error/error.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "float",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/float/float.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "hashmap",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/hashmap/hashmap.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "hashset",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/hashset/hashset.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "immut/hashmap",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/immut/hashmap/hashmap.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "immut/hashset",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/immut/hashset/hashset.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "immut/internal/path",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/immut/internal/path/path.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "immut/internal/sparse_array",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/immut/internal/sparse_array/sparse_array.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "immut/priority_queue",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/immut/priority_queue/priority_queue.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "immut/sorted_map",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/immut/sorted_map/sorted_map.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "immut/sorted_set",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/immut/sorted_set/sorted_set.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "immut/vector",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/immut/vector/vector.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "immut/vector_map",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/immut/vector_map/vector_map.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "int",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/int/int.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "int16",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/int16/int16.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "int64",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/int64/int64.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "internal/checksum",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/internal/checksum/checksum.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "internal/edit_distance",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/internal/edit_distance/edit_distance.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "internal/os_string",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/internal/os_string/os_string.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "internal/path_test",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/internal/path_test/path_test.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "internal/strconv",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/internal/strconv/strconv.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "json",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/json/json.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "lazy",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/lazy/lazy.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "lazy_list",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/lazy_list/lazy_list.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "lexbuf",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/lexbuf/lexbuf.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "list",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/list/list.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "math",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/math/math.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "option",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/option/option.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "path",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/path/path.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "path/error",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/path/error/error.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "path/internal/ffi",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/path/internal/ffi/ffi.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "path/internal/posix",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/path/internal/posix/posix.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "path/internal/unicode",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/path/internal/unicode/unicode.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "path/internal/win32",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/path/internal/win32/win32.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "prelude",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/prelude/prelude.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "priority_queue",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/priority_queue/priority_queue.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "queue",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/queue/queue.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "quickcheck",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/quickcheck/quickcheck.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "quickcheck/shrink",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/quickcheck/shrink/shrink.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "quickcheck/splitmix",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/quickcheck/splitmix/splitmix.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "random",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/random/random.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "random/internal/random_source",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/random/internal/random_source/random_source.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "range",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/range/range.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "ref",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/ref/ref.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "result",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/result/result.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "set",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/set/set.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "sorted_map",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/sorted_map/sorted_map.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "sorted_set",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/sorted_set/sorted_set.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "strconv",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/strconv/strconv.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "string",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/string/string.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "string/internal/regex_engine",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/string/internal/regex_engine/regex_engine.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "string/internal/regex_engine/ast",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/string/internal/regex_engine/ast/ast.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "string/internal/regex_engine/shared_types",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/string/internal/regex_engine/shared_types/shared_types.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "string/internal/regex_engine/shared_types/rechar_set",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/string/internal/regex_engine/shared_types/rechar_set/rechar_set.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "string/internal/regex_engine/symbol_map",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/string/internal/regex_engine/symbol_map/symbol_map.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "string/internal/regex_parser",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/string/internal/regex_parser/regex_parser.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "test",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/test/test.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "tuple",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/tuple/tuple.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "uint",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/uint/uint.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "uint16",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/uint16/uint16.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "uint64",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/uint64/uint64.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "unit",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/unit/unit.mi"
+    },
+    {
+      "root": "moonbitlang/core",
+      "rel": "v128",
+      "artifact": "/Users/kai/.moon/lib/core/_build/wasm/release/bundle/v128/v128.mi"
+    },
+    {
+      "root": "moonbitlang/moonback",
+      "rel": "",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbitlang/moonback/moonback.mi"
+    },
+    {
+      "root": "moonbitlang/moonback",
+      "rel": "middlewares/unstable_cors",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbitlang/moonback/middlewares/unstable_cors/unstable_cors.mi"
+    },
+    {
+      "root": "moonbitlang/moonback",
+      "rel": "middlewares/unstable_logreq",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbitlang/moonback/middlewares/unstable_logreq/unstable_logreq.mi"
+    },
+    {
+      "root": "moonbitlang/moonback",
+      "rel": "middlewares/unstable_requestid",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbitlang/moonback/middlewares/unstable_requestid/unstable_requestid.mi"
+    },
+    {
+      "root": "moonbitlang/moonback",
+      "rel": "middlewares/unstable_static",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbitlang/moonback/middlewares/unstable_static/unstable_static.mi"
+    },
+    {
+      "root": "moonbitlang/x",
+      "rel": "bcrypt",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbitlang/x/bcrypt/bcrypt.mi"
+    },
+    {
+      "root": "moonbitlang/x",
+      "rel": "codec/base64",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbitlang/x/codec/base64/base64.mi"
+    },
+    {
+      "root": "moonbitlang/x",
+      "rel": "crypto",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbitlang/x/crypto/crypto.mi"
+    },
+    {
+      "root": "moonbitlang/x",
+      "rel": "decimal",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbitlang/x/decimal/decimal.mi"
+    },
+    {
+      "root": "moonbitlang/x",
+      "rel": "encoding",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbitlang/x/encoding/encoding.mi"
+    },
+    {
+      "root": "moonbitlang/x",
+      "rel": "encoding/internal/benchmark",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbitlang/x/encoding/internal/benchmark/benchmark.mi"
+    },
+    {
+      "root": "moonbitlang/x",
+      "rel": "encoding/internal/benchmark/decoding_batch",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbitlang/x/encoding/internal/benchmark/decoding_batch/decoding_batch.mi"
+    },
+    {
+      "root": "moonbitlang/x",
+      "rel": "encoding/internal/benchmark/decoding_streaming",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbitlang/x/encoding/internal/benchmark/decoding_streaming/decoding_streaming.mi"
+    },
+    {
+      "root": "moonbitlang/x",
+      "rel": "encoding/percent",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbitlang/x/encoding/percent/percent.mi"
+    },
+    {
+      "root": "moonbitlang/x",
+      "rel": "fs",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbitlang/x/fs/fs.mi"
+    },
+    {
+      "root": "moonbitlang/x",
+      "rel": "json5",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbitlang/x/json5/json5.mi"
+    },
+    {
+      "root": "moonbitlang/x",
+      "rel": "jwt",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbitlang/x/jwt/jwt.mi"
+    },
+    {
+      "root": "moonbitlang/x",
+      "rel": "num",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbitlang/x/num/num.mi"
+    },
+    {
+      "root": "moonbitlang/x",
+      "rel": "path",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbitlang/x/path/path.mi"
+    },
+    {
+      "root": "moonbitlang/x",
+      "rel": "path/internal/ffi",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbitlang/x/path/internal/ffi/ffi.mi"
+    },
+    {
+      "root": "moonbitlang/x",
+      "rel": "path/posix",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbitlang/x/path/posix/posix.mi"
+    },
+    {
+      "root": "moonbitlang/x",
+      "rel": "path/win32",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbitlang/x/path/win32/win32.mi"
+    },
+    {
+      "root": "moonbitlang/x",
+      "rel": "rational",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbitlang/x/rational/rational.mi"
+    },
+    {
+      "root": "moonbitlang/x",
+      "rel": "stack",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbitlang/x/stack/stack.mi"
+    },
+    {
+      "root": "moonbitlang/x",
+      "rel": "sys",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbitlang/x/sys/sys.mi"
+    },
+    {
+      "root": "moonbitlang/x",
+      "rel": "sys/internal/ffi",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbitlang/x/sys/internal/ffi/ffi.mi"
+    },
+    {
+      "root": "moonbitlang/x",
+      "rel": "time",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbitlang/x/time/time.mi"
+    },
+    {
+      "root": "moonbitlang/x",
+      "rel": "time/internal/tzif",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbitlang/x/time/internal/tzif/tzif.mi"
+    },
+    {
+      "root": "moonbitlang/x",
+      "rel": "unicode",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbitlang/x/unicode/unicode.mi"
+    },
+    {
+      "root": "moonbitlang/x",
+      "rel": "uuid",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/.mooncakes/moonbitlang/x/uuid/uuid.mi"
+    },
+    {
+      "root": "username/hello_moon",
+      "rel": "",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/hello_moon.mi"
+    },
+    {
+      "root": "username/hello_moon",
+      "rel": "cmd/main",
+      "artifact": "/Users/kai/Desktop/洞宇科技/task1/hello_moon/_build/wasm/debug/test/cmd/main/main.mi"
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "ihb2032/MoonFrame/internal/kernel"
+
+import {
+  "ihb2032/MoonFrame/internal/ir",
+  "ihb2032/MoonFrame/series",
+  "ihb2032/MoonFrame/types",
+  "moonbitlang/core/string",
+}
+
+// Values
+pub fn broadcast_series(@series.Series, Int32) -> @series.Series raise @types.DataError
+
+pub fn compile_regex(String) -> @string.Regex raise @types.DataError
+
+pub fn eval_binary(@ir.BinOp, @series.Series, @series.Series) -> @series.Series raise @types.DataError
+
+pub fn eval_clip(@series.Series, lower? : @series.Series, upper? : @series.Series) -> @series.Series raise @types.DataError
+
+pub fn eval_diff(@series.Series, Int32) -> @series.Series raise @types.DataError
+
+pub fn eval_is_between(@series.Series, @series.Series, @series.Series, @types.ClosedInterval) -> @series.Series raise @types.DataError
+
+pub fn eval_is_in(@series.Series, ArrayView[@types.Scalar]) -> @series.Series raise @types.DataError
+
+pub fn eval_map_apply(Array[@series.Series], (Array[@types.Scalar]) -> @types.Scalar raise @types.DataError) -> @series.Series raise @types.DataError
+
+pub fn eval_positional(@ir.PositionalOp, @series.Series) -> @series.Series raise @types.DataError
+
+pub fn eval_str(@ir.StrOp, @series.Series) -> @series.Series raise @types.DataError
+
+pub fn eval_ternary(@series.Series, @series.Series, @series.Series) -> @series.Series raise @types.DataError
+
+pub fn eval_unary(@ir.UnOp, @series.Series) -> @series.Series raise @types.DataError
+
+pub fn infer_cells_dtype(Array[@types.Scalar]) -> @types.DataType?
+
+pub fn promote_mixed_int_float(Array[@types.Scalar]) -> Array[@types.Scalar]
+
+pub fn singleton_series(@types.Scalar) -> @series.Series raise @types.DataError
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits

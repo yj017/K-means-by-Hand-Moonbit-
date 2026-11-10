@@ -1,0 +1,5 @@
+// Pure MoonBit builders for small, deterministic TZif conformance fixtures.
+
+import {
+  "moonbitlang/core/encoding/utf8",
+}

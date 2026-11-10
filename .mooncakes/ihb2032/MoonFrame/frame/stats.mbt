@@ -1,0 +1,437 @@
+// Whole-frame statistical reductions on a `DataFrame`. Each of `sum`,
+// `mean`, `min`, `max`, `count`, `median`, `quantile`, `std`, `variance`,
+// and `n_unique` collapses the frame to a **single row**
+// — one cell per source column, names and order preserved — a 1-row frame
+// rather than a scalar. `null_count` is the
+// same-shaped census: one `Int` cell per column counting its nulls, and
+// `describe` is the per-column summary report — one row per source column
+// instead of one column per source column.
+//
+// Cell semantics, uniform across `sum` / `mean` / `min` / `max`, follow the
+// aggregation rules the series reducer's header states canonically (the
+// evaluator-side enumeration is the Aggregations bullet); what
+// these verbs add on top of them is the *frame shape*:
+//   - a **numeric** column (`Int` / `Float`) reduces to its value — `sum`,
+//     `min`, and `max` keep the source dtype, `mean` is always `Float`;
+//   - a **non-numeric** column (`Bool` / `String`) reduces to a `Null` cell
+//     kept in the source dtype. So `sum` / `min` / `max` preserve the frame's
+//     schema (numeric cells filled, non-numeric cells null) and `mean`
+//     promotes only the numeric columns to `Float`.
+//
+// `count` is the exception: the **non-null cell count** as `Int` for every
+// column regardless of dtype — the 1-row transpose of `null_count`.
+//
+// Two deliberate choices flow from the uniform numeric-only rule:
+//   - `min` / `max` null out `Bool` / `String` columns instead of ordering
+//     them. The numeric-only rule is kept uniform across the four
+//     reductions for one predictable frame shape; a caller who wants a
+//     `Bool` / `String` extremum reads the column's total `Series::min`
+//     / `max`, which order every dtype.
+//   - an empty / all-null numeric column follows the per-group / per-scope
+//     reducers, not the `Series` API: `sum` is the additive identity
+//     (`0` / `0.0`), while `mean` / `min` / `max` yield a `Null` cell rather
+//     than `Series::mean`'s `InvalidOperation` — a whole-frame reduction
+//     always produces a value slot. (This is why these go through the
+//     reduction kernel's total accessors, not `DataFrame`'s old raising
+//     per-column reductions.)
+//
+// A 0-column frame reduces to `1×0`: there is one summary row per source
+// frame whatever its shape, and with no column to reduce that row is simply
+// empty. `reduce_to_row` passes the height explicitly for that reason, as
+// `null_count` does.
+//
+// The per-column scalar reductions (`df.sum("col")` → `Scalar`) are
+// retired: read one column's scalar through its `Series`, e.g.
+// `df.get_column("col").sum()`.
+
+///|
+/// The fixed set of whole-frame reductions, one per public method below. Kept
+/// separate from the kernel's open-ended `ReduceOp` (which the expression
+/// aggregations also feed) on purpose: the whole-frame verbs are a closed
+/// set — `sum` / `mean` / `min` / `max` / `count` /
+/// `median` / `std` / `variance` / `n_unique` / `quantile` — and they dispatch
+/// to the `Series` accessors here rather than routing through `reducer_for`,
+/// so a kernel reduction with no frame-level reading (`first` / `last`)
+/// does not silently become a frame-wide method. Decoupling the tag keeps that
+/// decision explicit. `Quantile` is the one payload-carrying member: the frame
+/// method forwards its `q` / `interpolation` through the tag to the per-column
+/// call.
+priv enum FrameReduceOp {
+  Sum
+  Mean
+  Min
+  Max
+  Count
+  Median
+  Std
+  Var
+  NUnique
+  Quantile(Double, @series.QuantileInterpolation)
+}
+
+///|
+/// Sum every column as a 1-row `DataFrame`: numeric columns hold their sum
+/// (source dtype preserved), non-numeric columns a `Null` cell — the same
+/// uniform cell semantics every whole-frame reduction here follows. For one
+/// column's scalar use `df.get_column(name).sum()`.
+pub fn DataFrame::sum(self : DataFrame) -> DataFrame raise @types.DataError {
+  self.reduce_to_row(FrameReduceOp::Sum)
+}
+
+///|
+/// Arithmetic mean of every column as a 1-row `DataFrame`: numeric columns
+/// hold their mean as `Float` (an empty / all-null numeric column → `Null`),
+/// non-numeric columns a `Null` cell in their own dtype.
+pub fn DataFrame::mean(self : DataFrame) -> DataFrame raise @types.DataError {
+  self.reduce_to_row(FrameReduceOp::Mean)
+}
+
+///|
+/// Minimum of every column as a 1-row `DataFrame`: numeric columns hold their
+/// minimum non-null cell (`Float` `NaN` skipped, source dtype preserved),
+/// non-numeric columns a `Null` cell. Note this nulls `Bool` / `String`
+/// columns rather than ordering them — use `Series::min` for a typed
+/// extremum over any dtype.
+pub fn DataFrame::min(self : DataFrame) -> DataFrame raise @types.DataError {
+  self.reduce_to_row(FrameReduceOp::Min)
+}
+
+///|
+/// Maximum of every column as a 1-row `DataFrame`. Mirrors `min` with the
+/// order reversed; the `NaN`-skipping and non-numeric-`Null` rules are
+/// identical.
+pub fn DataFrame::max(self : DataFrame) -> DataFrame raise @types.DataError {
+  self.reduce_to_row(FrameReduceOp::Max)
+}
+
+///|
+/// Non-null cell count of every column as a 1-row `Int` `DataFrame` — the
+/// row-oriented counterpart of the column-oriented `null_count`. Total over
+/// every dtype (no numeric restriction).
+pub fn DataFrame::count(self : DataFrame) -> DataFrame raise @types.DataError {
+  self.reduce_to_row(FrameReduceOp::Count)
+}
+
+///|
+/// Median of every column as a 1-row `DataFrame`:
+/// numeric columns hold the median of their non-null cells as `Float` —
+/// `NaN` propagating, the two middles averaged on an even count — and every
+/// other column (non-numeric, empty, all-null) a `Null` cell.
+pub fn DataFrame::median(self : DataFrame) -> DataFrame raise @types.DataError {
+  self.reduce_to_row(FrameReduceOp::Median)
+}
+
+///|
+/// `q`-th quantile of every column as a 1-row `DataFrame`
+/// (default `interpolation=Nearest`): numeric columns hold
+/// the order statistic of their non-null cells as `Float`, and every other
+/// column (non-numeric, empty, all-null) a `Null` cell. A `q` outside
+/// `[0, 1]` `raise`s `InvalidOperation`.
+pub fn DataFrame::quantile(
+  self : DataFrame,
+  q : Double,
+  interpolation~ : @series.QuantileInterpolation = @series.QuantileInterpolation::Nearest,
+) -> DataFrame raise @types.DataError {
+  // The `q` check is a parameter check, not a data one: it runs before the
+  // per-column walk, so a frame no column of which reduces (all-string,
+  // empty, all-null) rejects an out-of-range `q` the same way the Series /
+  // expression / grouped surfaces do. `NaN` fails both comparisons and
+  // rejects with the out-of-range values.
+  if !(q >= 0.0 && q <= 1.0) {
+    raise @types.DataError::InvalidOperation("quantile q must lie in [0, 1]")
+  }
+  self.reduce_to_row(FrameReduceOp::Quantile(q, interpolation))
+}
+
+///|
+/// Sample standard deviation of every column as a 1-row `DataFrame`
+/// (`ddof = 1`): numeric columns with at least two non-null cells
+/// hold their `std` as `Float`, and every other column (non-numeric, empty,
+/// single-valued, all-null) a `Null` cell — no sample denominator, no value
+/// slot value.
+pub fn DataFrame::std(self : DataFrame) -> DataFrame raise @types.DataError {
+  self.reduce_to_row(FrameReduceOp::Std)
+}
+
+///|
+/// Sample variance of every column as a 1-row `DataFrame` (spelled out
+/// because `var` is a reserved MoonBit word): the `ddof = 1` variance, with
+/// `std`'s `Float`-or-`Null` cell rules.
+pub fn DataFrame::variance(
+  self : DataFrame,
+) -> DataFrame raise @types.DataError {
+  self.reduce_to_row(FrameReduceOp::Var)
+}
+
+///|
+/// Distinct value count of every column as a 1-row `Int` `DataFrame`:
+/// dtype-independent like `count`, a null cell
+/// counting as one distinct value and every `Float` `NaN` as one bucket.
+pub fn DataFrame::n_unique(
+  self : DataFrame,
+) -> DataFrame raise @types.DataError {
+  self.reduce_to_row(FrameReduceOp::NUnique)
+}
+
+///|
+/// Reduce every column under `op` into a single output cell, assembling the
+/// length-1 result columns into a 1-row `DataFrame`. The shared driver behind
+/// the ten public reductions above.
+///
+/// The result is one row for every source frame, its own height included: a
+/// 0-row frame reduces to a 1-row summary, and a 0-column one to `1×0` — the
+/// row with nothing in it. The height is passed explicitly for the latter,
+/// since there is then no column to infer it from.
+///
+/// Raises only through the 1-row `DataFrame::from_parts`, whose failure paths
+/// (duplicate name / length mismatch) cannot fire here — the output column
+/// names are exactly `self`'s (already unique) and every output column has
+/// length 1 — so the raise is forwarded, never actually taken.
+fn DataFrame::reduce_to_row(
+  self : DataFrame,
+  op : FrameReduceOp,
+) -> DataFrame raise @types.DataError {
+  let cols : Array[Series] = []
+  for s in self.column_series() {
+    cols.push(reduce_column(s, op))
+  }
+  DataFrame::from_parts(cols, 1)
+}
+
+///|
+/// Reduce one source column under `op` to a length-1 output column. Returns
+/// the `(cell, probe)` of the reduction — `cell` is the reduced `Scalar` (or
+/// `Scalar::Null`), `probe` fixes the output dtype — projected onto a typed
+/// column by the shared `scalars_to_series`.
+///
+/// `sum` reads the registry's `summable` bit (the numeric pair plus
+/// `Decimal`, whose exact unscaled addition the kernel performs), `min` /
+/// `max` reduce every dtype the extremum kernel orders — all but `Bool` /
+/// `String` — and `mean` (with `median` / `quantile` / `std` / `var` below)
+/// stays numeric: the approximate statistics are fenced for the `I64`
+/// riders. A column a gate excludes yields a `Null` cell kept in its source
+/// dtype (`probe = dtype`); `count` is dtype-independent — always the
+/// non-null count as `Int`. This is distinct from the expression engine's
+/// aggregation kernel (which reduces every dtype and raises on a non-numeric
+/// `sum` / `mean`): the whole-frame reductions tolerate non-reducible
+/// columns by nulling them, matching `df.sum()`.
+fn reduce_column(
+  s : Series,
+  op : FrameReduceOp,
+) -> Series raise @types.DataError {
+  let name = s.name()
+  // The column's own dtype doubles as the reduction gates and, for the
+  // dtype-preserving reductions, the output `probe`. A column dtype is never
+  // `Null` (that is a value-level concept), so `is_summable` and the
+  // orderable `match` decide the tests without a dead arm, and
+  // `scalars_to_series` never sees the dtype it rejects.
+  let dtype = s.dtype()
+  let numeric = dtype.is_numeric()
+  let summable = dtype.is_summable()
+  // `min` / `max` ride the total extremum kernel, which orders every dtype;
+  // only `Bool` / `String` stay nulled — the documented whole-frame shape —
+  // so a `Decimal` / `Date` / `Timestamp` column agrees with `Series::min` /
+  // `Series::max` (what `describe` reports) instead of silently nulling.
+  // Spelled variant-by-variant so a dtype added later fails compilation
+  // here until its verdict is written.
+  let orderable = match dtype {
+    @types.DataType::Int
+    | @types.DataType::Float
+    | @types.DataType::Date
+    | @types.DataType::Timestamp
+    | @types.DataType::Decimal(_) => true
+    @types.DataType::Bool | @types.DataType::String | @types.DataType::Null =>
+      false
+  }
+  let (cell, probe) = match op {
+    FrameReduceOp::Count =>
+      (@types.Scalar::Int(s.count().to_int64()), @types.DataType::Int)
+    // `Series::sum` only raises for a dtype outside the `summable` gate, so
+    // the call never actually raises here.
+    FrameReduceOp::Sum =>
+      (if summable { s.sum() } else { @types.Scalar::Null }, dtype)
+    FrameReduceOp::Min =>
+      (if orderable { s.min() } else { @types.Scalar::Null }, dtype)
+    FrameReduceOp::Max =>
+      (if orderable { s.max() } else { @types.Scalar::Null }, dtype)
+    FrameReduceOp::Mean => {
+      // `mean_opt` is the total form of `Series::mean`: `Some` for a numeric
+      // column with a non-null cell, `None` for an empty / all-null one (where
+      // a whole-frame reduction wants a `Null` cell, not `InvalidOperation`).
+      let cell = if numeric {
+        match s.mean_opt() {
+          Some(m) => @types.Scalar::Float(m)
+          None => @types.Scalar::Null
+        }
+      } else {
+        @types.Scalar::Null
+      }
+      (cell, if numeric { @types.DataType::Float } else { dtype })
+    }
+    // `median` / `quantile` share `mean`'s shape: a numeric column with at
+    // least one non-null cell holds the statistic as `Float`, everything else
+    // (non-numeric, empty, all-null) a `Null` cell. The `count() > 0` guard is
+    // what makes the raising `Series` call total here — `mean_opt` folded that
+    // guard in for `mean`, and these read the plain accessor under the same
+    // guard `mean_opt` itself would apply.
+    FrameReduceOp::Median => {
+      let cell = if numeric && s.count() > 0 {
+        @types.Scalar::Float(s.median())
+      } else {
+        @types.Scalar::Null
+      }
+      (cell, if numeric { @types.DataType::Float } else { dtype })
+    }
+    FrameReduceOp::Quantile(q, interpolation) => {
+      let cell = if numeric && s.count() > 0 {
+        @types.Scalar::Float(s.quantile(q, interpolation~))
+      } else {
+        @types.Scalar::Null
+      }
+      (cell, if numeric { @types.DataType::Float } else { dtype })
+    }
+    // `std` / `variance` additionally need a sample denominator: a numeric
+    // column with fewer than two non-null cells has no sample statistic, so it
+    // takes the `Null` cell rather than the raising accessor's
+    // `InvalidOperation` — the whole-frame rule that a reduction always
+    // produces a value slot.
+    FrameReduceOp::Std => {
+      let cell = if numeric && s.count() >= 2 {
+        @types.Scalar::Float(s.std())
+      } else {
+        @types.Scalar::Null
+      }
+      (cell, if numeric { @types.DataType::Float } else { dtype })
+    }
+    FrameReduceOp::Var => {
+      let cell = if numeric && s.count() >= 2 {
+        @types.Scalar::Float(s.variance())
+      } else {
+        @types.Scalar::Null
+      }
+      (cell, if numeric { @types.DataType::Float } else { dtype })
+    }
+    // `n_unique` is dtype-independent like `count`: the distinct value
+    // count of every column — a null counts as one distinct value, every
+    // `NaN` as one bucket.
+    FrameReduceOp::NUnique =>
+      (@types.Scalar::Int(s.n_unique().to_int64()), @types.DataType::Int)
+  }
+  scalars_to_series(probe, name, [cell])
+}
+
+///|
+/// Per-column null-count summary, returned as a `1 × ncols` DataFrame.
+/// Column names match `self.columns()` verbatim, in the same order, and
+/// every output column has dtype `Int` with a single non-null cell —
+/// the null count of the source column.
+///
+/// The summary is one row wide of whatever the source has, so a 0-column
+/// frame summarises to `1×0` — the row is there, it just has nothing in it.
+/// The height is passed explicitly for that reason: with no column to anchor
+/// it, an inferred one would round the row away.
+///
+/// Raises only because the summary is built through the fallible
+/// `DataFrame::from_parts`; its failure paths (duplicate-name, length-mismatch)
+/// cannot fire here — the names come from `self.column_series()` (already
+/// unique) and every output column has length 1 — so the raise is forwarded,
+/// never actually taken.
+pub fn DataFrame::null_count(
+  self : DataFrame,
+) -> DataFrame raise @types.DataError {
+  let cols = self
+    .column_series()
+    .map(s => Series::from_ints(s.name(), [s.null_count().to_int64()]))
+  DataFrame::from_parts(cols, 1)
+}
+
+///|
+/// Per-column statistical summary, returned as a `DataFrame` with one
+/// row per source column. The result schema is fixed and dtype-pure —
+/// every cell has the dtype declared below, regardless of the source
+/// frame's shape or column dtypes:
+///
+/// - `column` (`String`): source column name, in declaration order
+/// - `dtype` (`String`): source column dtype rendered via `DataType::to_string`
+/// - `count` (`Int`): non-null cell count
+/// - `null_count` (`Int`): null cell count
+/// - `n_unique` (`Int`): distinct value count, a null counting as one
+///   distinct value
+/// - `mean` (`Float`, nullable): arithmetic mean for numeric columns;
+///   `Null` for non-numeric or empty / all-null numeric columns
+/// - `min` (`String`, nullable): minimum cell rendered via
+///   `Scalar::to_string`; `Null` for empty / all-null columns
+/// - `max` (`String`, nullable): maximum cell rendered via
+///   `Scalar::to_string`; `Null` for empty / all-null columns
+///
+/// `min` / `max` are rendered as `String` so the summary can carry
+/// extrema for every dtype in a single column without forcing a
+/// uniform value type. A `Float` extremum renders via `Double::to_string`,
+/// which drops the decimal point of a whole value (`1.0` → `"1"`), so a
+/// `Float` column's extrema can read like an `Int`'s — the `dtype` column
+/// disambiguates. The per-column reductions (`min`, `max`) keep the
+/// original dtype if a caller needs it typed.
+///
+/// This is a deliberately reduced summary: it omits the standard deviation,
+/// variance, and quantiles (`25%` / `50%` / `75%`). The per-column kernels
+/// expose those directly (`Series` std / variance / median) for callers who
+/// need them.
+///
+/// Because `min` / `max` skip `NaN` while `count` and `n_unique` treat `NaN`
+/// as a present value, an all-`NaN` `Float` column reports a non-zero
+/// `count` and an `n_unique` of `1` (every `NaN` folds into one distinct
+/// bucket) but `Null` `min` / `max` — these can legitimately disagree, in
+/// addition to the empty / all-null case noted above.
+///
+/// Raises only because the summary frame is built through the fallible
+/// `DataFrame::DataFrame`; the output columns are hardcoded-unique and equal
+/// length, so the raise is forwarded, never actually taken. The 0-column
+/// case collapses to a `0×8` frame: zero source columns ⇒ zero output
+/// rows, but the eight schema columns are still present so downstream
+/// code can rely on the result's column layout.
+pub fn DataFrame::describe(
+  self : DataFrame,
+) -> DataFrame raise @types.DataError {
+  let names : Array[String] = []
+  let dtypes : Array[String] = []
+  let counts : Array[Int64] = []
+  let null_counts : Array[Int64] = []
+  let n_uniques : Array[Int64] = []
+  let means : Array[Double?] = []
+  let mins : Array[String?] = []
+  let maxs : Array[String?] = []
+  for s in self.column_series() {
+    names.push(s.name())
+    dtypes.push(s.dtype().to_string())
+    counts.push(s.count().to_int64())
+    null_counts.push(s.null_count().to_int64())
+    n_uniques.push(s.n_unique().to_int64())
+    // `mean_opt` is the total form of `Series::mean` — `None` exactly where
+    // `mean` would raise (a non-numeric column, or an empty / all-null
+    // numeric one), `Some(mean)` otherwise. The aggregate view wants that
+    // single null cell either way (the per-column API keeps the
+    // distinction), so it reads the total accessor and skips the error
+    // catch, like the `min` / `max` reads just below.
+    means.push(s.mean_opt())
+    // `min` / `max` are total; they return `Scalar::Null` to signal "no
+    // value" — a null cell here — and otherwise render via
+    // `Scalar::to_string`.
+    let lo = s.min()
+    mins.push(if lo.is_null() { None } else { Some(lo.to_string()) })
+    let hi = s.max()
+    maxs.push(if hi.is_null() { None } else { Some(hi.to_string()) })
+  }
+  // The output columns share a length (`self.ncols()`) and the names are
+  // hardcoded-unique, so `DataFrame::DataFrame` always succeeds; the raise is
+  // forwarded rather than caught.
+  DataFrame::DataFrame([
+    Series::from_strings("column", names),
+    Series::from_strings("dtype", dtypes),
+    Series::from_ints("count", counts),
+    Series::from_ints("null_count", null_counts),
+    Series::from_ints("n_unique", n_uniques),
+    Series::from_float_options("mean", means),
+    Series::from_string_options("min", mins),
+    Series::from_string_options("max", maxs),
+  ])
+}

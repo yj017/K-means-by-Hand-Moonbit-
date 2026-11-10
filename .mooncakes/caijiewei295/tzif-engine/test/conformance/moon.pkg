@@ -1,0 +1,7 @@
+// Conformance tests against RFC 8536 and known DST transition points.
+
+import {
+  "caijiewei295/tzif-engine" @tzif,
+  "caijiewei295/tzif-engine/test/fixtures",
+  "caijiewei295/tzif-engine/types",
+} for "test"

@@ -1,0 +1,7 @@
+import {
+  "Lampese/mathplotlib/ticker/date",
+}
+
+import {
+  "Lampese/mathplotlib/config",
+} for "test"

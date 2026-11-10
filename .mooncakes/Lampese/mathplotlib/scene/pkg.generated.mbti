@@ -1,0 +1,1028 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Lampese/mathplotlib/scene"
+
+import {
+  "Lampese/mathplotlib/core",
+  "Lampese/mathplotlib/core/colors",
+  "Lampese/mathplotlib/drawing",
+  "Lampese/mathplotlib/scene/axis",
+  "Lampese/mathplotlib/scene/boxplot",
+  "Lampese/mathplotlib/scene/colorbar",
+  "Lampese/mathplotlib/scene/gridspec",
+  "Lampese/mathplotlib/ticker",
+  "Lampese/mathplotlib/ticker/date",
+  "Lampese/mathplotlib/ticker/scale",
+  "Lampese/mathplotlib/transforms",
+  "moonbitlang/core/debug",
+  "moonbitlang/core/ref",
+}
+
+// Values
+pub fn detrend_linear(Array[Double]) -> Array[Double]
+
+pub fn detrend_mean(Array[Double]) -> Array[Double]
+
+pub fn detrend_none(Array[Double]) -> Array[Double]
+
+pub fn figure(width? : Int, height? : Int) -> Figure
+
+pub fn hexbin_reducer((Array[Double]) -> Double) -> HexbinReducer
+
+pub fn legend_entry(String, color? : String, kind? : LegendKind) -> LegendEntry
+
+pub fn path_collection(Array[@core.Point], colors? : Array[String], sizes? : Array[Double]) -> PathCollection raise @core.DataError
+
+pub fn streamplot_set(Array[Artist], Array[Artist]) -> StreamplotSet
+
+pub fn triangulation(Array[Double], Array[Double], triangles? : Array[Array[Int]], mask? : Array[Bool]) -> Triangulation raise @core.DataError
+
+pub fn trifinder(Triangulation) -> TriFinder
+
+pub fn violin_stats(Array[Double], points? : Int, bandwidth? : ViolinBandwidth, quantiles? : Array[Double]) -> ViolinStats raise @core.DataError
+
+// Errors
+
+// Types and methods
+pub(all) enum Anchor {
+  Named(String)
+  Fraction(Double, Double)
+}
+
+pub struct Annotation {
+  x : Double
+  y : Double
+  text_x : Double
+  text_y : Double
+  value : String
+  xycoords : String
+  textcoords : String
+  connector : String
+  arrow : Bool
+  arrowcolor : String
+  linewidth : Double
+  head_length : Double
+  head_width : Double
+  style : @core.Style
+}
+
+pub(all) enum Artist {
+  Line(Array[@core.Point], @core.Style)
+  Scatter(Array[@core.Point], @core.Style)
+  PathCollection(PathCollection)
+  Bar(Array[@core.Point], @core.Style)
+  BarH(Array[@core.Point], @core.Style)
+  BarSegments(Array[@core.BarSegment], Bool, @core.Style)
+  FillBetween(Array[@core.Point], Array[@core.Point], @core.Style)
+  Polygon(Array[@core.Point], @core.Style)
+  CompoundPolygon(Array[Array[@core.Point]], @core.Style)
+  GouraudTriangle(Array[@core.Point], Array[String])
+  HLine(Double, @core.Style)
+  VLine(Double, @core.Style)
+  AxLine(@core.Point, @core.Point, @core.Style)
+  HSpan(Double, Double, @core.Style)
+  VSpan(Double, Double, @core.Style)
+  Text(Double, Double, String, @core.Style)
+  Annotation(Annotation)
+  ErrorBar(Array[@core.Point], Array[Double], Array[Double], @core.Style)
+  Image(Array[Array[Double]], Double?, Double?, @colors.ColorMap)
+  ImageNorm(Array[Array[Double]], @colors.ColorNorm, @colors.ColorMap, ImageOrigin, (Double, Double, Double, Double)?, Double, ImageInterpolation)
+  ColorImage(Array[Array[@colors.Rgba]], ImageOrigin, (Double, Double, Double, Double)?, Double, ImageInterpolation)
+  Table(Table)
+  Pie(Array[Double], Array[String], Array[String], Double)
+  Donut(Array[Double], Array[String], Array[String], Double, Double)
+  BoxPlot(Array[@boxplot.BoxStats], Bool, @core.Style)
+  Quiver(Array[@core.Point], Array[@core.Point], @core.Style)
+  Violin(Array[ViolinStats], Array[Double], Array[Double], Bool, ViolinSide, Bool, Bool, Bool, @core.Style, @core.Style, Double)
+}
+
+pub struct Axes {
+  figure : Figure
+  state : @ref.Ref[AxesData]
+}
+pub fn Axes::acorr(Self, Array[Double], normed? : Bool, usevlines? : Bool, maxlags? : Int, color? : String, label? : String, detrend? : (Array[Double]) -> Array[Double]) -> Correlation raise @core.DataError
+pub fn Axes::annotate(Self, String, Double, Double, offset_x? : Double, offset_y? : Double, arrow? : Bool, color? : String, arrowcolor? : String, linewidth? : Double, head_length? : Double, head_width? : Double, fontsize? : Int, xycoords? : String, textcoords? : String, connector? : String) -> Unit raise @core.DataError
+pub fn Axes::apply_aspect(Self) -> Unit raise @core.DataError
+pub fn Axes::arrow(Self, Double, Double, Double, Double, color? : String, linewidth? : Double, head_length? : Double, head_width? : Double, label? : String) -> Unit raise @core.DataError
+pub fn Axes::artists(Self) -> Array[Artist]
+pub fn Axes::aspect_equal(Self) -> Bool
+pub fn Axes::autoscale(Self, enable? : Bool?, axis? : String, tight? : Bool) -> Unit raise @core.DataError
+pub fn Axes::autoscale_tight(Self) -> Bool?
+pub fn Axes::autoscale_view(Self, tight? : Bool, scalex? : Bool, scaley? : Bool, axis? : String) -> Unit raise @core.DataError
+pub fn Axes::axhline(Self, Double, color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Axes::axhspan(Self, Double, Double, color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Axes::axis_visible(Self) -> Bool
+pub fn Axes::axline(Self, @core.Point, xy2? : @core.Point, slope? : Double, color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Axes::axvline(Self, Double, color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Axes::axvspan(Self, Double, Double, color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Axes::bar(Self, Array[@core.Point], color? : String, label? : String) -> Unit
+pub fn Axes::bar_category(Self, Array[String], Array[Double], color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Axes::bar_category_y(Self, Array[Double], Array[String], color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Axes::barbs(Self, Array[Double], Array[Double], Array[Double], Array[Double], color? : String, linewidth? : Double, barb_length? : Double, label? : String) -> Unit raise @core.DataError
+pub fn Axes::barbs_with_options(Self, Array[Double], Array[Double], Array[Double], Array[Double], color? : String, linewidth? : Double, barb_length? : Double, label? : String, half_increment? : Double, full_increment? : Double, flag_increment? : Double, rounding? : Bool, flip? : Bool, fill_empty? : Bool, pivot? : String) -> Unit raise @core.DataError
+pub fn Axes::barh(Self, Array[Double], Array[Double], color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Axes::boxplot(Self, Array[Array[Double]], horizontal? : Bool, color? : String, label? : String) -> Array[@boxplot.BoxStats] raise @core.DataError
+pub fn Axes::broken_barh(Self, Array[(Double, Double)], (Double, Double), color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Axes::clabel(Self, ContourSet, inline? : Bool, fontsize? : Int, color? : String) -> Unit raise @core.DataError
+pub fn Axes::clear(Self) -> Unit
+pub fn Axes::clear_checked(Self) -> Unit raise @core.DataError
+pub fn Axes::clear_legend(Self) -> Unit
+pub fn Axes::color_cycle(Self) -> Array[String]
+pub fn Axes::containers(Self) -> Array[Container]
+pub fn Axes::contour(Self, Array[Array[Double]], x? : Array[Double], y? : Array[Double], levels? : Array[Double], nlevels? : Int, color? : String, linewidth? : Double, label? : String, corner_mask? : Bool, locator? : @ticker.Locator?, colors? : Array[String], linewidths? : Array[Double]) -> ContourSet raise @core.DataError
+pub fn Axes::contourf(Self, Array[Array[Double]], x? : Array[Double], y? : Array[Double], levels? : Array[Double], nlevels? : Int, colors? : Array[String], cmap? : String, label? : String, extend_mode? : String, corner_mask? : Bool, locator? : @ticker.Locator?) -> ContourSet raise @core.DataError
+pub fn Axes::data_limits(Self, horizontal? : Bool) -> @core.Limits
+pub fn Axes::data_minpos(Self, horizontal? : Bool) -> Double
+pub fn Axes::donut(Self, Array[Double], labels? : Array[String], colors? : Array[String], start_angle? : Double, inner_radius? : Double) -> Array[Double] raise @core.DataError
+pub fn Axes::ecdf(Self, Array[Double], weights? : Array[Double], complementary? : Bool, horizontal? : Bool, compress? : Bool, color? : String, label? : String) -> Ecdf raise @core.DataError
+pub fn Axes::errorbar(Self, Array[Double], Array[Double], yerr? : Array[Double], xerr? : Array[Double], color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Axes::eventplot(Self, Array[Array[Double]], orientation? : String, lineoffsets? : Array[Double], linelengths? : Array[Double], linewidth? : Double, color? : String) -> Unit raise @core.DataError
+pub fn Axes::figure(Self) -> Figure
+pub fn Axes::fill(Self, Array[Double], Array[Double], color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Axes::fill_between(Self, Array[Double], Array[Double], Array[Double], color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Axes::fill_between_masked(Self, @core.MaskedArray, @core.MaskedArray, @core.MaskedArray, color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Axes::fill_betweenx(Self, Array[Double], Array[Double], right? : Array[Double], color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Axes::fill_betweenx_masked(Self, @core.MaskedArray, @core.MaskedArray, @core.MaskedArray, color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Axes::get_adjustable(Self) -> String
+pub fn Axes::get_anchor(Self) -> Anchor
+pub fn Axes::get_aspect(Self) -> Double?
+pub fn Axes::get_autoscale_on(Self) -> Bool
+pub fn Axes::get_autoscalex_on(Self) -> Bool
+pub fn Axes::get_autoscaley_on(Self) -> Bool
+pub fn Axes::get_box_aspect(Self) -> Double?
+pub fn Axes::get_figure(Self) -> Figure
+pub fn Axes::get_legend_handles_labels(Self) -> Array[LegendEntry]
+pub fn Axes::get_margins(Self) -> (Double, Double)
+pub fn Axes::get_position(Self, original? : Bool) -> @gridspec.Rect?
+pub fn Axes::get_subplotspec(Self) -> @gridspec.SubplotSpec?
+pub fn Axes::get_title(Self) -> String?
+pub fn Axes::get_xlabel(Self) -> String?
+pub fn Axes::get_xlim(Self) -> @core.Limits?
+pub fn Axes::get_xlim_checked(Self) -> @core.Limits raise @core.DataError
+pub fn Axes::get_ylabel(Self) -> String?
+pub fn Axes::get_ylim(Self) -> @core.Limits?
+pub fn Axes::get_ylim_checked(Self) -> @core.Limits raise @core.DataError
+pub fn Axes::grid(Self, visible? : Bool, which? : String, color? : String, linewidth? : Double, axis? : String) -> Unit raise @core.DataError
+pub fn Axes::grouped_bar(Self, Array[String], Array[Array[Double]], labels? : Array[String], colors? : Array[String], horizontal? : Bool, width? : Double, gap? : Double, baseline? : Double) -> Unit raise @core.DataError
+pub fn Axes::hexbin(Self, Array[Double], Array[Double], values? : Array[Double], gridsize? : Int, mincnt? : Int, cmap? : String, vmin? : Double, vmax? : Double, color? : String, label? : String, reduce? : String, edgecolor? : String, linewidth? : Double, bins? : String, extent? : Array[Double], marginals? : Bool, reduce_fn? : HexbinReducer?) -> Hexbin raise @core.DataError
+pub fn Axes::hist(Self, Array[Double], bins? : Int, color? : String, label? : String) -> Histogram raise @core.DataError
+pub fn Axes::hist2d(Self, Array[Double], Array[Double], bins_x? : Int, bins_y? : Int, cmap? : String) -> Unit raise @core.DataError
+pub fn Axes::hlines(Self, Array[Double], Double, Double, color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Axes::ignore_existing_data_limits(Self) -> Bool
+pub fn Axes::imshow(Self, Array[Array[Double]], vmin? : Double, vmax? : Double, cmap? : String, origin? : String, extent? : Array[Double], aspect? : String, alpha? : Double, interpolation? : String) -> Unit raise @core.DataError
+pub fn Axes::imshow_color(Self, Array[Array[@colors.Rgba]], origin? : String, extent? : Array[Double], aspect? : String, alpha? : Double, interpolation? : String) -> Unit raise @core.DataError
+pub fn Axes::imshow_masked(Self, @core.MaskedMatrix, vmin? : Double, vmax? : Double, cmap? : String, origin? : String, extent? : Array[Double], aspect? : String, alpha? : Double, interpolation? : String) -> Unit raise @core.DataError
+pub fn Axes::imshow_masked_with_colormap(Self, @core.MaskedMatrix, @colors.ColorMap, vmin? : Double, vmax? : Double, origin? : String, extent? : Array[Double], aspect? : String, alpha? : Double, interpolation? : String) -> Unit raise @core.DataError
+pub fn Axes::imshow_masked_with_norm(Self, @core.MaskedMatrix, @colors.ColorNorm, cmap? : String, origin? : String, extent? : Array[Double], aspect? : String, alpha? : Double, interpolation? : String) -> Unit raise @core.DataError
+pub fn Axes::imshow_masked_with_norm_and_colormap(Self, @core.MaskedMatrix, @colors.ColorNorm, @colors.ColorMap, origin? : String, extent? : Array[Double], aspect? : String, alpha? : Double, interpolation? : String) -> Unit raise @core.DataError
+pub fn Axes::imshow_rgb(Self, Array[Array[@colors.Rgb]], origin? : String, extent? : Array[Double], aspect? : String, alpha? : Double, interpolation? : String) -> Unit raise @core.DataError
+pub fn Axes::imshow_rgb_channels(Self, Array[Array[Array[Double]]], origin? : String, extent? : Array[Double], aspect? : String, alpha? : Double, interpolation? : String) -> Unit raise @core.DataError
+pub fn Axes::imshow_rgba(Self, Array[Array[@colors.Rgba]], origin? : String, extent? : Array[Double], aspect? : String, alpha? : Double, interpolation? : String) -> Unit raise @core.DataError
+pub fn Axes::imshow_rgba_channels(Self, Array[Array[Array[Double]]], origin? : String, extent? : Array[Double], aspect? : String, alpha? : Double, interpolation? : String) -> Unit raise @core.DataError
+pub fn Axes::imshow_with_colormap(Self, Array[Array[Double]], @colors.ColorMap, vmin? : Double, vmax? : Double, origin? : String, extent? : Array[Double], aspect? : String, alpha? : Double, interpolation? : String) -> Unit raise @core.DataError
+pub fn Axes::imshow_with_norm(Self, Array[Array[Double]], @colors.ColorNorm, cmap? : String, origin? : String, extent? : Array[Double], aspect? : String, alpha? : Double, interpolation? : String) -> Unit raise @core.DataError
+pub fn Axes::imshow_with_norm_and_colormap(Self, Array[Array[Double]], @colors.ColorNorm, @colors.ColorMap, origin? : String, extent? : Array[Double], aspect? : String, alpha? : Double, interpolation? : String) -> Unit raise @core.DataError
+pub fn Axes::is_attached(Self) -> Bool
+pub fn Axes::legend(Self, Array[LegendEntry]) -> Unit
+pub fn Axes::legend_entries(Self) -> Array[LegendEntry]
+pub fn Axes::legend_position(Self) -> @core.LegendPosition
+pub fn Axes::line(Self, Array[@core.Point], color? : String, label? : String) -> Unit
+pub fn Axes::loglog(Self, Array[Double], Array[Double], color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Axes::margins(Self) -> (Double, Double)
+pub fn Axes::matshow(Self, Array[Array[Double]], vmin? : Double, vmax? : Double, cmap? : String, interpolation? : String) -> Unit raise @core.DataError
+pub fn Axes::pcolor(Self, Array[Array[Double]], x? : Array[Double], y? : Array[Double], vmin? : Double, vmax? : Double, cmap? : String, antialiased? : Bool) -> Unit raise @core.DataError
+pub fn Axes::pcolor_grid(Self, Array[Array[Double]], Array[Array[Double]], Array[Array[Double]], shading? : String, vmin? : Double, vmax? : Double, cmap? : String, antialiased? : Bool) -> Unit raise @core.DataError
+pub fn Axes::pcolor_grid_masked(Self, @core.MaskedMatrix, @core.MaskedMatrix, @core.MaskedMatrix, shading? : String, vmin? : Double, vmax? : Double, cmap? : String, antialiased? : Bool) -> Unit raise @core.DataError
+pub fn Axes::pcolor_masked(Self, @core.MaskedMatrix, x? : Array[Double], y? : Array[Double], vmin? : Double, vmax? : Double, cmap? : String, antialiased? : Bool) -> Unit raise @core.DataError
+pub fn Axes::pcolor_masked_with_norm_and_colormap(Self, @core.MaskedMatrix, @colors.ColorNorm, @colors.ColorMap, x? : Array[Double], y? : Array[Double], antialiased? : Bool) -> Unit raise @core.DataError
+pub fn Axes::pcolor_with_norm(Self, Array[Array[Double]], @colors.ColorNorm, cmap? : String, x? : Array[Double], y? : Array[Double], antialiased? : Bool) -> Unit raise @core.DataError
+pub fn Axes::pcolor_with_norm_and_colormap(Self, Array[Array[Double]], @colors.ColorNorm, @colors.ColorMap, x? : Array[Double], y? : Array[Double], antialiased? : Bool) -> Unit raise @core.DataError
+pub fn Axes::pcolormesh(Self, Array[Array[Double]], x? : Array[Double], y? : Array[Double], vmin? : Double, vmax? : Double, cmap? : String, antialiased? : Bool) -> Unit raise @core.DataError
+pub fn Axes::pcolormesh_grid(Self, Array[Array[Double]], Array[Array[Double]], Array[Array[Double]], shading? : String, vmin? : Double, vmax? : Double, cmap? : String, antialiased? : Bool) -> Unit raise @core.DataError
+pub fn Axes::pcolormesh_grid_masked(Self, @core.MaskedMatrix, @core.MaskedMatrix, @core.MaskedMatrix, shading? : String, vmin? : Double, vmax? : Double, cmap? : String, antialiased? : Bool) -> Unit raise @core.DataError
+pub fn Axes::pcolormesh_masked(Self, @core.MaskedMatrix, x? : Array[Double], y? : Array[Double], vmin? : Double, vmax? : Double, cmap? : String, antialiased? : Bool) -> Unit raise @core.DataError
+pub fn Axes::pcolormesh_masked_with_norm_and_colormap(Self, @core.MaskedMatrix, @colors.ColorNorm, @colors.ColorMap, x? : Array[Double], y? : Array[Double], antialiased? : Bool) -> Unit raise @core.DataError
+pub fn Axes::pcolormesh_with_norm(Self, Array[Array[Double]], @colors.ColorNorm, cmap? : String, x? : Array[Double], y? : Array[Double], antialiased? : Bool) -> Unit raise @core.DataError
+pub fn Axes::pcolormesh_with_norm_and_colormap(Self, Array[Array[Double]], @colors.ColorNorm, @colors.ColorMap, x? : Array[Double], y? : Array[Double], antialiased? : Bool) -> Unit raise @core.DataError
+pub fn Axes::pie(Self, Array[Double], labels? : Array[String], colors? : Array[String], start_angle? : Double) -> Array[Double] raise @core.DataError
+pub fn Axes::plot(Self, Array[Double], Array[Double], color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Axes::plot_category(Self, Array[String], Array[Double], color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Axes::plot_category_y(Self, Array[Double], Array[String], color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Axes::plot_date(Self, Array[@date.DateTime], Array[Double], color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Axes::plot_date_units(Self, Array[@date.RRuleDateTime], Array[Double], color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Axes::plot_line(Self, LineData, LineData, color? : String, label? : String) -> Line2D raise @core.DataError
+pub fn Axes::plot_masked(Self, @core.MaskedArray, @core.MaskedArray, color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Axes::quiver(Self, Array[Double], Array[Double], Array[Double], Array[Double], color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Axes::quiverkey(Self, Double, Double, Double, String, color? : String) -> Unit raise @core.DataError
+pub fn Axes::rect(Self) -> @gridspec.Rect?
+pub fn Axes::relim(Self, visible_only? : Bool) -> Unit
+pub fn Axes::relim_checked(Self, visible_only? : Bool) -> Unit raise @core.DataError
+pub fn Axes::remove(Self) -> Unit raise @core.DataError
+pub fn Axes::request_autoscale_view(Self, axis? : String, tight? : Bool) -> Unit raise @core.DataError
+pub fn Axes::reset_position(Self) -> Unit raise @core.DataError
+pub fn Axes::scatter(Self, Array[@core.Point], color? : String, label? : String) -> Unit
+pub fn Axes::scatter_category(Self, Array[String], Array[Double], color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Axes::scatter_category_y(Self, Array[Double], Array[String], color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Axes::scatter_collection(Self, Array[@core.Point], colors? : Array[String], sizes? : Array[Double], label? : String) -> PathCollection raise @core.DataError
+pub fn Axes::scatter_masked(Self, @core.MaskedArray, @core.MaskedArray, color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Axes::secondary_xaxis(Self, (Double) -> Double, (Double) -> Double, location? : SecondaryAxisLocation, transform? : @transforms.Affine2D?) -> SecondaryAxis raise @core.DataError
+pub fn Axes::secondary_yaxis(Self, (Double) -> Double, (Double) -> Double, location? : SecondaryAxisLocation, transform? : @transforms.Affine2D?) -> SecondaryAxis raise @core.DataError
+pub fn Axes::semilogx(Self, Array[Double], Array[Double], color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Axes::semilogy(Self, Array[Double], Array[Double], color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Axes::set_adjustable(Self, String, share? : Bool) -> Unit raise @core.DataError
+pub fn Axes::set_anchor(Self, Anchor, share? : Bool) -> Unit raise @core.DataError
+pub fn Axes::set_aspect(Self, Double, share? : Bool, anchor? : Anchor, adjustable? : String) -> Unit raise @core.DataError
+pub fn Axes::set_aspect_auto(Self, share? : Bool) -> Unit
+pub fn Axes::set_aspect_equal(Self, share? : Bool) -> Unit
+pub fn Axes::set_autoscale_on(Self, Bool) -> Unit
+pub fn Axes::set_autoscalex_on(Self, Bool) -> Unit
+pub fn Axes::set_autoscaley_on(Self, Bool) -> Unit
+pub fn Axes::set_axis_off(Self) -> Unit
+pub fn Axes::set_axis_on(Self) -> Unit
+pub fn Axes::set_bounds(Self, @core.Bounds) -> Unit raise @core.DataError
+pub fn Axes::set_box_aspect(Self, aspect? : Double) -> Unit raise @core.DataError
+pub fn Axes::set_color_cycle(Self, Array[String]) -> Unit raise @core.DataError
+pub fn Axes::set_legend(Self, Array[LegendEntry]) -> Unit
+pub fn Axes::set_legend_position(Self, @core.LegendPosition) -> Unit
+pub fn Axes::set_margins(Self, Double, Double) -> Unit raise @core.DataError
+pub fn Axes::set_position(Self, Double, Double, Double, Double, which? : String) -> Unit raise @core.DataError
+pub fn Axes::set_prop_cycle(Self, Array[String]) -> Unit raise @core.DataError
+pub fn Axes::set_title(Self, String) -> Unit
+pub fn Axes::set_use_sticky_edges(Self, Bool) -> Unit
+pub fn Axes::set_x_categories(Self, Array[String]) -> Unit raise @core.DataError
+pub fn Axes::set_x_date(Self) -> Unit raise @core.DataError
+pub fn Axes::set_x_date_converter(Self, @date.DateConverter) -> Unit raise @core.DataError
+pub fn Axes::set_x_date_format(Self, String) -> Unit raise @core.DataError
+pub fn Axes::set_x_date_formatter(Self, @date.DateFormatter) -> Unit raise @core.DataError
+pub fn Axes::set_x_date_locator(Self, @date.DateLocator) -> Unit raise @core.DataError
+pub fn Axes::set_x_date_offset(Self, Int) -> Unit raise @core.DataError
+pub fn Axes::set_x_date_timezone(Self, @date.DateTimeZone) -> Unit raise @core.DataError
+pub fn Axes::set_x_formatter(Self, @ticker.Formatter) -> Unit
+pub fn Axes::set_x_label(Self, String) -> Unit
+pub fn Axes::set_x_limits(Self, Double, Double) -> Unit raise @core.DataError
+pub fn Axes::set_x_locator(Self, @ticker.Locator) -> Unit raise @core.DataError
+pub fn Axes::set_x_margin(Self, Double) -> Unit raise @core.DataError
+pub fn Axes::set_x_minor_date_formatter(Self, @date.DateFormatter) -> Unit raise @core.DataError
+pub fn Axes::set_x_minor_date_locator(Self, @date.DateLocator) -> Unit raise @core.DataError
+pub fn Axes::set_x_minor_locator(Self, @ticker.MinorLocator) -> Unit raise @core.DataError
+pub fn Axes::set_x_minor_named_formatter(Self, @ticker.BaseFormatter) -> Unit
+pub fn Axes::set_x_named_formatter(Self, @ticker.BaseFormatter) -> Unit
+pub fn Axes::set_x_scale(Self, @scale.Scale) -> Unit raise @core.DataError
+pub fn Axes::set_x_tick_labels(Self, Array[String]) -> Unit raise @core.DataError
+pub fn Axes::set_x_tick_labels_visible(Self, Bool) -> Unit
+pub fn Axes::set_x_tick_position(Self, @axis.TickPosition) -> Unit
+pub fn Axes::set_x_ticks(Self, Array[Double]) -> Unit raise @core.DataError
+pub fn Axes::set_x_units(Self, @axis.AxisUnitTag?) -> Unit raise @core.DataError
+pub fn Axes::set_xlabel(Self, String) -> Unit
+pub fn Axes::set_xlim(Self, Double, Double, auto? : Bool?) -> Unit raise @core.DataError
+pub fn Axes::set_xmargin(Self, Double) -> Unit raise @core.DataError
+pub fn Axes::set_xscale(Self, @scale.Scale) -> Unit raise @core.DataError
+pub fn Axes::set_xticklabels(Self, Array[String]) -> Unit raise @core.DataError
+pub fn Axes::set_xticks(Self, Array[Double]) -> Unit raise @core.DataError
+pub fn Axes::set_y_categories(Self, Array[String]) -> Unit raise @core.DataError
+pub fn Axes::set_y_date(Self) -> Unit raise @core.DataError
+pub fn Axes::set_y_date_converter(Self, @date.DateConverter) -> Unit raise @core.DataError
+pub fn Axes::set_y_date_format(Self, String) -> Unit raise @core.DataError
+pub fn Axes::set_y_date_formatter(Self, @date.DateFormatter) -> Unit raise @core.DataError
+pub fn Axes::set_y_date_locator(Self, @date.DateLocator) -> Unit raise @core.DataError
+pub fn Axes::set_y_date_offset(Self, Int) -> Unit raise @core.DataError
+pub fn Axes::set_y_date_timezone(Self, @date.DateTimeZone) -> Unit raise @core.DataError
+pub fn Axes::set_y_formatter(Self, @ticker.Formatter) -> Unit
+pub fn Axes::set_y_label(Self, String) -> Unit
+pub fn Axes::set_y_limits(Self, Double, Double) -> Unit raise @core.DataError
+pub fn Axes::set_y_locator(Self, @ticker.Locator) -> Unit raise @core.DataError
+pub fn Axes::set_y_margin(Self, Double) -> Unit raise @core.DataError
+pub fn Axes::set_y_minor_date_formatter(Self, @date.DateFormatter) -> Unit raise @core.DataError
+pub fn Axes::set_y_minor_date_locator(Self, @date.DateLocator) -> Unit raise @core.DataError
+pub fn Axes::set_y_minor_locator(Self, @ticker.MinorLocator) -> Unit raise @core.DataError
+pub fn Axes::set_y_minor_named_formatter(Self, @ticker.BaseFormatter) -> Unit
+pub fn Axes::set_y_named_formatter(Self, @ticker.BaseFormatter) -> Unit
+pub fn Axes::set_y_scale(Self, @scale.Scale) -> Unit raise @core.DataError
+pub fn Axes::set_y_tick_labels(Self, Array[String]) -> Unit raise @core.DataError
+pub fn Axes::set_y_tick_labels_visible(Self, Bool) -> Unit
+pub fn Axes::set_y_tick_position(Self, @axis.TickPosition) -> Unit
+pub fn Axes::set_y_ticks(Self, Array[Double]) -> Unit raise @core.DataError
+pub fn Axes::set_y_units(Self, @axis.AxisUnitTag?) -> Unit raise @core.DataError
+pub fn Axes::set_ylabel(Self, String) -> Unit
+pub fn Axes::set_ylim(Self, Double, Double, auto? : Bool?) -> Unit raise @core.DataError
+pub fn Axes::set_ymargin(Self, Double) -> Unit raise @core.DataError
+pub fn Axes::set_yscale(Self, @scale.Scale) -> Unit raise @core.DataError
+pub fn Axes::set_yticklabels(Self, Array[String]) -> Unit raise @core.DataError
+pub fn Axes::set_yticks(Self, Array[Double]) -> Unit raise @core.DataError
+pub fn Axes::spine(Self, SpineSide) -> Spine
+pub fn Axes::spines(Self) -> Array[Spine]
+pub fn Axes::spy(Self, Array[Array[Double]], precision? : Double, color? : String, label? : String, markersize? : Double, origin? : String, aspect? : String, marker? : String) -> Unit raise @core.DataError
+pub fn Axes::stacked_bar(Self, Array[String], Array[Array[Double]], labels? : Array[String], colors? : Array[String], horizontal? : Bool, width? : Double, baseline? : Double) -> Unit raise @core.DataError
+pub fn Axes::stackplot(Self, Array[Double], Array[Array[Double]], labels? : Array[String], colors? : Array[String], baseline? : String) -> Array[Artist] raise @core.DataError
+pub fn Axes::stairs(Self, Array[Double], edges? : Array[Double], orientation? : String, baseline? : Double, fill? : Bool, color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Axes::stem(Self, Array[Double], locs? : Array[Double], bottom? : Double, orientation? : String, color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Axes::step(Self, Array[Double], Array[Double], where_? : String, color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Axes::streamplot(Self, Array[Double], Array[Double], Array[Array[Double]], Array[Array[Double]], density? : Double, density_x? : Double, density_y? : Double, color? : String, linewidth? : Double, max_steps? : Int, minlength? : Double, start_points? : Array[@core.Point], maxlength? : Double, integration_direction? : String, broken_streamlines? : Bool, integration_max_step_scale? : Double, integration_max_error_scale? : Double, arrows? : Bool, arrow_size? : Double, num_arrows? : Int, arrowstyle? : String, label? : String) -> StreamplotSet raise @core.DataError
+pub fn Axes::streamplot_mesh(Self, Array[Array[Double]], Array[Array[Double]], Array[Array[Double]], Array[Array[Double]], density? : Double, density_x? : Double, density_y? : Double, color? : String, linewidth? : Double, max_steps? : Int, minlength? : Double, start_points? : Array[@core.Point], maxlength? : Double, integration_direction? : String, broken_streamlines? : Bool, integration_max_step_scale? : Double, integration_max_error_scale? : Double, arrows? : Bool, arrow_size? : Double, num_arrows? : Int, arrowstyle? : String, label? : String) -> StreamplotSet raise @core.DataError
+pub fn Axes::streamplot_with_style_grids(Self, Array[Double], Array[Double], Array[Array[Double]], Array[Array[Double]], linewidths? : Array[Array[Double]], color_values? : Array[Array[Double]], density? : Double, density_x? : Double, density_y? : Double, color? : String, linewidth? : Double, cmap? : String, vmin? : Double, vmax? : Double, max_steps? : Int, minlength? : Double, start_points? : Array[@core.Point], maxlength? : Double, integration_direction? : String, broken_streamlines? : Bool, integration_max_step_scale? : Double, integration_max_error_scale? : Double, arrows? : Bool, arrow_size? : Double, num_arrows? : Int, arrowstyle? : String, label? : String) -> StreamplotSet raise @core.DataError
+pub fn Axes::table(Self, cell_text? : Array[Array[String]], cell_colours? : Array[Array[String]], cell_loc? : String, col_widths? : Array[Double], row_labels? : Array[String], row_colours? : Array[String], row_loc? : String, col_labels? : Array[String], col_colours? : Array[String], col_loc? : String, loc? : String, bbox? : Array[Double], edges? : String) -> Table raise @core.DataError
+pub fn Axes::text(Self, Double, Double, String, color? : String) -> Unit raise @core.DataError
+pub fn Axes::title(Self) -> String?
+pub fn Axes::tricontour(Self, Array[Double], Array[Double], Array[Array[Int]], Array[Double], levels? : Array[Double], nlevels? : Int, color? : String, linewidth? : Double, label? : String, mask? : Array[Bool], locator? : @ticker.Locator?, colors? : Array[String], linewidths? : Array[Double]) -> ContourSet raise @core.DataError
+pub fn Axes::tricontour_triangulation(Self, Triangulation, Array[Double], levels? : Array[Double], nlevels? : Int, color? : String, linewidth? : Double, label? : String, locator? : @ticker.Locator?, colors? : Array[String], linewidths? : Array[Double]) -> ContourSet raise @core.DataError
+pub fn Axes::tricontourf(Self, Array[Double], Array[Double], Array[Array[Int]], Array[Double], levels? : Array[Double], nlevels? : Int, colors? : Array[String], cmap? : String, label? : String, extend_mode? : String, mask? : Array[Bool], locator? : @ticker.Locator?) -> ContourSet raise @core.DataError
+pub fn Axes::tricontourf_triangulation(Self, Triangulation, Array[Double], levels? : Array[Double], nlevels? : Int, colors? : Array[String], cmap? : String, label? : String, extend_mode? : String, locator? : @ticker.Locator?) -> ContourSet raise @core.DataError
+pub fn Axes::tripcolor(Self, Array[Double], Array[Double], Array[Array[Int]], Array[Double], vmin? : Double, vmax? : Double, cmap? : String, label? : String, mask? : Array[Bool]) -> Unit raise @core.DataError
+pub fn Axes::tripcolor_triangulation(Self, Triangulation, Array[Double], vmin? : Double, vmax? : Double, cmap? : String, label? : String) -> Unit raise @core.DataError
+pub fn Axes::triplot(Self, Array[Double], Array[Double], Array[Array[Int]], color? : String, linewidth? : Double, label? : String, mask? : Array[Bool]) -> Unit raise @core.DataError
+pub fn Axes::triplot_triangulation(Self, Triangulation, color? : String, linewidth? : Double, label? : String) -> Unit raise @core.DataError
+pub fn Axes::unstale_view(Self) -> Unit raise @core.DataError
+pub fn Axes::update_datalim(Self, Array[@core.Point], update_x? : Bool, update_y? : Bool) -> Unit
+pub fn Axes::update_x_category_units(Self, Array[String]) -> Bool raise @core.DataError
+pub fn Axes::update_x_date_units(Self, Array[@date.RRuleDateTime]) -> Bool raise @core.DataError
+pub fn Axes::update_y_category_units(Self, Array[String]) -> Bool raise @core.DataError
+pub fn Axes::update_y_date_units(Self, Array[@date.RRuleDateTime]) -> Bool raise @core.DataError
+pub fn Axes::use_sticky_edges(Self) -> Bool
+pub fn Axes::violin(Self, Array[ViolinStats], positions? : Array[Double], width? : Double, widths? : Array[Double], horizontal? : Bool, side? : ViolinSide, showmeans? : Bool, showextrema? : Bool, showmedians? : Bool, color? : String, facecolor? : String, linecolor? : String, label? : String) -> Unit raise @core.DataError
+pub fn Axes::violinplot(Self, Array[Array[Double]], positions? : Array[Double], width? : Double, widths? : Array[Double], horizontal? : Bool, side? : ViolinSide, showmeans? : Bool, showextrema? : Bool, showmedians? : Bool, quantiles? : Array[Array[Double]], points? : Int, bandwidth? : ViolinBandwidth, color? : String, facecolor? : String, linecolor? : String, label? : String) -> Array[ViolinStats] raise @core.DataError
+pub fn Axes::vlines(Self, Array[Double], Double, Double, color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Axes::x_axis(Self) -> @axis.Axis
+pub fn Axes::x_date_format(Self) -> String?
+pub fn Axes::x_date_offset(Self) -> Int
+pub fn Axes::x_date_timezone(Self) -> @date.DateTimeZone?
+pub fn Axes::x_limits(Self) -> @core.Limits?
+pub fn Axes::x_margin(Self) -> Double
+pub fn Axes::x_scale(Self) -> @scale.Scale
+pub fn Axes::x_units(Self) -> @axis.AxisUnitTag?
+pub fn Axes::xaxis_date(Self, format? : String) -> Unit raise @core.DataError
+pub fn Axes::xcorr(Self, Array[Double], Array[Double], normed? : Bool, usevlines? : Bool, maxlags? : Int, color? : String, label? : String, detrend? : (Array[Double]) -> Array[Double]) -> Correlation raise @core.DataError
+pub fn Axes::y_axis(Self) -> @axis.Axis
+pub fn Axes::y_date_format(Self) -> String?
+pub fn Axes::y_date_offset(Self) -> Int
+pub fn Axes::y_date_timezone(Self) -> @date.DateTimeZone?
+pub fn Axes::y_limits(Self) -> @core.Limits?
+pub fn Axes::y_margin(Self) -> Double
+pub fn Axes::y_scale(Self) -> @scale.Scale
+pub fn Axes::y_units(Self) -> @axis.AxisUnitTag?
+pub fn Axes::yaxis_date(Self, format? : String) -> Unit raise @core.DataError
+
+type AxesData
+
+pub struct Container {
+  kind : ContainerKind
+  artists : Array[Artist]
+  label : String
+}
+pub fn Container::artists(Self) -> Array[Artist]
+pub fn Container::kind(Self) -> ContainerKind
+pub fn Container::label(Self) -> String
+
+pub(all) enum ContainerKind {
+  Generic
+  Bar
+  ErrorBar
+  Stem
+  BoxPlot
+  Contour
+  Quiver
+  Violin
+  Pie
+  Stackplot
+  Streamplot
+}
+
+pub struct ContourSet {
+  levels : Array[Double]
+  filled : Bool
+  segments : Array[Array[@core.Point]]
+  segment_levels : Array[Double]
+  extend_mode : String
+  corner_mask : Bool
+}
+pub fn ContourSet::allsegs(Self) -> Array[Array[Array[@core.Point]]]
+pub fn ContourSet::corner_mask(Self) -> Bool
+pub fn ContourSet::extend_mode(Self) -> String
+pub fn ContourSet::filled(Self) -> Bool
+pub fn ContourSet::layers(Self) -> Array[Double]
+pub fn ContourSet::levels(Self) -> Array[Double]
+pub fn ContourSet::segment_levels(Self) -> Array[Double]
+pub fn ContourSet::segments(Self) -> Array[Array[@core.Point]]
+
+pub struct Correlation {
+  lags : Array[Double]
+  values : Array[Double]
+}
+pub fn Correlation::lags(Self) -> Array[Double]
+pub fn Correlation::values(Self) -> Array[Double]
+
+pub struct Ecdf {
+  values : Array[Double]
+  probabilities : Array[Double]
+}
+pub fn Ecdf::probabilities(Self) -> Array[Double]
+pub fn Ecdf::values(Self) -> Array[Double]
+
+pub struct Figure {
+  width : Int
+  height : Int
+  margin : Int
+  axes : Array[@ref.Ref[AxesData]]
+  subfigures : Array[@ref.Ref[SubFigureData]]
+  colorbars : Array[@colorbar.Colorbar]
+  mut share_group_seed : Int
+  mut title : String?
+  // private fields
+}
+pub fn Figure::acorr(Self, Array[Double], normed? : Bool, usevlines? : Bool, maxlags? : Int, color? : String, label? : String, detrend? : (Array[Double]) -> Array[Double]) -> Correlation raise @core.DataError
+pub fn Figure::add_axes(Self, Double, Double, Double, Double) -> Axes raise @gridspec.LayoutError
+pub fn Figure::add_polar_axes(Self, Double, Double, Double, Double) -> PolarAxes raise @gridspec.LayoutError
+pub fn Figure::add_subfigure(Self, @gridspec.SubplotSpec) -> SubFigure
+pub fn Figure::add_subplot(Self, @gridspec.SubplotSpec) -> Axes
+pub fn Figure::annotate(Self, String, Double, Double, offset_x? : Double, offset_y? : Double, arrow? : Bool, color? : String, arrowcolor? : String, linewidth? : Double, head_length? : Double, head_width? : Double, fontsize? : Int, xycoords? : String, textcoords? : String, connector? : String) -> Unit raise @core.DataError
+pub fn Figure::arrow(Self, Double, Double, Double, Double, color? : String, linewidth? : Double, head_length? : Double, head_width? : Double, label? : String) -> Unit raise @core.DataError
+pub fn Figure::artists(Self) -> Array[Artist]
+pub fn Figure::autoscale(Self, enable? : Bool?, axis? : String, tight? : Bool) -> Unit raise @core.DataError
+pub fn Figure::autoscale_view(Self, tight? : Bool, scalex? : Bool, scaley? : Bool, axis? : String) -> Unit raise @core.DataError
+pub fn Figure::axes(Self) -> Axes
+pub fn Figure::axes_list(Self) -> Array[Axes]
+pub fn Figure::axhline(Self, Double, color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Figure::axhspan(Self, Double, Double, color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Figure::axline(Self, @core.Point, xy2? : @core.Point, slope? : Double, color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Figure::axvline(Self, Double, color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Figure::axvspan(Self, Double, Double, color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Figure::bar(Self, Array[@core.Point], color? : String, label? : String) -> Unit
+pub fn Figure::bar_category(Self, Array[String], Array[Double], color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Figure::bar_category_y(Self, Array[Double], Array[String], color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Figure::barbs(Self, Array[Double], Array[Double], Array[Double], Array[Double], color? : String, linewidth? : Double, barb_length? : Double, label? : String) -> Unit raise @core.DataError
+pub fn Figure::barbs_with_options(Self, Array[Double], Array[Double], Array[Double], Array[Double], color? : String, linewidth? : Double, barb_length? : Double, label? : String, half_increment? : Double, full_increment? : Double, flag_increment? : Double, rounding? : Bool, flip? : Bool, fill_empty? : Bool, pivot? : String) -> Unit raise @core.DataError
+pub fn Figure::barh(Self, Array[Double], Array[Double], color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Figure::boxplot(Self, Array[Array[Double]], horizontal? : Bool, color? : String, label? : String) -> Array[@boxplot.BoxStats] raise @core.DataError
+pub fn Figure::broken_barh(Self, Array[(Double, Double)], (Double, Double), color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Figure::clabel(Self, ContourSet, inline? : Bool, fontsize? : Int, color? : String) -> Unit raise @core.DataError
+pub fn Figure::clear(Self) -> Unit
+pub fn Figure::clear_checked(Self) -> Unit raise @core.DataError
+pub fn Figure::color_cycle(Self) -> Array[String]
+pub fn Figure::colorbar(Self, @colors.ColorNorm, @colors.ColorMap, orientation? : @colorbar.Orientation) -> @colorbar.Colorbar
+pub fn Figure::colorbars(Self) -> Array[@colorbar.Colorbar]
+pub fn Figure::containers(Self) -> Array[Container]
+pub fn Figure::contour(Self, Array[Array[Double]], x? : Array[Double], y? : Array[Double], levels? : Array[Double], nlevels? : Int, color? : String, linewidth? : Double, label? : String, corner_mask? : Bool, locator? : @ticker.Locator, colors? : Array[String], linewidths? : Array[Double]) -> ContourSet raise @core.DataError
+pub fn Figure::contourf(Self, Array[Array[Double]], x? : Array[Double], y? : Array[Double], levels? : Array[Double], nlevels? : Int, colors? : Array[String], cmap? : String, label? : String, extend_mode? : String, corner_mask? : Bool, locator? : @ticker.Locator) -> ContourSet raise @core.DataError
+pub fn Figure::delaxes(Self, Axes) -> Unit raise @core.DataError
+pub fn Figure::donut(Self, Array[Double], labels? : Array[String], colors? : Array[String], start_angle? : Double, inner_radius? : Double) -> Array[Double] raise @core.DataError
+pub fn Figure::ecdf(Self, Array[Double], weights? : Array[Double], complementary? : Bool, horizontal? : Bool, compress? : Bool, color? : String, label? : String) -> Ecdf raise @core.DataError
+pub fn Figure::errorbar(Self, Array[Double], Array[Double], yerr? : Array[Double], xerr? : Array[Double], color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Figure::eventplot(Self, Array[Array[Double]], orientation? : String, lineoffsets? : Array[Double], linelengths? : Array[Double], linewidth? : Double, color? : String) -> Unit raise @core.DataError
+pub fn Figure::explicit_bounds(Self) -> @core.Bounds?
+pub fn Figure::fill(Self, Array[Double], Array[Double], color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Figure::fill_between(Self, Array[Double], Array[Double], Array[Double], color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Figure::fill_between_masked(Self, @core.MaskedArray, @core.MaskedArray, @core.MaskedArray, color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Figure::fill_betweenx(Self, Array[Double], Array[Double], right? : Array[Double], color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Figure::fill_betweenx_masked(Self, @core.MaskedArray, @core.MaskedArray, @core.MaskedArray, color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Figure::gca(Self) -> Axes
+pub fn Figure::get_adjustable(Self) -> String
+pub fn Figure::get_anchor(Self) -> Anchor
+pub fn Figure::get_aspect(Self) -> Double?
+pub fn Figure::get_axes(Self) -> Array[Axes]
+pub fn Figure::get_box_aspect(Self) -> Double?
+pub fn Figure::get_legend_handles_labels(Self) -> Array[LegendEntry]
+pub fn Figure::grid(Self, visible? : Bool, which? : String, color? : String, linewidth? : Double, axis? : String) -> Unit raise @core.DataError
+pub fn Figure::grid_cells(Self, Int, Int, hspace? : Double, vspace? : Double, width_ratios? : Array[Double], height_ratios? : Array[Double]) -> Array[@gridspec.Rect] raise @gridspec.LayoutError
+pub fn Figure::grid_spec(Self, Int, Int, hspace? : Double, vspace? : Double, width_ratios? : Array[Double], height_ratios? : Array[Double]) -> @gridspec.GridSpec raise @gridspec.LayoutError
+pub fn Figure::grouped_bar(Self, Array[String], Array[Array[Double]], labels? : Array[String], colors? : Array[String], horizontal? : Bool, width? : Double, gap? : Double, baseline? : Double) -> Unit raise @core.DataError
+pub fn Figure::height(Self) -> Int
+pub fn Figure::hexbin(Self, Array[Double], Array[Double], values? : Array[Double], gridsize? : Int, mincnt? : Int, cmap? : String, vmin? : Double, vmax? : Double, color? : String, label? : String, reduce? : String, edgecolor? : String, linewidth? : Double, bins? : String, extent? : Array[Double], marginals? : Bool, reduce_fn? : HexbinReducer) -> Hexbin raise @core.DataError
+pub fn Figure::hist(Self, Array[Double], bins? : Int, color? : String, label? : String) -> Histogram raise @core.DataError
+pub fn Figure::hist2d(Self, Array[Double], Array[Double], bins_x? : Int, bins_y? : Int, cmap? : String) -> Unit raise @core.DataError
+pub fn Figure::hlines(Self, Array[Double], Double, Double, color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Figure::imshow(Self, Array[Array[Double]], vmin? : Double, vmax? : Double, cmap? : String, origin? : String, extent? : Array[Double], aspect? : String, alpha? : Double, interpolation? : String) -> Unit raise @core.DataError
+pub fn Figure::imshow_color(Self, Array[Array[@colors.Rgba]], origin? : String, extent? : Array[Double], aspect? : String, alpha? : Double, interpolation? : String) -> Unit raise @core.DataError
+pub fn Figure::imshow_masked(Self, @core.MaskedMatrix, vmin? : Double, vmax? : Double, cmap? : String, origin? : String, extent? : Array[Double], aspect? : String, alpha? : Double, interpolation? : String) -> Unit raise @core.DataError
+pub fn Figure::imshow_masked_with_colormap(Self, @core.MaskedMatrix, @colors.ColorMap, vmin? : Double, vmax? : Double, origin? : String, extent? : Array[Double], aspect? : String, alpha? : Double, interpolation? : String) -> Unit raise @core.DataError
+pub fn Figure::imshow_masked_with_norm(Self, @core.MaskedMatrix, @colors.ColorNorm, cmap? : String, origin? : String, extent? : Array[Double], aspect? : String, alpha? : Double, interpolation? : String) -> Unit raise @core.DataError
+pub fn Figure::imshow_masked_with_norm_and_colormap(Self, @core.MaskedMatrix, @colors.ColorNorm, @colors.ColorMap, origin? : String, extent? : Array[Double], aspect? : String, alpha? : Double, interpolation? : String) -> Unit raise @core.DataError
+pub fn Figure::imshow_rgb(Self, Array[Array[@colors.Rgb]], origin? : String, extent? : Array[Double], aspect? : String, alpha? : Double, interpolation? : String) -> Unit raise @core.DataError
+pub fn Figure::imshow_rgb_channels(Self, Array[Array[Array[Double]]], origin? : String, extent? : Array[Double], aspect? : String, alpha? : Double, interpolation? : String) -> Unit raise @core.DataError
+pub fn Figure::imshow_rgba(Self, Array[Array[@colors.Rgba]], origin? : String, extent? : Array[Double], aspect? : String, alpha? : Double, interpolation? : String) -> Unit raise @core.DataError
+pub fn Figure::imshow_rgba_channels(Self, Array[Array[Array[Double]]], origin? : String, extent? : Array[Double], aspect? : String, alpha? : Double, interpolation? : String) -> Unit raise @core.DataError
+pub fn Figure::imshow_with_colormap(Self, Array[Array[Double]], @colors.ColorMap, vmin? : Double, vmax? : Double, origin? : String, extent? : Array[Double], aspect? : String, alpha? : Double, interpolation? : String) -> Unit raise @core.DataError
+pub fn Figure::imshow_with_norm(Self, Array[Array[Double]], @colors.ColorNorm, cmap? : String, origin? : String, extent? : Array[Double], aspect? : String, alpha? : Double, interpolation? : String) -> Unit raise @core.DataError
+pub fn Figure::imshow_with_norm_and_colormap(Self, Array[Array[Double]], @colors.ColorNorm, @colors.ColorMap, origin? : String, extent? : Array[Double], aspect? : String, alpha? : Double, interpolation? : String) -> Unit raise @core.DataError
+pub fn Figure::legend(Self, Array[LegendEntry]) -> Unit
+pub fn Figure::legend_entries(Self) -> Array[LegendEntry]
+pub fn Figure::legend_position(Self) -> @core.LegendPosition
+pub fn Figure::line(Self, Array[@core.Point], color? : String, label? : String) -> Unit
+pub fn Figure::loglog(Self, Array[Double], Array[Double], color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Figure::margin(Self) -> Int
+pub fn Figure::margins(Self) -> (Double, Double)
+pub fn Figure::matshow(Self, Array[Array[Double]], vmin? : Double, vmax? : Double, cmap? : String, interpolation? : String) -> Unit raise @core.DataError
+pub fn Figure::pcolor(Self, Array[Array[Double]], x? : Array[Double], y? : Array[Double], vmin? : Double, vmax? : Double, cmap? : String, antialiased? : Bool) -> Unit raise @core.DataError
+pub fn Figure::pcolor_grid(Self, Array[Array[Double]], Array[Array[Double]], Array[Array[Double]], shading? : String, vmin? : Double, vmax? : Double, cmap? : String, antialiased? : Bool) -> Unit raise @core.DataError
+pub fn Figure::pcolor_grid_masked(Self, @core.MaskedMatrix, @core.MaskedMatrix, @core.MaskedMatrix, shading? : String, vmin? : Double, vmax? : Double, cmap? : String, antialiased? : Bool) -> Unit raise @core.DataError
+pub fn Figure::pcolor_masked(Self, @core.MaskedMatrix, x? : Array[Double], y? : Array[Double], vmin? : Double, vmax? : Double, cmap? : String, antialiased? : Bool) -> Unit raise @core.DataError
+pub fn Figure::pcolor_masked_with_norm_and_colormap(Self, @core.MaskedMatrix, @colors.ColorNorm, @colors.ColorMap, x? : Array[Double], y? : Array[Double], antialiased? : Bool) -> Unit raise @core.DataError
+pub fn Figure::pcolor_with_norm(Self, Array[Array[Double]], @colors.ColorNorm, cmap? : String, x? : Array[Double], y? : Array[Double], antialiased? : Bool) -> Unit raise @core.DataError
+pub fn Figure::pcolor_with_norm_and_colormap(Self, Array[Array[Double]], @colors.ColorNorm, @colors.ColorMap, x? : Array[Double], y? : Array[Double], antialiased? : Bool) -> Unit raise @core.DataError
+pub fn Figure::pcolormesh(Self, Array[Array[Double]], x? : Array[Double], y? : Array[Double], vmin? : Double, vmax? : Double, cmap? : String, antialiased? : Bool) -> Unit raise @core.DataError
+pub fn Figure::pcolormesh_grid(Self, Array[Array[Double]], Array[Array[Double]], Array[Array[Double]], shading? : String, vmin? : Double, vmax? : Double, cmap? : String, antialiased? : Bool) -> Unit raise @core.DataError
+pub fn Figure::pcolormesh_grid_masked(Self, @core.MaskedMatrix, @core.MaskedMatrix, @core.MaskedMatrix, shading? : String, vmin? : Double, vmax? : Double, cmap? : String, antialiased? : Bool) -> Unit raise @core.DataError
+pub fn Figure::pcolormesh_masked(Self, @core.MaskedMatrix, x? : Array[Double], y? : Array[Double], vmin? : Double, vmax? : Double, cmap? : String, antialiased? : Bool) -> Unit raise @core.DataError
+pub fn Figure::pcolormesh_masked_with_norm_and_colormap(Self, @core.MaskedMatrix, @colors.ColorNorm, @colors.ColorMap, x? : Array[Double], y? : Array[Double], antialiased? : Bool) -> Unit raise @core.DataError
+pub fn Figure::pcolormesh_with_norm(Self, Array[Array[Double]], @colors.ColorNorm, cmap? : String, x? : Array[Double], y? : Array[Double], antialiased? : Bool) -> Unit raise @core.DataError
+pub fn Figure::pcolormesh_with_norm_and_colormap(Self, Array[Array[Double]], @colors.ColorNorm, @colors.ColorMap, x? : Array[Double], y? : Array[Double], antialiased? : Bool) -> Unit raise @core.DataError
+pub fn Figure::pie(Self, Array[Double], labels? : Array[String], colors? : Array[String], start_angle? : Double) -> Array[Double] raise @core.DataError
+pub fn Figure::plot(Self, Array[Double], Array[Double], color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Figure::plot_category(Self, Array[String], Array[Double], color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Figure::plot_category_y(Self, Array[Double], Array[String], color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Figure::plot_date(Self, Array[@date.DateTime], Array[Double], color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Figure::plot_date_units(Self, Array[@date.RRuleDateTime], Array[Double], color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Figure::plot_line(Self, LineData, LineData, color? : String, label? : String) -> Line2D raise @core.DataError
+pub fn Figure::plot_masked(Self, @core.MaskedArray, @core.MaskedArray, color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Figure::quiver(Self, Array[Double], Array[Double], Array[Double], Array[Double], color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Figure::quiverkey(Self, Double, Double, Double, String, color? : String) -> Unit raise @core.DataError
+pub fn Figure::sca(Self, Axes) -> Axes raise @core.DataError
+pub fn Figure::scatter(Self, Array[@core.Point], color? : String, label? : String) -> Unit
+pub fn Figure::scatter_category(Self, Array[String], Array[Double], color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Figure::scatter_category_y(Self, Array[Double], Array[String], color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Figure::scatter_collection(Self, Array[@core.Point], colors? : Array[String], sizes? : Array[Double], label? : String) -> PathCollection raise @core.DataError
+pub fn Figure::scatter_masked(Self, @core.MaskedArray, @core.MaskedArray, color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Figure::secondary_xaxis(Self, (Double) -> Double, (Double) -> Double, location? : SecondaryAxisLocation, transform? : @transforms.Affine2D?) -> SecondaryAxis raise @core.DataError
+pub fn Figure::secondary_yaxis(Self, (Double) -> Double, (Double) -> Double, location? : SecondaryAxisLocation, transform? : @transforms.Affine2D?) -> SecondaryAxis raise @core.DataError
+pub fn Figure::semilogx(Self, Array[Double], Array[Double], color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Figure::semilogy(Self, Array[Double], Array[Double], color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Figure::set_adjustable(Self, String, share? : Bool) -> Unit raise @core.DataError
+pub fn Figure::set_anchor(Self, Anchor, share? : Bool) -> Unit raise @core.DataError
+pub fn Figure::set_aspect(Self, Double, share? : Bool, anchor? : Anchor, adjustable? : String) -> Unit raise @core.DataError
+pub fn Figure::set_aspect_auto(Self) -> Unit
+pub fn Figure::set_aspect_equal(Self) -> Unit
+pub fn Figure::set_axis_off(Self) -> Unit
+pub fn Figure::set_axis_on(Self) -> Unit
+pub fn Figure::set_bounds(Self, @core.Bounds) -> Unit raise @core.DataError
+pub fn Figure::set_box_aspect(Self, aspect? : Double) -> Unit raise @core.DataError
+pub fn Figure::set_color_cycle(Self, Array[String]) -> Unit raise @core.DataError
+pub fn Figure::set_legend(Self, Array[LegendEntry]) -> Unit
+pub fn Figure::set_legend_position(Self, @core.LegendPosition) -> Unit
+pub fn Figure::set_margins(Self, Double, Double) -> Unit raise @core.DataError
+pub fn Figure::set_prop_cycle(Self, Array[String]) -> Unit raise @core.DataError
+pub fn Figure::set_title(Self, String) -> Unit
+pub fn Figure::set_x_categories(Self, Array[String]) -> Unit raise @core.DataError
+pub fn Figure::set_x_date_converter(Self, @date.DateConverter) -> Unit raise @core.DataError
+pub fn Figure::set_x_date_formatter(Self, @date.DateFormatter) -> Unit raise @core.DataError
+pub fn Figure::set_x_date_locator(Self, @date.DateLocator) -> Unit raise @core.DataError
+pub fn Figure::set_x_date_offset(Self, Int) -> Unit raise @core.DataError
+pub fn Figure::set_x_date_timezone(Self, @date.DateTimeZone) -> Unit raise @core.DataError
+pub fn Figure::set_x_formatter(Self, @ticker.Formatter) -> Unit
+pub fn Figure::set_x_label(Self, String) -> Unit
+pub fn Figure::set_x_limits(Self, Double, Double) -> Unit raise @core.DataError
+pub fn Figure::set_x_locator(Self, @ticker.Locator) -> Unit raise @core.DataError
+pub fn Figure::set_x_margin(Self, Double) -> Unit raise @core.DataError
+pub fn Figure::set_x_minor_date_formatter(Self, @date.DateFormatter) -> Unit raise @core.DataError
+pub fn Figure::set_x_minor_date_locator(Self, @date.DateLocator) -> Unit raise @core.DataError
+pub fn Figure::set_x_minor_locator(Self, @ticker.MinorLocator) -> Unit raise @core.DataError
+pub fn Figure::set_x_minor_named_formatter(Self, @ticker.BaseFormatter) -> Unit
+pub fn Figure::set_x_named_formatter(Self, @ticker.BaseFormatter) -> Unit
+pub fn Figure::set_x_scale(Self, @scale.Scale) -> Unit raise @core.DataError
+pub fn Figure::set_x_tick_labels(Self, Array[String]) -> Unit raise @core.DataError
+pub fn Figure::set_x_tick_position(Self, @axis.TickPosition) -> Unit
+pub fn Figure::set_x_ticks(Self, Array[Double]) -> Unit raise @core.DataError
+pub fn Figure::set_xlabel(Self, String) -> Unit
+pub fn Figure::set_xlim(Self, Double, Double, auto? : Bool?) -> Unit raise @core.DataError
+pub fn Figure::set_xmargin(Self, Double) -> Unit raise @core.DataError
+pub fn Figure::set_xscale(Self, @scale.Scale) -> Unit raise @core.DataError
+pub fn Figure::set_xticklabels(Self, Array[String]) -> Unit raise @core.DataError
+pub fn Figure::set_xticks(Self, Array[Double]) -> Unit raise @core.DataError
+pub fn Figure::set_y_categories(Self, Array[String]) -> Unit raise @core.DataError
+pub fn Figure::set_y_date_converter(Self, @date.DateConverter) -> Unit raise @core.DataError
+pub fn Figure::set_y_date_formatter(Self, @date.DateFormatter) -> Unit raise @core.DataError
+pub fn Figure::set_y_date_locator(Self, @date.DateLocator) -> Unit raise @core.DataError
+pub fn Figure::set_y_date_offset(Self, Int) -> Unit raise @core.DataError
+pub fn Figure::set_y_date_timezone(Self, @date.DateTimeZone) -> Unit raise @core.DataError
+pub fn Figure::set_y_formatter(Self, @ticker.Formatter) -> Unit
+pub fn Figure::set_y_label(Self, String) -> Unit
+pub fn Figure::set_y_limits(Self, Double, Double) -> Unit raise @core.DataError
+pub fn Figure::set_y_locator(Self, @ticker.Locator) -> Unit raise @core.DataError
+pub fn Figure::set_y_margin(Self, Double) -> Unit raise @core.DataError
+pub fn Figure::set_y_minor_date_formatter(Self, @date.DateFormatter) -> Unit raise @core.DataError
+pub fn Figure::set_y_minor_date_locator(Self, @date.DateLocator) -> Unit raise @core.DataError
+pub fn Figure::set_y_minor_locator(Self, @ticker.MinorLocator) -> Unit raise @core.DataError
+pub fn Figure::set_y_minor_named_formatter(Self, @ticker.BaseFormatter) -> Unit
+pub fn Figure::set_y_named_formatter(Self, @ticker.BaseFormatter) -> Unit
+pub fn Figure::set_y_scale(Self, @scale.Scale) -> Unit raise @core.DataError
+pub fn Figure::set_y_tick_labels(Self, Array[String]) -> Unit raise @core.DataError
+pub fn Figure::set_y_tick_position(Self, @axis.TickPosition) -> Unit
+pub fn Figure::set_y_ticks(Self, Array[Double]) -> Unit raise @core.DataError
+pub fn Figure::set_ylabel(Self, String) -> Unit
+pub fn Figure::set_ylim(Self, Double, Double, auto? : Bool?) -> Unit raise @core.DataError
+pub fn Figure::set_ymargin(Self, Double) -> Unit raise @core.DataError
+pub fn Figure::set_yscale(Self, @scale.Scale) -> Unit raise @core.DataError
+pub fn Figure::set_yticklabels(Self, Array[String]) -> Unit raise @core.DataError
+pub fn Figure::set_yticks(Self, Array[Double]) -> Unit raise @core.DataError
+pub fn Figure::spine(Self, SpineSide) -> Spine
+pub fn Figure::spines(Self) -> Array[Spine]
+pub fn Figure::spy(Self, Array[Array[Double]], precision? : Double, color? : String, label? : String, markersize? : Double, origin? : String, aspect? : String, marker? : String) -> Unit raise @core.DataError
+pub fn Figure::stacked_bar(Self, Array[String], Array[Array[Double]], labels? : Array[String], colors? : Array[String], horizontal? : Bool, width? : Double, baseline? : Double) -> Unit raise @core.DataError
+pub fn Figure::stackplot(Self, Array[Double], Array[Array[Double]], labels? : Array[String], colors? : Array[String], baseline? : String) -> Array[Artist] raise @core.DataError
+pub fn Figure::stairs(Self, Array[Double], edges? : Array[Double], orientation? : String, baseline? : Double, fill? : Bool, color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Figure::stem(Self, Array[Double], locs? : Array[Double], bottom? : Double, orientation? : String, color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Figure::step(Self, Array[Double], Array[Double], where_? : String, color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Figure::streamplot(Self, Array[Double], Array[Double], Array[Array[Double]], Array[Array[Double]], density? : Double, density_x? : Double, density_y? : Double, color? : String, linewidth? : Double, max_steps? : Int, minlength? : Double, start_points? : Array[@core.Point], maxlength? : Double, integration_direction? : String, broken_streamlines? : Bool, integration_max_step_scale? : Double, integration_max_error_scale? : Double, arrows? : Bool, arrow_size? : Double, num_arrows? : Int, arrowstyle? : String, label? : String) -> StreamplotSet raise @core.DataError
+pub fn Figure::streamplot_mesh(Self, Array[Array[Double]], Array[Array[Double]], Array[Array[Double]], Array[Array[Double]], density? : Double, density_x? : Double, density_y? : Double, color? : String, linewidth? : Double, max_steps? : Int, minlength? : Double, start_points? : Array[@core.Point], maxlength? : Double, integration_direction? : String, broken_streamlines? : Bool, integration_max_step_scale? : Double, integration_max_error_scale? : Double, arrows? : Bool, arrow_size? : Double, num_arrows? : Int, arrowstyle? : String, label? : String) -> StreamplotSet raise @core.DataError
+pub fn Figure::streamplot_with_style_grids(Self, Array[Double], Array[Double], Array[Array[Double]], Array[Array[Double]], linewidths? : Array[Array[Double]], color_values? : Array[Array[Double]], density? : Double, density_x? : Double, density_y? : Double, color? : String, linewidth? : Double, cmap? : String, vmin? : Double, vmax? : Double, max_steps? : Int, minlength? : Double, start_points? : Array[@core.Point], maxlength? : Double, integration_direction? : String, broken_streamlines? : Bool, integration_max_step_scale? : Double, integration_max_error_scale? : Double, arrows? : Bool, arrow_size? : Double, num_arrows? : Int, arrowstyle? : String, label? : String) -> StreamplotSet raise @core.DataError
+pub fn Figure::subfigures(Self) -> Array[SubFigure]
+pub fn Figure::subplot_bounds(Self) -> (Double, Double, Double, Double)
+pub fn Figure::subplots(Self, Int, Int, hspace? : Double, vspace? : Double, share_x? : Bool, share_y? : Bool, width_ratios? : Array[Double], height_ratios? : Array[Double]) -> Array[Axes] raise @gridspec.LayoutError
+pub fn Figure::subplots_adjust(Self, left? : Double, bottom? : Double, right? : Double, top? : Double, wspace? : Double, hspace? : Double) -> Unit raise @gridspec.LayoutError
+pub fn Figure::subplots_with_grid(Self, @gridspec.GridSpec) -> Array[Axes] raise @gridspec.LayoutError
+pub fn Figure::suptitle(Self, String) -> Unit
+pub fn Figure::table(Self, cell_text? : Array[Array[String]], cell_colours? : Array[Array[String]], cell_loc? : String, col_widths? : Array[Double], row_labels? : Array[String], row_colours? : Array[String], row_loc? : String, col_labels? : Array[String], col_colours? : Array[String], col_loc? : String, loc? : String, bbox? : Array[Double], edges? : String) -> Table raise @core.DataError
+pub fn Figure::text(Self, Double, Double, String, color? : String) -> Unit raise @core.DataError
+pub fn Figure::title(Self) -> String?
+pub fn Figure::to_drawing(Self) -> @drawing.Drawing raise @core.DataError
+pub fn Figure::to_svg(Self) -> String
+pub fn Figure::to_svg_checked(Self) -> String raise @core.DataError
+pub fn Figure::tricontour(Self, Array[Double], Array[Double], Array[Array[Int]], Array[Double], levels? : Array[Double], nlevels? : Int, color? : String, linewidth? : Double, label? : String, mask? : Array[Bool], locator? : @ticker.Locator, colors? : Array[String], linewidths? : Array[Double]) -> ContourSet raise @core.DataError
+pub fn Figure::tricontour_triangulation(Self, Triangulation, Array[Double], levels? : Array[Double], nlevels? : Int, color? : String, linewidth? : Double, label? : String, locator? : @ticker.Locator, colors? : Array[String], linewidths? : Array[Double]) -> ContourSet raise @core.DataError
+pub fn Figure::tricontourf(Self, Array[Double], Array[Double], Array[Array[Int]], Array[Double], levels? : Array[Double], nlevels? : Int, colors? : Array[String], cmap? : String, label? : String, extend_mode? : String, mask? : Array[Bool], locator? : @ticker.Locator) -> ContourSet raise @core.DataError
+pub fn Figure::tricontourf_triangulation(Self, Triangulation, Array[Double], levels? : Array[Double], nlevels? : Int, colors? : Array[String], cmap? : String, label? : String, extend_mode? : String, locator? : @ticker.Locator) -> ContourSet raise @core.DataError
+pub fn Figure::tripcolor(Self, Array[Double], Array[Double], Array[Array[Int]], Array[Double], vmin? : Double, vmax? : Double, cmap? : String, label? : String, mask? : Array[Bool]) -> Unit raise @core.DataError
+pub fn Figure::tripcolor_triangulation(Self, Triangulation, Array[Double], vmin? : Double, vmax? : Double, cmap? : String, label? : String) -> Unit raise @core.DataError
+pub fn Figure::triplot(Self, Array[Double], Array[Double], Array[Array[Int]], color? : String, linewidth? : Double, label? : String, mask? : Array[Bool]) -> Unit raise @core.DataError
+pub fn Figure::triplot_triangulation(Self, Triangulation, color? : String, linewidth? : Double, label? : String) -> Unit raise @core.DataError
+pub fn Figure::violin(Self, Array[ViolinStats], positions? : Array[Double], width? : Double, widths? : Array[Double], horizontal? : Bool, side? : ViolinSide, showmeans? : Bool, showextrema? : Bool, showmedians? : Bool, color? : String, facecolor? : String, linecolor? : String, label? : String) -> Unit raise @core.DataError
+pub fn Figure::violinplot(Self, Array[Array[Double]], positions? : Array[Double], width? : Double, widths? : Array[Double], horizontal? : Bool, side? : ViolinSide, showmeans? : Bool, showextrema? : Bool, showmedians? : Bool, quantiles? : Array[Array[Double]], points? : Int, bandwidth? : ViolinBandwidth, color? : String, facecolor? : String, linecolor? : String, label? : String) -> Array[ViolinStats] raise @core.DataError
+pub fn Figure::vlines(Self, Array[Double], Double, Double, color? : String, label? : String) -> Unit raise @core.DataError
+pub fn Figure::width(Self) -> Int
+pub fn Figure::x_axis(Self) -> @axis.Axis
+pub fn Figure::x_date_timezone(Self) -> @date.DateTimeZone?
+pub fn Figure::x_label(Self) -> String?
+pub fn Figure::x_limits(Self) -> @core.Limits?
+pub fn Figure::x_margin(Self) -> Double
+pub fn Figure::xaxis_date(Self, format? : String) -> Unit raise @core.DataError
+pub fn Figure::xcorr(Self, Array[Double], Array[Double], normed? : Bool, usevlines? : Bool, maxlags? : Int, color? : String, label? : String, detrend? : (Array[Double]) -> Array[Double]) -> Correlation raise @core.DataError
+pub fn Figure::y_axis(Self) -> @axis.Axis
+pub fn Figure::y_date_timezone(Self) -> @date.DateTimeZone?
+pub fn Figure::y_label(Self) -> String?
+pub fn Figure::y_limits(Self) -> @core.Limits?
+pub fn Figure::y_margin(Self) -> Double
+pub fn Figure::yaxis_date(Self, format? : String) -> Unit raise @core.DataError
+
+pub struct Hexbin {
+  centers : Array[@core.Point]
+  values : Array[Double]
+  counts : Array[Int]
+}
+pub fn Hexbin::centers(Self) -> Array[@core.Point]
+pub fn Hexbin::counts(Self) -> Array[Int]
+pub fn Hexbin::values(Self) -> Array[Double]
+
+pub struct HexbinReducer {
+  reducer : (Array[Double]) -> Double
+}
+pub fn HexbinReducer::apply(Self, Array[Double]) -> Double
+
+pub struct Histogram {
+  counts : Array[Double]
+  edges : Array[Double]
+  artists : Array[Artist]
+}
+pub fn Histogram::artists(Self) -> Array[Artist]
+pub fn Histogram::counts(Self) -> Array[Double]
+pub fn Histogram::edges(Self) -> Array[Double]
+pub fn Histogram::patches(Self) -> Array[Artist]
+
+pub(all) enum ImageInterpolation {
+  Nearest
+  NoInterpolation
+  Bilinear
+  Bicubic
+  Spline16
+  Spline36
+  Hanning
+  Hamming
+  Hermite
+  Kaiser
+  Quadric
+  Catrom
+  Gaussian
+  Bessel
+  Mitchell
+  Sinc
+  Lanczos
+  Blackman
+  Auto
+  Antialiased
+}
+
+pub(all) enum ImageOrigin {
+  Upper
+  Lower
+}
+
+pub struct LegendEntry {
+  label : String
+  color : String
+  kind : LegendKind
+}
+pub fn LegendEntry::color(Self) -> String
+pub fn LegendEntry::kind(Self) -> LegendKind
+pub fn LegendEntry::label(Self) -> String
+
+pub(all) enum LegendKind {
+  Line
+  Marker
+  Patch
+}
+
+pub struct Line2D {
+  // private fields
+}
+pub fn Line2D::data_values_checked(Self) -> (@ticker.TickValues, @ticker.TickValues) raise @core.DataError
+pub fn Line2D::get_alpha(Self) -> Double?
+pub fn Line2D::get_color(Self) -> String
+pub fn Line2D::get_data(Self) -> (LineData, LineData)
+pub fn Line2D::get_drawstyle(Self) -> String
+pub fn Line2D::get_gapcolor(Self) -> String?
+pub fn Line2D::get_linestyle(Self) -> String
+pub fn Line2D::get_linewidth(Self) -> Double
+pub fn Line2D::get_visible(Self) -> Bool
+pub fn Line2D::get_xdata(Self) -> LineData
+pub fn Line2D::get_ydata(Self) -> LineData
+pub fn Line2D::is_dashed(Self) -> Bool
+pub fn Line2D::path_values_checked(Self) -> @ticker.TickValues raise @core.DataError
+pub fn Line2D::recache_checked(Self, always? : Bool) -> Unit raise @core.DataError
+pub fn Line2D::remove(Self) -> Unit raise @core.DataError
+pub fn Line2D::set_alpha(Self, Double?) -> Unit raise @core.DataError
+pub fn Line2D::set_color(Self, String) -> Unit raise @core.DataError
+pub fn Line2D::set_dashes(Self, Array[Double]) -> Unit
+pub fn Line2D::set_data(Self, LineData, LineData) -> Unit
+pub fn Line2D::set_drawstyle(Self, String) -> Unit raise @core.DataError
+pub fn Line2D::set_gapcolor(Self, String?) -> Unit raise @core.DataError
+pub fn Line2D::set_linestyle(Self, String) -> Unit raise @core.DataError
+pub fn Line2D::set_linewidth(Self, Double) -> Unit
+pub fn Line2D::set_visible(Self, Bool) -> Unit
+pub fn Line2D::set_xdata(Self, LineData) -> Unit
+pub fn Line2D::set_ydata(Self, LineData) -> Unit
+pub fn Line2D::stale(Self) -> Bool
+pub fn Line2D::x_values_checked(Self) -> @ticker.TickValues raise @core.DataError
+pub fn Line2D::xy_values_checked(Self) -> @ticker.TickValues raise @core.DataError
+pub fn Line2D::y_values_checked(Self) -> @ticker.TickValues raise @core.DataError
+
+pub(all) enum LineData {
+  Numeric(Array[Double])
+  Category(Array[String])
+  Date(Array[@date.RRuleDateTime])
+}
+
+pub struct PathCollection {
+  points : Array[@core.Point]
+  styles : Array[@core.Style]
+}
+pub fn PathCollection::length(Self) -> Int
+pub fn PathCollection::points(Self) -> Array[@core.Point]
+pub fn PathCollection::styles(Self) -> Array[@core.Style]
+
+pub struct PolarAxes {
+  // private fields
+}
+pub fn PolarAxes::bar(Self, Array[Double], Array[Double], width~ : Double, color? : String, label? : String) -> Unit raise @core.DataError
+pub fn PolarAxes::clear(Self) -> Unit
+pub fn PolarAxes::legend(Self, Array[LegendEntry]) -> Unit
+pub fn PolarAxes::legend_entries(Self) -> Array[LegendEntry]
+pub fn PolarAxes::plot(Self, Array[Double], Array[Double], closed? : Bool, color? : String, linewidth? : Double, label? : String) -> Unit raise @core.DataError
+pub fn PolarAxes::radar(Self, Array[Double], Array[String], color? : String, linewidth? : Double, label? : String) -> Unit raise @core.DataError
+pub fn PolarAxes::scatter(Self, Array[Double], Array[Double], color? : String, size? : Double, label? : String) -> Unit raise @core.DataError
+pub fn PolarAxes::set_direction(Self, PolarDirection) -> Unit
+pub fn PolarAxes::set_legend(Self, Array[LegendEntry]) -> Unit
+pub fn PolarAxes::set_legend_position(Self, @core.LegendPosition) -> Unit
+pub fn PolarAxes::set_radius_max(Self, Double) -> Unit raise @core.DataError
+pub fn PolarAxes::set_radius_ticks(Self, Array[Double], labels? : Array[String]) -> Unit raise @core.DataError
+pub fn PolarAxes::set_theta_offset(Self, Double) -> Unit raise @core.DataError
+pub fn PolarAxes::set_theta_ticks(Self, Array[Double], labels? : Array[String]) -> Unit raise @core.DataError
+pub fn PolarAxes::set_title(Self, String) -> Unit
+
+pub(all) enum PolarDirection {
+  CounterClockwise
+  Clockwise
+} derive(Eq, @debug.Debug)
+pub fn PolarDirection::equal(Self, Self) -> Bool
+pub fn PolarDirection::not_equal(Self, Self) -> Bool
+pub fn PolarDirection::to_repr(Self) -> @debug.Repr
+
+pub struct SecondaryAxis {
+  mut label : String?
+  // private fields
+}
+pub fn SecondaryAxis::alignment(Self) -> SecondaryAxisAlignment
+pub fn SecondaryAxis::apply_aspect(Self) -> Unit raise @core.DataError
+pub fn SecondaryAxis::clear_formatter(Self) -> Unit
+pub fn SecondaryAxis::clear_locator(Self) -> Unit
+pub fn SecondaryAxis::clear_minor_locator(Self) -> Unit
+pub fn SecondaryAxis::clear_minor_named_formatter(Self) -> Unit
+pub fn SecondaryAxis::clear_named_formatter(Self) -> Unit
+pub fn SecondaryAxis::formatter(Self) -> @ticker.Formatter?
+pub fn SecondaryAxis::formatter_axis_binding(Self) -> @ticker.FormatterAxisBinding
+pub fn SecondaryAxis::formatter_offset_label_checked(Self, Array[Double], view? : @core.Limits) -> String raise @core.DataError
+pub fn SecondaryAxis::formatter_tick_locations_checked(Self, minor? : Bool) -> @ticker.FormatterLocations raise @core.DataError
+pub fn SecondaryAxis::formatter_warnings(Self) -> Array[String]
+pub fn SecondaryAxis::forward(Self) -> (Double) -> Double
+pub fn SecondaryAxis::get_tick_space(Self) -> Double
+pub fn SecondaryAxis::inverse(Self) -> (Double) -> Double
+pub fn SecondaryAxis::label(Self) -> String?
+pub fn SecondaryAxis::location(Self) -> SecondaryAxisLocation
+pub fn SecondaryAxis::locator(Self) -> @ticker.Locator?
+pub fn SecondaryAxis::minor_locator(Self) -> @ticker.MinorLocator?
+pub fn SecondaryAxis::minor_named_formatter(Self) -> @ticker.BaseFormatter?
+pub fn SecondaryAxis::minor_overlap_removal(Self) -> Bool
+pub fn SecondaryAxis::minor_tick_labels_checked(Self, Array[Double], view? : @core.Limits) -> Array[String] raise @core.DataError
+pub fn SecondaryAxis::minor_tick_values_checked(Self) -> Array[Double] raise @core.DataError
+pub fn SecondaryAxis::named_formatter(Self) -> @ticker.BaseFormatter?
+pub fn SecondaryAxis::position(Self) -> Double
+pub fn SecondaryAxis::prepare_draw(Self) -> Unit raise @core.DataError
+pub fn SecondaryAxis::reset_functions(Self) -> Unit raise @core.DataError
+pub fn SecondaryAxis::set_alignment(Self, SecondaryAxisAlignment) -> Unit raise @core.DataError
+pub fn SecondaryAxis::set_formatter(Self, @ticker.Formatter) -> Unit
+pub fn SecondaryAxis::set_functions(Self, (Double) -> Double, (Double) -> Double) -> Unit raise @core.DataError
+pub fn SecondaryAxis::set_label(Self, String) -> Unit
+pub fn SecondaryAxis::set_location(Self, SecondaryAxisLocation, transform? : @transforms.Affine2D?) -> Unit raise @core.DataError
+pub fn SecondaryAxis::set_locator(Self, @ticker.Locator) -> Unit raise @core.DataError
+pub fn SecondaryAxis::set_minor_locator(Self, @ticker.MinorLocator) -> Unit
+pub fn SecondaryAxis::set_minor_named_formatter(Self, @ticker.BaseFormatter) -> Unit
+pub fn SecondaryAxis::set_minor_overlap_removal(Self, Bool) -> Unit
+pub fn SecondaryAxis::set_named_formatter(Self, @ticker.BaseFormatter) -> Unit
+pub fn SecondaryAxis::set_tick_count(Self, Int) -> Unit
+pub fn SecondaryAxis::set_tick_label_size(Self, Double) -> Unit
+pub fn SecondaryAxis::set_ticks(Self, Array[Double]) -> Unit raise @core.DataError
+pub fn SecondaryAxis::tick_count(Self) -> Int
+pub fn SecondaryAxis::tick_group_is_null(Self, minor? : Bool) -> Bool
+pub fn SecondaryAxis::tick_label_size(Self) -> Double
+pub fn SecondaryAxis::tick_labels_checked(Self, Array[Double], view? : @core.Limits) -> Array[String] raise @core.DataError
+pub fn SecondaryAxis::tick_values_checked(Self) -> Array[Double] raise @core.DataError
+pub fn SecondaryAxis::ticks(Self) -> Array[Double]?
+
+pub(all) enum SecondaryAxisAlignment {
+  Top
+  Bottom
+  Left
+  Right
+}
+
+pub(all) enum SecondaryAxisLocation {
+  Top
+  Bottom
+  Left
+  Right
+  Position(Double)
+}
+
+pub struct Spine {
+  axes : Axes
+  side : SpineSide
+}
+pub fn Spine::bounds(Self) -> (Double, Double)?
+pub fn Spine::clear_bounds(Self) -> Unit
+pub fn Spine::color(Self) -> String
+pub fn Spine::linewidth(Self) -> Double
+pub fn Spine::position(Self) -> SpinePosition
+pub fn Spine::set_bounds(Self, Double, Double) -> Unit raise @core.DataError
+pub fn Spine::set_color(Self, String) -> Unit raise @core.DataError
+pub fn Spine::set_linewidth(Self, Double) -> Unit raise @core.DataError
+pub fn Spine::set_position(Self, SpinePosition) -> Unit raise @core.DataError
+pub fn Spine::set_visible(Self, Bool) -> Unit
+pub fn Spine::side(Self) -> SpineSide
+pub fn Spine::visible(Self) -> Bool
+
+pub(all) enum SpinePosition {
+  Axes
+  Data(Double)
+  Outward(Double)
+}
+
+pub(all) enum SpineSide {
+  Left
+  Right
+  Bottom
+  Top
+}
+
+pub struct StreamplotSet {
+  lines : Array[Artist]
+  arrows : Array[Artist]
+}
+pub fn StreamplotSet::arrows(Self) -> Array[Artist]
+pub fn StreamplotSet::lines(Self) -> Array[Artist]
+
+pub struct SubFigure {
+  figure : Figure
+  data : @ref.Ref[SubFigureData]
+}
+pub fn SubFigure::add_subfigure(Self, @gridspec.SubplotSpec) -> Self
+pub fn SubFigure::add_subplot(Self, @gridspec.SubplotSpec) -> Axes
+pub fn SubFigure::axes_list(Self) -> Array[Axes]
+pub fn SubFigure::clear(Self) -> Unit
+pub fn SubFigure::clear_checked(Self) -> Unit raise @core.DataError
+pub fn SubFigure::delaxes(Self, Axes) -> Unit raise @core.DataError
+pub fn SubFigure::figure(Self) -> Figure
+pub fn SubFigure::get_axes(Self) -> Array[Axes]
+pub fn SubFigure::rect(Self) -> @gridspec.Rect
+pub fn SubFigure::set_title(Self, String) -> Unit
+pub fn SubFigure::subfigures(Self) -> Array[Self]
+pub fn SubFigure::subplot_spec(Self) -> @gridspec.SubplotSpec
+pub fn SubFigure::subplots(Self, Int, Int, hspace? : Double, vspace? : Double, share_x? : Bool, share_y? : Bool, width_ratios? : Array[Double], height_ratios? : Array[Double]) -> Array[Axes] raise @gridspec.LayoutError
+pub fn SubFigure::subplots_with_grid(Self, @gridspec.GridSpec) -> Array[Axes] raise @gridspec.LayoutError
+pub fn SubFigure::suptitle(Self, String) -> Unit
+pub fn SubFigure::title(Self) -> String?
+
+type SubFigureData
+
+pub struct Table {
+  cells : Array[TableCell]
+  rows : Int
+  columns : Int
+  x : Double
+  y : Double
+  width : Double
+  height : Double
+  column_widths : Array[Double]
+}
+pub fn Table::cell(Self, Int, Int) -> TableCell?
+pub fn Table::cells(Self) -> Array[TableCell]
+pub fn Table::column_widths(Self) -> Array[Double]
+pub fn Table::columns(Self) -> Int
+pub fn Table::height(Self) -> Double
+pub fn Table::rows(Self) -> Int
+pub fn Table::width(Self) -> Double
+pub fn Table::x(Self) -> Double
+pub fn Table::y(Self) -> Double
+
+pub struct TableCell {
+  row : Int
+  column : Int
+  text : String
+  facecolor : String
+  edgecolor : String
+  align : String
+  visible_edges : String
+}
+pub fn TableCell::align(Self) -> String
+pub fn TableCell::column(Self) -> Int
+pub fn TableCell::edgecolor(Self) -> String
+pub fn TableCell::facecolor(Self) -> String
+pub fn TableCell::row(Self) -> Int
+pub fn TableCell::text(Self) -> String
+pub fn TableCell::visible_edges(Self) -> String
+
+pub struct TriFinder {
+  x : Array[Double]
+  y : Array[Double]
+  triangles : Array[Array[Int]]
+  mask : Array[Bool]
+}
+pub fn TriFinder::find(Self, Double, Double) -> Int
+pub fn TriFinder::find_many(Self, Array[Double], Array[Double]) -> Array[Int] raise @core.DataError
+
+pub struct Triangulation {
+  x : Array[Double]
+  y : Array[Double]
+  triangles : Array[Array[Int]]
+  mask : Array[Bool]
+  edges : Array[(Int, Int)]
+  neighbors : Array[Array[Int]]
+  delaunay : Bool
+}
+pub fn Triangulation::edges(Self) -> Array[(Int, Int)]
+pub fn Triangulation::find_triangle(Self, Double, Double) -> Int
+pub fn Triangulation::get_masked_triangles(Self) -> Array[Array[Int]]
+pub fn Triangulation::get_trifinder(Self) -> TriFinder
+pub fn Triangulation::is_delaunay(Self) -> Bool
+pub fn Triangulation::mask(Self) -> Array[Bool]
+pub fn Triangulation::neighbors(Self) -> Array[Array[Int]]
+pub fn Triangulation::triangles(Self) -> Array[Array[Int]]
+pub fn Triangulation::x(Self) -> Array[Double]
+pub fn Triangulation::y(Self) -> Array[Double]
+
+pub(all) enum ViolinBandwidth {
+  Scott
+  Silverman
+  Fixed(Double)
+}
+
+pub(all) enum ViolinSide {
+  Both
+  Low
+  High
+}
+
+pub struct ViolinStats {
+  coords : Array[Double]
+  vals : Array[Double]
+  mean : Double
+  median : Double
+  min : Double
+  max : Double
+  quantiles : Array[Double]
+}
+pub fn ViolinStats::coords(Self) -> Array[Double]
+pub fn ViolinStats::max(Self) -> Double
+pub fn ViolinStats::mean(Self) -> Double
+pub fn ViolinStats::median(Self) -> Double
+pub fn ViolinStats::min(Self) -> Double
+pub fn ViolinStats::quantiles(Self) -> Array[Double]
+pub fn ViolinStats::vals(Self) -> Array[Double]
+
+// Type aliases
+pub using @core {type LegendPosition}
+
+// Traits

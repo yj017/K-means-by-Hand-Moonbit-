@@ -1,0 +1,35 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Lampese/mathplotlib/backend/svg"
+
+import {
+  "Lampese/mathplotlib/core",
+  "Lampese/mathplotlib/drawing",
+  "Lampese/mathplotlib/internal/render",
+}
+
+// Values
+pub fn artist_data_interval(Array[@render.Artist], Bool) -> @core.Limits
+
+pub fn artist_minpos(Array[@render.Artist], Bool) -> Double
+
+pub fn artist_sticky_edges(Array[@render.Artist], Bool) -> Array[Double]
+
+pub fn panel_position(@render.Figure, Int) -> (Double, Double, Double, Double)?
+
+pub fn panel_view(@render.Figure, Int) -> ((Double, Double, Double, Double), @core.Limits, @core.Limits)? raise @core.DataError
+
+pub fn render(@render.Figure) -> String
+
+pub fn render_drawing_with_positions_checked(@render.Figure) -> (@drawing.Drawing, Array[(Double, Double, Double, Double)]) raise @core.DataError
+
+pub fn render_with_positions(@render.Figure) -> (String, Array[(Double, Double, Double, Double)])
+
+pub fn render_with_positions_checked(@render.Figure) -> (String, Array[(Double, Double, Double, Double)]) raise @core.DataError
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits

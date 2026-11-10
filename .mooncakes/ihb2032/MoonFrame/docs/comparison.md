@@ -1,0 +1,218 @@
+# MoonFrame and Polars / pandas
+
+MoonFrame is an **original MoonBit implementation** — no Polars or pandas
+source was translated. What it borrows is the *shape*: the DataFrame and
+expression API and the column semantics are modeled on
+[Polars](https://pola.rs) (the primary reference), with a few I/O
+conventions from [pandas](https://pandas.pydata.org). This page records what
+is aligned, what deliberately differs, and what is out of scope, so a Polars
+user knows what to expect.
+
+## Attribution
+
+| Project | Borrowed | License |
+|---|---|---|
+| [Polars](https://github.com/pola-rs/polars) | DataFrame / expression API, column / null / NaN semantics | MIT |
+| [pandas](https://github.com/pandas-dev/pandas) | some I/O conventions (`to_json` non-finite handling, `read_json(lines=True)`) | BSD-3-Clause |
+
+MoonFrame itself is Apache-2.0 (see [LICENSE](../LICENSE)). It is a
+behavioral reimplementation — modeled on the *documented behavior* of these
+libraries — not a derivative work of either codebase.
+
+## Aligned with Polars
+
+- **Bracket access** — `df["qty"]` reads a column, `s[0]` a cell, and
+  `df[1:3]` / `df[2:]` / `df[:-1]` is the bracket-slice sugar: half-open,
+  negatives from the end, omitted bounds to the ends. As in Polars, the sugar
+  is a translation layer — the bounds normalize into the one
+  `slice(offset, length)` kernel — and as in MoonBit, an index bracket does
+  not wrap negatives (`s[-1]` raises; the slice spelling is where they count
+  from the end).
+- **The four verbs take expressions** — `select` / `filter` / `with_columns`
+  take `Expr`s on both `DataFrame` and `LazyFrame`, and so does `agg`, reached
+  as `group_by(keys).agg(aggregations)` through the grouped intermediate each
+  layer returns; the `sort` / `group_by` / `join` / `drop` keys are expressions
+  too. The grouped intermediates also carry Polars' per-op conveniences —
+  `group_by(k).sum()` / `.mean()` / `.count()` / `.len()` / `.quantile(q)` /
+  … — one aggregation over every non-key column, `agg` sugar on the eager
+  side and a collect-time tag on the lazy side.
+- **Expression engine** — `col` / `lit_*`, arithmetic `+ - * /` plus
+  `floor_div` / `modulo` / `pow` / `atan2` / `hypot` and the unary `abs` /
+  `floor` / `ceil` / `sign` / `round` alongside the always-`Float` math
+  family (`sin` / `cos` / `tan` / `asin` / `acos` / `atan` / `sinh` / `cosh`
+  / `tanh` / `asinh` / `acosh` / `atanh` / `ln` / `log2` / `log10` / `exp` /
+  `cbrt` / `sqrt`), Kleene `& |`, comparisons and the `is_in` / `is_between` /
+  `is_null` / `is_nan` / `is_finite` / `is_infinite` predicates, `when / then /
+  otherwise`, `clip`, the `forward_fill` / `backward_fill` directional
+  fills, the aggregations
+  (`sum` / `mean` / `min` / `max` / `count` / `std` / `variance` /
+  `median` / `quantile` / `n_unique` / `first` / `last`), a `str_*` namespace with both
+  literal and regex matching (`str_contains` / `str_replace` / `str_replace_all`
+  take `literal?`; `str_extract` / `str_count_matches` are regex-only), and the
+  `map_elements` / `map_batches` / `map_many` UDF escape hatch, the
+  `dt_*` Date components (`dt_year` / `dt_month` / `dt_day` /
+  `dt_day_of_week`, the ISO weekday), and the distinct family
+  (`unique_counts` / `is_first_distinct` / `is_last_distinct` / `mode`,
+  the last tie-broken first-appearance where Polars lists every tied
+  value). Per-operator
+  rules — dtype, null, and `NaN` — are each stated on the operator's own
+  docstring (the generated reference collects them).
+- **`null` is missing** — a null propagates through arithmetic and
+  comparison (Arrow / Polars); `&` / `|` are three-valued (Kleene).
+- **`NaN` is a value, not missing** — `sum` / `mean` / `median` / `quantile`
+  propagate `NaN`; `min` / `max` skip it (as in Polars); `n_unique` buckets every `NaN`
+  as one value; comparisons treat `NaN` as a value. `sort` orders it by the
+  IEEE-754 total order — larger than every other value, so it trails an
+  ascending sort and leads a descending one, independently of where the nulls
+  sit, and with `-0.0` and `+0.0` ordered equal (the total order relaxed
+  exactly where `==` already says they are; a stable sort keeps their input
+  order). Only `null` is missing.
+- **`group_by`** — a **null key forms its own group** (the Polars default;
+  pandas drops null keys), `NaN` keys compare equal, and group order is
+  first appearance (`maintain_order=True`).
+- **`join`** — a **null key matches nothing** (`null != null`, the
+  SQL / Polars rule), `NaN` keys match each other, the collision suffix
+  defaults to `_right`, and coalesce follows Polars' per-`how` rule. The
+  full `how` set is carried — `Inner` / `Left` / `Right` / `Outer` /
+  `Cross` / `Semi` / `Anti`, the last two the left-schema existence
+  filters.
+- **`/` is always `Float`** — integer operands promote; division by zero is
+  IEEE `±inf` / `NaN`, never a trap.
+- **Whole-frame vs single-column reductions** — `df.sum()` returns a
+  one-row frame (Polars' `df.sum()`); a scalar comes from
+  `df.get_column(c).sum()` (Polars' `df[c].sum()`).
+- **`sample(n, with_replacement?, seed?)`** and **`shuffle(seed?)`** are
+  deterministic functions of their seed — same seed, same rows, on every
+  platform (chacha8, from `core/random`); without replacement, `n` past the
+  row count raises rather than saturating. An omitted seed is
+  `seed = 0`, so two independent calls that both leave it out draw the
+  same rows (Polars draws a fresh seed per call); name a seed when the
+  draws must differ. Polars' `fraction` parameter is not carried.
+- **`unique(subset?, keep?)`** keeps first-appearance order
+  (`maintain_order=True`), dedups on a column subset when given one, and takes
+  Polars' `keep` strategies (`First` / `Last` / `None`).
+- **Lazy file sources** — `scan_csv` / `scan_ndjson` / `scan_json` with
+  both projection and predicate pushdown into the reader. The pushdowns
+  prune the *assembly* — only the consumed columns are built, and only the
+  surviving rows' cells are parsed past the predicate's own columns — never
+  the parse itself: the file is still tokenised / parsed whole. Every file
+  source, eager and lazy alike, is transparently gzip-aware: a file whose
+  bytes open with the gzip magic is decompressed before parsing, and the
+  `write_*` entry points compress when the target path ends in `.gz`.
+  (Polars has
+  `scan_ndjson` but no `scan_json`; MoonFrame carries the source, with the
+  assembly-level pruning above.)
+- **I/O inference** — `infer_schema_rows = 0` scans every row (Polars'
+  `infer_schema_length=None`); `on_parse_error = Null` downgrades a bad cell
+  to null (Polars' `ignore_errors=True`); a non-finite `Float` writes as
+  JSON `null` (pandas' `to_json`).
+
+## Deliberate differences
+
+Where MoonFrame knowingly does something else than Polars.
+
+- **A CSV header of all-empty names raises.** `",,"` as a header row is
+  `DuplicateColumn("")` — the empty name repeats. Polars instead
+  disambiguates repeated header names (`_duplicated_0` suffixes) and
+  reads on; rename the columns after a `read_csv` on mangled source data,
+  or fix the header.
+- **`describe` summarises differently.** MoonFrame's rows are `count` /
+  `null_count` / `n_unique` / `mean` / `min` / `max`, with `min` / `max`
+  rendered as `String` so one table carries every dtype; Polars' are `count` /
+  `null_count` / `mean` / `std` / `min` / the three quartiles / `max`, all
+  numeric. The quartiles are not implemented (the deferral list), and the
+  `String` rendering is a table-shape choice.
+- **Mixed `Int` / `Float` comparison is exact.** An `Int64` compared against a
+  `Float` is *not* promoted to `Double` first, so two distinct values never
+  collide above 2^53: `Int64::MAX` is not equal to the `2^63` `Double` a
+  promotion would round it to. Polars applies its Float64-supertype rule and
+  compares the rounded values. Correctness was chosen over parity here; it
+  shows in the comparison operators and the predicates built on them
+  (`is_in` / `is_between`). Same-dtype comparisons are exact either way, and a
+  join refuses a mixed-dtype key outright rather than deciding for you.
+- **Configuration is an options struct**, not a bag of per-call arguments:
+  `read_csv(path, options=CsvReadOptions::CsvReadOptions(delimiter=';'))` where
+  Polars takes `pl.read_csv(path, separator=";")`. Not a language limit —
+  MoonBit has labelled optional parameters, and the options constructors are
+  built out of them (`CsvReadOptions::CsvReadOptions(delimiter=';')` names one
+  field and defaults the rest). It is about what the parameter *is*: one value a
+  caller can name once and reuse across reads, pass through a helper that knows
+  nothing about its fields, and gain a field on without any signature changing.
+  The same struct then serves the eager reader and its `scan_*` counterpart.
+- **`is_in` inherits `==`, so a `NaN` member matches nothing.** Every member
+  is compared exactly as `a.eq(lit(member))` would, and IEEE `NaN != NaN`;
+  Polars' `is_in` compares by total equality and matches it. The split is
+  deliberate: `is_in` stays the OR of `eq` and cannot drift from it — the
+  key-based verbs (`n_unique` / `group_by` / `join`) are where `NaN` buckets
+  as one value, on the other side of that line.
+- **`when` treats a null condition as unknown, Polars' as false.** A null
+  condition cell yields a null output (the Kleene reading, consistent with
+  `&` / `|`); Polars' `when` takes null as false and reads the `otherwise`
+  branch. Add an explicit `is_null()` branch when the Polars reading is the
+  one wanted.
+- **Whole-frame `min` / `max` / `sum` / `mean` leave a non-numeric column a
+  `Null` cell.** A `Date` column reduces to `Null` in the one-row summary
+  frame (Polars reduces dates); the column's own `Series::min` / `max`
+  still order every dtype and read the date.
+
+For `NaN` everywhere — `sum` / `mean` / `median` / `quantile` / `sort` / `group_by` /
+`join` / comparisons — it is a value, as in Polars.
+
+## Forced by MoonBit (not behavioral)
+
+These read differently from Polars but are language constraints, not
+semantic choices:
+
+- Comparisons are **methods** (`eq` / `ne` / `lt` / `le` / `gt` / `ge`), not
+  `==` / `<`, which MoonBit pins to `Bool` / `Int` returns.
+- `&` / `|` are Kleene-logical (not bitwise); the method spellings are
+  `land` / `lor` (`and` is a reserved word, so there is no `Expr::and`). <!-- doc-guard: unresolved -->
+- Names dodging reserved words: `with_alias` (`alias`), `variance` (`var`),
+  `LazyFrame::LazyFrame(df)` rather than `lazy(df)` or `df.lazy()` (`lazy`).
+
+## Out of scope (vs Polars)
+
+Not implemented. The tracked deferrals — the ones with a place in a later
+release — are listed as such below; this is what a Polars user
+will not find here today:
+
+- **Dtypes** — `Int` / `Float` / `Bool` / `String` / `Null` plus the three
+  `I64`-rider dtypes `Date` (days), `Timestamp` (microseconds, UTC — the
+  granularity of Polars' `Datetime("us")`, without time zones or calendar
+  arithmetic), and `Decimal(scale)` (a fixed-point decimal exact across
+  `+` / `-` / `*` and `sum`, with division and `Float` mixing fenced).
+  Still missing: `Duration` / `List` / `Struct` / `Categorical` — the
+  deferral the others hang off: the list-returning `str.split`, the
+  timestamp / duration expression family, and a reader that takes a
+  declared schema all need a dtype before they can exist.
+- **Expressions** — no window / `over` functions. The history-dependent
+  family — `shift` / `diff`, the `cum_*` running aggregates, `rank`,
+  `arg_sort` — is present, as are the positional reductions `arg_min` /
+  `arg_max` and the rolling core (`rolling_sum` / `mean` / `min` / `max` /
+  `std` / `variance` / `median`, with `min_samples` and `center`; Polars'
+  `weights` is not carried). The reshapes are present too — `pivot` /
+  `unpivot` on both layers — with unpivot's value column requiring a
+  unifying dtype (`Int` / `Float` widen; no stringly supertype).
+- **Lazy** — no streaming execution: a scan pushes projections and predicates
+  down into the reader, but still tokenises the whole file. No columnar
+  file sources either — the Parquet scan is withdrawn pending an upstream
+  toolchain-compatible release (see
+  [`migration.md`](migration.md)), and IPC has no reader.
+- **Optimizer** — the passes are slice, predicate, and projection pushdown
+  (the predicate pass also splits a filter into the sides of a join) plus
+  the folding / clustering rules; `LazyFrame::collect`'s docstring is
+  the contract's home. Dead-expression elimination and sinking
+  filters below sorts are not implemented.
+- **Reader dtype override** — `CsvReadOptions` / `JsonReadOptions` take a
+  `dtypes=` map pinning named columns to `Int` / `Float` / `Bool` /
+  `String` ahead of inference (Polars' `schema_overrides`); columns not
+  named keep their inferred dtype, a name the input does not carry is
+  refused, and the rider dtypes cannot be pinned — the readers have no
+  parser for their text (a written-back `Date` / `Timestamp` / `Decimal`
+  column still reads as `String` / `Float`). See
+  [`type-inference.md`](type-inference.md).
+
+See [`migration.md`](migration.md) for the upgrade history, the per-symbol
+reference — generated from the docstrings — on
+[mooncakes.io](https://mooncakes.io/docs/ihb2032/MoonFrame), and the README's
+"Compatibility" section for the versioning rules.

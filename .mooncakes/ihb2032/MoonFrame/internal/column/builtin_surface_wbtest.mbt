@@ -1,0 +1,468 @@
+// Tests for `BuiltinColumn` (Arrow layout), compiled inside the package: the
+// `data` and `validity` buffers are read through the `data()` accessor and
+// the package-shared dtype-unwrapping helpers.
+
+// ── Constructors ─────────────────────────────────────────────────────
+
+///|
+test "from_ints / from_int_options" {
+  let raw = BuiltinColumn::from_ints([1, 2, 3])
+  assert_eq(raw.len(), 3)
+  assert_eq(raw.dtype(), @types.DataType::Int)
+  assert_eq(raw.null_count(), 0)
+  let opt = BuiltinColumn::from_int_options([Some(1), None, Some(3)])
+  assert_eq(opt.len(), 3)
+  assert_eq(opt.null_count(), 1)
+}
+
+///|
+test "from_floats / from_float_options" {
+  let raw = BuiltinColumn::from_floats([1.5, 2.5])
+  assert_eq(raw.dtype(), @types.DataType::Float)
+  assert_eq(raw.null_count(), 0)
+  let opt = BuiltinColumn::from_float_options([None, Some(1.0)])
+  assert_eq(opt.null_count(), 1)
+}
+
+///|
+test "from_bools / from_bool_options" {
+  let raw = BuiltinColumn::from_bools([true, false, true])
+  assert_eq(raw.dtype(), @types.DataType::Bool)
+  let opt = BuiltinColumn::from_bool_options([Some(true), None, None])
+  assert_eq(opt.null_count(), 2)
+}
+
+///|
+test "from_strings / from_string_options" {
+  let raw = BuiltinColumn::from_strings(["a", "b"])
+  assert_eq(raw.dtype(), @types.DataType::String)
+  let opt = BuiltinColumn::from_string_options([Some("x"), None])
+  assert_eq(opt.len(), 2)
+  assert_eq(opt.null_count(), 1)
+}
+
+///|
+// Defensive copy: the raw constructors copy their input, so a column is
+// independent of the caller's array — mutating the source afterwards must not
+// change the column's cells.
+test "raw constructors copy their input" {
+  let ints : Array[Int64] = [1, 2, 3]
+  let ic = BuiltinColumn::from_ints(ints)
+  ints[0] = 99
+  assert_eq(ic.get(0), @types.Scalar::Int(1))
+  let flts : Array[Double] = [1.5, 2.5]
+  let fc = BuiltinColumn::from_floats(flts)
+  flts[0] = 9.9
+  assert_eq(fc.get(0), @types.Scalar::Float(1.5))
+  let bls = [true, false]
+  let bc = BuiltinColumn::from_bools(bls)
+  bls[0] = false
+  assert_eq(bc.get(0), @types.Scalar::Bool(true))
+  let strs = ["a", "b"]
+  let sc = BuiltinColumn::from_strings(strs)
+  strs[0] = "z"
+  assert_eq(sc.get(0), @types.Scalar::String("a"))
+}
+
+///|
+test "is_empty" {
+  let empty = BuiltinColumn::from_ints([])
+  assert_true(empty.is_empty())
+  let non_empty = BuiltinColumn::from_ints([0])
+  assert_false(non_empty.is_empty())
+}
+
+///|
+test "structural equality compares data and validity, not identity" {
+  assert_eq(BuiltinColumn::from_ints([1, 2]), BuiltinColumn::from_ints([1, 2]))
+  assert_not_eq(
+    BuiltinColumn::from_ints([1, 2]),
+    BuiltinColumn::from_ints([1, 3]),
+  )
+  // Two columns with the same data but different validity must not be equal.
+  assert_not_eq(
+    BuiltinColumn::from_int_options([Some(1), None]),
+    BuiltinColumn::from_int_options([Some(1), Some(1)]),
+  )
+}
+
+// ── is_null / get ────────────────────────────────────────────────────
+
+///|
+test "is_null returns the validity for in-bounds indices" {
+  let col = BuiltinColumn::from_int_options([Some(1), None, Some(3)])
+  assert_eq(col.is_null(0), false)
+  assert_eq(col.is_null(1), true)
+  assert_eq(col.is_null(2), false)
+}
+
+///|
+test "is_null out-of-bounds is IndexOutOfBounds" {
+  let col = BuiltinColumn::from_ints([1, 2])
+  assert_eq(
+    Ok(col.is_null(-1)) catch {
+      e => Err(e)
+    },
+    Err(@types.DataError::IndexOutOfBounds(-1)),
+  )
+  assert_eq(
+    Ok(col.is_null(2)) catch {
+      e => Err(e)
+    },
+    Err(@types.DataError::IndexOutOfBounds(2)),
+  )
+}
+
+///|
+test "get returns Scalar or Null" {
+  let col = BuiltinColumn::from_int_options([Some(7), None])
+  assert_eq(col.get(0), @types.Scalar::Int(7))
+  assert_eq(col.get(1), @types.Scalar::Null)
+}
+
+///|
+test "get out-of-bounds is IndexOutOfBounds" {
+  let col = BuiltinColumn::from_ints([1])
+  assert_eq(
+    Ok(col.get(5)) catch {
+      e => Err(e)
+    },
+    Err(@types.DataError::IndexOutOfBounds(5)),
+  )
+}
+
+///|
+test "get covers every dtype" {
+  assert_eq(BuiltinColumn::from_floats([1.5]).get(0), @types.Scalar::Float(1.5))
+  assert_eq(BuiltinColumn::from_bools([true]).get(0), @types.Scalar::Bool(true))
+  assert_eq(
+    BuiltinColumn::from_strings(["x"]).get(0),
+    @types.Scalar::String("x"),
+  )
+}
+
+// ── slice ────────────────────────────────────────────────────────────
+
+///|
+test "slice produces an independent sub-column" {
+  let col = BuiltinColumn::from_ints([10, 20, 30, 40])
+  let part = col.slice_unchecked(1, 3)
+  assert_eq(part.len(), 2)
+  assert_eq(part.get(0), @types.Scalar::Int(20))
+  assert_eq(part.get(1), @types.Scalar::Int(30))
+}
+
+///|
+test "slice with start == end is empty" {
+  let col = BuiltinColumn::from_strings(["a", "b", "c"])
+  let part = col.slice_unchecked(2, 2)
+  assert_true(part.is_empty())
+}
+
+///|
+test "slice full range equals self length" {
+  let col = BuiltinColumn::from_bools([true, false])
+  let part = col.slice_unchecked(0, 2)
+  assert_eq(part.len(), 2)
+}
+
+///|
+test "slice_unchecked trusts its caller's bounds; the total entry clamps" {
+  let col = BuiltinColumn::from_ints([1, 2, 3])
+  // The raw core trusts the window the caller guaranteed; the saturating
+  // window verbs are what guarantee it.
+  assert_eq(col.slice_unchecked(1, 3).len(), 2)
+  // The total entry clamps an out-of-range window into the column instead.
+  assert_eq(ColumnStorage::Builtin(col).slice_total(0, 9).len(), 3)
+  assert_eq(ColumnStorage::Builtin(col).slice_total(2, 1).len(), 0)
+  assert_eq(ColumnStorage::Builtin(col).slice_total(-1, 9).len(), 3)
+}
+
+// ── take ─────────────────────────────────────────────────────────────
+
+///|
+test "take gathers in arbitrary order, with duplicates" {
+  let col = BuiltinColumn::from_strings(["a", "b", "c"])
+  let out = col.take([2, 0, 0, 1])
+  assert_eq(out.len(), 4)
+  assert_eq(out.get(0), @types.Scalar::String("c"))
+  assert_eq(out.get(1), @types.Scalar::String("a"))
+  assert_eq(out.get(2), @types.Scalar::String("a"))
+  assert_eq(out.get(3), @types.Scalar::String("b"))
+}
+
+///|
+test "take with empty index array returns empty column" {
+  let col = BuiltinColumn::from_floats([1.0, 2.0])
+  let out = col.take([])
+  assert_true(out.is_empty())
+  assert_eq(out.dtype(), @types.DataType::Float)
+}
+
+///|
+test "take preserves nulls" {
+  let col = BuiltinColumn::from_int_options([Some(1), None, Some(3)])
+  let out = col.take([1, 0, 1])
+  assert_eq(out.null_count(), 2)
+  assert_eq(out.get(1), @types.Scalar::Int(1))
+}
+
+///|
+test "take out-of-bounds index reports first offender" {
+  let col = BuiltinColumn::from_ints([1, 2])
+  assert_eq(
+    Ok(col.take([0, 5])) catch {
+      e => Err(e)
+    },
+    Err(@types.DataError::IndexOutOfBounds(5)),
+  )
+  assert_eq(
+    Ok(col.take([-1])) catch {
+      e => Err(e)
+    },
+    Err(@types.DataError::IndexOutOfBounds(-1)),
+  )
+}
+
+// ── coverage fill: per-dtype is_null / get null branches ─────────────
+
+///|
+test "is_null covers Float, Bool, and String columns" {
+  let f = BuiltinColumn::from_float_options([Some(1.5), None])
+  assert_eq(f.is_null(0), false)
+  assert_eq(f.is_null(1), true)
+  let b = BuiltinColumn::from_bool_options([Some(true), None])
+  assert_eq(b.is_null(0), false)
+  assert_eq(b.is_null(1), true)
+  let s = BuiltinColumn::from_string_options([None, Some("ok")])
+  assert_eq(s.is_null(0), true)
+  assert_eq(s.is_null(1), false)
+}
+
+///|
+test "get null branch fires on every dtype" {
+  assert_eq(BuiltinColumn::from_int_options([None]).get(0), @types.Scalar::Null)
+  assert_eq(
+    BuiltinColumn::from_float_options([None]).get(0),
+    @types.Scalar::Null,
+  )
+  assert_eq(
+    BuiltinColumn::from_bool_options([None]).get(0),
+    @types.Scalar::Null,
+  )
+  assert_eq(
+    BuiltinColumn::from_string_options([None]).get(0),
+    @types.Scalar::Null,
+  )
+}
+
+// ── coverage fill: slice / take across every dtype ───────────────────
+
+///|
+test "slice produces a sub-column for every dtype" {
+  let i = BuiltinColumn::from_ints([1, 2, 3, 4]).slice_unchecked(1, 3)
+  assert_eq(i.get(0), @types.Scalar::Int(2))
+  assert_eq(i.get(1), @types.Scalar::Int(3))
+  let f = BuiltinColumn::from_floats([1.0, 2.0, 3.0]).slice_unchecked(0, 2)
+  assert_eq(f.len(), 2)
+  assert_eq(f.get(1), @types.Scalar::Float(2.0))
+  let b = BuiltinColumn::from_bools([true, false, true]).slice_unchecked(1, 3)
+  assert_eq(b.get(0), @types.Scalar::Bool(false))
+  assert_eq(b.get(1), @types.Scalar::Bool(true))
+  let s = BuiltinColumn::from_strings(["a", "b", "c", "d"]).slice_unchecked(
+    1, 4,
+  )
+  assert_eq(s.len(), 3)
+  assert_eq(s.get(0), @types.Scalar::String("b"))
+  assert_eq(s.get(2), @types.Scalar::String("d"))
+}
+
+///|
+test "take gathers across every dtype" {
+  let i = BuiltinColumn::from_ints([10, 20, 30]).take([2, 0])
+  assert_eq(i.get(0), @types.Scalar::Int(30))
+  assert_eq(i.get(1), @types.Scalar::Int(10))
+  let f = BuiltinColumn::from_float_options([Some(1.0), None, Some(3.0)]).take([
+    1, 2, 0,
+  ])
+  assert_eq(f.get(0), @types.Scalar::Null)
+  assert_eq(f.get(1), @types.Scalar::Float(3.0))
+  assert_eq(f.get(2), @types.Scalar::Float(1.0))
+  let b = BuiltinColumn::from_bools([true, false]).take([1, 0, 1])
+  assert_eq(b.get(0), @types.Scalar::Bool(false))
+  assert_eq(b.get(2), @types.Scalar::Bool(false))
+  let s = BuiltinColumn::from_strings(["x", "y"]).take([0])
+  assert_eq(s.get(0), @types.Scalar::String("x"))
+}
+
+// ── Arrow layout invariants ──────────────────────────────────────────
+
+///|
+test "from_int_options stores 0 placeholder at null slots" {
+  let col = BuiltinColumn::from_int_options([Some(1), None, Some(3)])
+  let (data, validity) = int_cells(col)
+  assert_eq(data, [1, 0, 3])
+  assert_eq(validity.is_valid_total(0), true)
+  assert_eq(validity.is_valid_total(1), false)
+  assert_eq(validity.is_valid_total(2), true)
+}
+
+///|
+test "from_float_options stores 0.0 placeholder at null slots" {
+  let col = BuiltinColumn::from_float_options([None, Some(2.5)])
+  let (data, validity) = float_cells(col)
+  assert_eq(data, [(0.0 : Double), (2.5 : Double)])
+  assert_eq(validity.is_valid_total(0), false)
+  assert_eq(validity.is_valid_total(1), true)
+}
+
+///|
+test "from_bool_options stores false placeholder at null slots" {
+  let col = BuiltinColumn::from_bool_options([Some(true), None])
+  let (data, validity) = bool_cells(col)
+  assert_eq(data, [true, false])
+  assert_eq(validity.is_valid_total(1), false)
+}
+
+///|
+test "from_string_options stores \"\" placeholder at null slots" {
+  let col = BuiltinColumn::from_string_options([None, Some("hi")])
+  let (data, validity) = string_cells(col)
+  assert_eq(data, ["", "hi"])
+  assert_eq(validity.is_valid_total(0), false)
+  assert_eq(validity.is_valid_total(1), true)
+}
+
+///|
+test "data buffer length matches validity length for every constructor" {
+  // Raw constructors → all-valid bitmap of the right length.
+  let raw_i = BuiltinColumn::from_ints([1, 2, 3, 4, 5])
+  let (data, validity) = int_cells(raw_i)
+  assert_eq(data.length(), 5)
+  assert_eq(validity.to_bools().length(), 5)
+  assert_eq(validity.null_count(), 0)
+  // Option constructors → validity reflects the Some/None mask exactly.
+  let opt = BuiltinColumn::from_int_options([Some(1), None, Some(3), None])
+  let (d2, v2) = int_cells(opt)
+  assert_eq(d2.length(), 4)
+  assert_eq(v2.to_bools().length(), 4)
+  assert_eq(v2.null_count(), 2)
+}
+
+///|
+test "cast Int -> Float preserves the validity bitmap" {
+  let col = BuiltinColumn::from_int_options([
+    Some(1),
+    None,
+    Some(3),
+    None,
+    Some(5),
+  ])
+  let out = col.cast(@types.DataType::Float)
+  // Validity is unchanged across the cast.
+  let (_, src_validity) = int_cells(col)
+  let (_, dst_validity) = float_cells(out)
+  assert_eq(src_validity.to_bools(), dst_validity.to_bools())
+  // And the null slots in the output read as Null, not 0.0.
+  assert_eq(out.get(1), @types.Scalar::Null)
+  assert_eq(out.get(3), @types.Scalar::Null)
+}
+
+///|
+test "cast Bool -> Int and Bool -> Float preserve validity" {
+  let col = BuiltinColumn::from_bool_options([
+    Some(true),
+    None,
+    Some(false),
+    None,
+  ])
+  let as_int = col.cast(@types.DataType::Int)
+  assert_eq(as_int.null_count(), 2)
+  assert_eq(as_int.get(0), @types.Scalar::Int(1))
+  assert_eq(as_int.get(2), @types.Scalar::Int(0))
+  let as_float = col.cast(@types.DataType::Float)
+  assert_eq(as_float.null_count(), 2)
+  assert_eq(as_float.get(0), @types.Scalar::Float(1.0))
+}
+
+///|
+test "to_string_column on Int with nulls preserves validity" {
+  let col = BuiltinColumn::from_int_options([Some(7), None, Some(-3)])
+  let out = col.to_string_column()
+  assert_eq(out.null_count(), 1)
+  assert_eq(out.get(0), @types.Scalar::String("7"))
+  assert_eq(out.get(1), @types.Scalar::Null)
+  assert_eq(out.get(2), @types.Scalar::String("-3"))
+}
+
+///|
+test "to_string_column on Bool with nulls preserves validity" {
+  let col = BuiltinColumn::from_bool_options([Some(true), None, Some(false)])
+  let out = col.to_string_column()
+  assert_eq(out.get(0), @types.Scalar::String("true"))
+  assert_eq(out.get(1), @types.Scalar::Null)
+  assert_eq(out.get(2), @types.Scalar::String("false"))
+}
+
+///|
+test "slice preserves nulls in the sub-window" {
+  let col = BuiltinColumn::from_int_options([
+    Some(1),
+    None,
+    Some(3),
+    None,
+    Some(5),
+  ])
+  let part = col.slice_unchecked(1, 4)
+  assert_eq(part.len(), 3)
+  assert_eq(part.null_count(), 2)
+  assert_eq(part.get(0), @types.Scalar::Null)
+  assert_eq(part.get(1), @types.Scalar::Int(3))
+  assert_eq(part.get(2), @types.Scalar::Null)
+}
+
+///|
+test "cast Int from String skips null slots without parsing the placeholder" {
+  // The placeholder for null String slots is "" (empty), which is itself
+  // unparseable as an Int. The cast must short-circuit on null so the
+  // placeholder is never parsed.
+  let col = BuiltinColumn::from_string_options([None, Some("42")])
+  let out = col.cast(@types.DataType::Int)
+  assert_eq(out.get(0), @types.Scalar::Null)
+  assert_eq(out.get(1), @types.Scalar::Int(42))
+}
+
+///|
+test "cast Float from String skips null slots without parsing the placeholder" {
+  let col = BuiltinColumn::from_string_options([None, Some("1.5")])
+  let out = col.cast(@types.DataType::Float)
+  assert_eq(out.get(0), @types.Scalar::Null)
+  assert_eq(out.get(1), @types.Scalar::Float(1.5))
+}
+
+///|
+test "placeholders_normalized holds across constructors, casts, and row transforms" {
+  // The placeholder invariant asserted as one predicate rather than a per-slot
+  // read of `data`: every public path that writes a Builtin column leaves each
+  // null slot on its dtype's canonical placeholder. Covers the true arm on all
+  // four dtypes, plus cast (validity-preserving, fills the *target* dtype's
+  // placeholder) and the row transforms slice / take (which copy / gather it).
+  let opt_i = BuiltinColumn::from_int_options([Some(1), None, Some(3)])
+  let opt_f = BuiltinColumn::from_float_options([None, Some(2.5)])
+  let opt_b = BuiltinColumn::from_bool_options([Some(true), None])
+  let opt_s = BuiltinColumn::from_string_options([None, Some("z")])
+  for c in [opt_i, opt_f, opt_b, opt_s] {
+    assert_true(placeholders_normalized(c))
+  }
+  // An all-valid column has no null slot — trivially normalized.
+  assert_true(placeholders_normalized(BuiltinColumn::from_ints([1, 2])))
+  // Casts preserve validity and fill each null slot with the target dtype's
+  // placeholder, so the result is normalized on the new dtype.
+  assert_true(placeholders_normalized(opt_i.cast(@types.DataType::Float)))
+  assert_true(placeholders_normalized(opt_i.cast(@types.DataType::String)))
+  assert_true(placeholders_normalized(opt_f.cast(@types.DataType::Int)))
+  assert_true(placeholders_normalized(opt_b.cast(@types.DataType::String)))
+  // Row transforms copy / gather the placeholder, keeping it normalized.
+  assert_true(placeholders_normalized(opt_i.slice_unchecked(0, 2)))
+  assert_true(placeholders_normalized(opt_s.take([1, 0, 0])))
+}

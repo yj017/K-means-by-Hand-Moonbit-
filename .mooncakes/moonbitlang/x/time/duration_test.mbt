@@ -1,0 +1,141 @@
+// Copyright 2025 International Digital Economy Academy
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+///|
+test "from_str" {
+  inspect((@string.FromStr::from_str("PT0S") : @time.Duration), content="PT0S")
+  inspect(
+    (@string.FromStr::from_str("PT1H2M3.456789S") : @time.Duration),
+    content="PT1H2M3.456789S",
+  )
+  inspect(
+    (@string.FromStr::from_str("PT-1H-2M-3.456789S") : @time.Duration),
+    content="PT-1H-2M-3.456789S",
+  )
+  inspect(
+    (@string.FromStr::from_str("PT0.45S") : @time.Duration),
+    content="PT0.45S",
+  )
+  @test.assert_raise(() => {
+    (@string.FromStr::from_str("PT0.000.45S") : @time.Duration)
+  })
+  @test.assert_raise(() => {
+    (@string.FromStr::from_str("P1Y2M3DT4H5M6S") : @time.Duration)
+  })
+  @test.assert_raise(() => (@string.FromStr::from_str("PT") : @time.Duration))
+  @test.assert_raise(() => (@string.FromStr::from_str("PT1") : @time.Duration))
+}
+
+///|
+test "getters" {
+  let d = @time.Duration::of(hours=1L, minutes=2L, seconds=3L, nanoseconds=400L)
+  inspect(d.seconds(), content="3723")
+  inspect(d.nanoseconds(), content="400")
+}
+
+///|
+test "is_zero" {
+  inspect(@time.Duration::zero().is_zero(), content="true")
+  inspect(@time.Duration::of().is_zero(), content="true")
+  inspect(@time.Duration::of(hours=1L).is_zero(), content="false")
+  inspect(@time.Duration::of(minutes=1L).is_zero(), content="false")
+  inspect(@time.Duration::of(seconds=1L).is_zero(), content="false")
+  inspect(@time.Duration::of(nanoseconds=1L).is_zero(), content="false")
+}
+
+///|
+test "is_neg" {
+  inspect(@time.Duration::zero().is_neg(), content="false")
+  inspect(@time.Duration::of(seconds=1L).is_neg(), content="false")
+  inspect(@time.Duration::of(seconds=-1L).is_neg(), content="true")
+  inspect(
+    @time.Duration::of(seconds=-1L, nanoseconds=1L).is_neg(),
+    content="true",
+  )
+  inspect(@time.Duration::of(nanoseconds=1L).is_neg(), content="false")
+}
+
+///|
+test "add_seconds" {
+  inspect(@time.Duration::zero().add_seconds(0L), content="PT0S")
+  inspect(@time.Duration::zero().add_seconds(1L), content="PT1S")
+  inspect(@time.Duration::zero().add_seconds(-1L), content="PT-1S")
+  inspect(
+    @time.Duration::zero().add_seconds(@int64.MAX_VALUE),
+    content="PT2562047788015215H30M7S",
+  )
+  inspect(
+    @time.Duration::zero().add_seconds(@int64.MIN_VALUE),
+    content="PT-2562047788015215H-30M-8S",
+  )
+  @test.assert_raise(() => {
+    @time.Duration::of(seconds=1L).add_seconds(@int64.MAX_VALUE)
+  })
+  @test.assert_raise(() => {
+    @time.Duration::of(seconds=-1L).add_seconds(@int64.MIN_VALUE)
+  })
+}
+
+///|
+test "with_seconds" {
+  let d = @time.Duration::of(seconds=20L)
+  inspect(d.with_seconds(20L), content="PT20S")
+  inspect(d.with_seconds(30L), content="PT30S")
+}
+
+///|
+test "with_nanoseconds" {
+  let d = @time.Duration::of(nanoseconds=1000L)
+  inspect(d.with_nanoseconds(1000), content="PT0.000001S")
+  inspect(d.with_nanoseconds(2000), content="PT0.000002S")
+  @test.assert_raise(() => d.with_nanoseconds(1_000_000_000))
+}
+
+///|
+test "add_nanoseconds preserves existing nanoseconds (#268)" {
+  let duration = @time.Duration::of(nanoseconds=1L)
+  let result = duration.add_nanoseconds(2L)
+  inspect(result.to_nanoseconds(), content="3")
+  inspect(result, content="PT0.000000003S")
+}
+
+///|
+test "negative sub-second durations have a canonical representation (#269)" {
+  let a = @time.Duration::of(nanoseconds=-2L)
+  let b = @time.Duration::of(nanoseconds=1L)
+  let added = a.add_duration(b)
+  let direct = @time.Duration::of(nanoseconds=-1L)
+  assert_eq(added, direct)
+  inspect(added, content="PT-0.000000001S")
+}
+
+///|
+test "is_neg agrees with the sign of sub-second durations (#267)" {
+  assert_true(@time.Duration::of(nanoseconds=-1L).is_neg())
+  assert_true(@time.Duration::of(nanoseconds=-999999999L).is_neg())
+  assert_false(@time.Duration::of(nanoseconds=1L).is_neg())
+  assert_false(@time.Duration::of(nanoseconds=-1L).is_zero())
+  inspect(
+    @time.Duration::of(nanoseconds=-999999999L).to_nanoseconds(),
+    content="-999999999",
+  )
+}
+
+///|
+test "fractional cancellation at minimum seconds" {
+  let a = @time.Duration::of(seconds=@int64.MIN_VALUE, nanoseconds=1L)
+  let b = @time.Duration::of(nanoseconds=-1L)
+  let expected = @time.Duration::of(seconds=@int64.MIN_VALUE)
+  assert_eq(a.add_duration(b), expected)
+}

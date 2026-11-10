@@ -1,0 +1,47 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Lampese/mathplotlib/ticker/scale"
+
+import {
+  "Lampese/mathplotlib/core",
+}
+
+// Values
+pub fn asinh_scale(linear_width? : Double) -> Scale raise @core.DataError
+
+pub fn linear_scale() -> Scale
+
+pub fn log_scale() -> Scale
+
+pub fn logit_scale(nonpositive? : String) -> Scale raise @core.DataError
+
+pub fn symlog_scale(linthresh? : Double, linscale? : Double, base? : Double) -> Scale raise @core.DataError
+
+// Errors
+
+// Types and methods
+pub(all) enum Scale {
+  Linear
+  Log
+  SymLog(linthresh~ : Double, linscale~ : Double, base~ : Double)
+  Asinh(linear_width~ : Double)
+  Logit(clip~ : Bool)
+}
+pub fn Scale::asinh_linear_width(Self) -> Double?
+pub fn Scale::format_tick(Self, Double) -> String
+pub fn Scale::inverse(Self, Double) -> Double
+pub fn Scale::is_asinh(Self) -> Bool
+pub fn Scale::is_log(Self) -> Bool
+pub fn Scale::is_logit(Self) -> Bool
+pub fn Scale::is_nonlinear(Self) -> Bool
+pub fn Scale::is_symlog(Self) -> Bool
+pub fn Scale::is_valid(Self, Double) -> Bool
+pub fn Scale::limit_range_for_scale(Self, Double, Double, Double) -> (Double, Double)
+pub fn Scale::logit_nonpositive(Self) -> String?
+pub fn Scale::symlog_base(Self) -> Double?
+pub fn Scale::symlog_linthresh(Self) -> Double?
+pub fn Scale::tick_values(Self, @core.Limits, count? : Int) -> Array[Double]
+pub fn Scale::transform(Self, Double) -> Double
+
+// Type aliases
+
+// Traits

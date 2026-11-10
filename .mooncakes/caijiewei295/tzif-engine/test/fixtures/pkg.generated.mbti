@@ -1,0 +1,49 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "caijiewei295/tzif-engine/test/fixtures"
+
+// Values
+pub fn build(version~ : Byte, Array[FixtureType], Array[FixtureTransition], String, v1_leap_records? : Int, leap_seconds? : Array[FixtureLeapSecond]?, standard_indicators? : Array[Bool]?, utc_indicators? : Array[Bool]?, footer? : String) -> FixtureFile
+
+pub fn bytes_with_byte_at(FixtureFile, Int, Byte) -> Bytes
+
+pub fn fixed_offset_v2(Int, String) -> FixtureFile
+
+pub fn fixed_offset_v3(Int, String, footer? : String) -> FixtureFile
+
+pub fn truncated(FixtureFile, Int) -> Bytes
+
+// Errors
+
+// Types and methods
+pub(all) struct FixtureFile {
+  bytes : Bytes
+  second_header_offset : Int
+  second_body_offset : Int
+  second_index_offset : Int
+  second_ttinfo_offset : Int
+  second_leap_offset : Int
+  second_standard_indicator_offset : Int
+  second_utc_indicator_offset : Int
+  footer_offset : Int
+}
+
+pub(all) struct FixtureLeapSecond {
+  transition_time : Int64
+  correction : Int
+}
+
+pub(all) struct FixtureTransition {
+  utc_time : Int64
+  type_index : Byte
+}
+
+pub(all) struct FixtureType {
+  utoff : Int
+  is_dst : Bool
+  abbr_index : Int
+}
+
+// Type aliases
+
+// Traits
+

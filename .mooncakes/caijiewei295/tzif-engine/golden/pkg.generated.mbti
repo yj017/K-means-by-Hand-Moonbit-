@@ -1,0 +1,20 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "caijiewei295/tzif-engine/golden"
+
+// Values
+pub let america_new_york_2026b : Bytes
+
+pub let america_new_york_byte_length : Int
+
+pub let america_new_york_sha256 : String
+
+pub let america_new_york_tzdb_release : String
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+

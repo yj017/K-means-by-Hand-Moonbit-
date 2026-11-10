@@ -1,0 +1,201 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Lampese/mathplotlib/transforms"
+
+import {
+  "Lampese/mathplotlib/core",
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn affine_from_values(Double, Double, Double, Double, Double, Double) -> Affine2D
+
+pub fn affine_transform(Affine2D) -> Transform2D
+
+pub fn bbox(Double, Double, Double, Double) -> BBox
+
+pub fn bbox_from_bounds(Double, Double, Double, Double) -> BBox
+
+pub fn bbox_transform(BBox, BBox) -> Transform2D
+
+pub fn bbox_transform_from(BBox) -> Transform2D
+
+pub fn bbox_transform_to(BBox) -> Transform2D
+
+pub fn blended_transform(Transform2D, Transform2D) -> Transform2D
+
+pub fn composite_transform(Transform2D, Transform2D) -> Transform2D
+
+pub fn cubic_bezier(@core.Point, @core.Point, @core.Point, @core.Point) -> BezierSegment raise BezierError
+
+pub fn identity() -> Affine2D
+
+pub fn identity_transform() -> Transform2D
+
+pub fn line_path(Array[@core.Point]) -> Path raise PathError
+
+pub fn null_bbox() -> BBox
+
+pub fn path(Array[@core.Point], codes? : Array[PathCode]) -> Path raise PathError
+
+pub fn polygon_path(Array[@core.Point]) -> Path raise PathError
+
+pub fn quadratic_bezier(@core.Point, @core.Point, @core.Point) -> BezierSegment raise BezierError
+
+pub fn rectangle_path(BBox) -> Path raise PathError
+
+pub fn rotation(Double) -> Affine2D
+
+pub fn rotation_degrees(Double) -> Affine2D
+
+pub fn scaled_translation(Double, Double, Affine2D) -> Transform2D
+
+pub fn scaling(Double, Double) -> Affine2D
+
+pub fn skew(Double, Double) -> Affine2D
+
+pub fn skew_degrees(Double, Double) -> Affine2D
+
+pub fn translation(Double, Double) -> Affine2D
+
+pub fn unit_bbox() -> BBox
+
+// Errors
+pub(all) suberror BezierError {
+  InvalidControlPoints(message~ : String)
+  InvalidParameter(message~ : String)
+}
+
+pub(all) suberror PathError {
+  InvalidCodes(message~ : String)
+  InvalidVertex(message~ : String)
+}
+
+pub(all) suberror TransformError {
+  Singular
+}
+
+// Types and methods
+pub struct Affine2D {
+  a : Double
+  b : Double
+  c : Double
+  d : Double
+  e : Double
+  f : Double
+}
+pub fn Affine2D::apply(Self, @core.Point) -> @core.Point
+pub fn Affine2D::apply_all(Self, Array[@core.Point]) -> Array[@core.Point]
+pub fn Affine2D::apply_delta(Self, @core.Point) -> @core.Point
+pub fn Affine2D::compose(Self, Self) -> Self
+pub fn Affine2D::determinant(Self) -> Double
+pub fn Affine2D::inverse(Self) -> Self raise TransformError
+pub fn Affine2D::is_separable(Self) -> Bool
+pub fn Affine2D::matrix(Self) -> Array[Array[Double]]
+pub fn Affine2D::rotated(Self, Double) -> Self
+pub fn Affine2D::scaled(Self, Double, Double) -> Self
+pub fn Affine2D::skewed(Self, Double, Double) -> Self
+pub fn Affine2D::then(Self, Self) -> Self
+pub fn Affine2D::to_values(Self) -> (Double, Double, Double, Double, Double, Double)
+pub fn Affine2D::translated(Self, Double, Double) -> Self
+
+pub struct BBox {
+  x0 : Double
+  y0 : Double
+  x1 : Double
+  y1 : Double
+}
+pub fn BBox::bounds(Self) -> (Double, Double, Double, Double)
+pub fn BBox::contains(Self, Double, Double) -> Bool
+pub fn BBox::contains_point(Self, @core.Point) -> Bool
+pub fn BBox::contains_x(Self, Double) -> Bool
+pub fn BBox::contains_y(Self, Double) -> Bool
+pub fn BBox::corners(Self) -> Array[@core.Point]
+pub fn BBox::expanded(Self, Double, Double) -> Self
+pub fn BBox::fully_contains(Self, Double, Double) -> Bool
+pub fn BBox::fully_contains_x(Self, Double) -> Bool
+pub fn BBox::fully_contains_y(Self, Double) -> Bool
+pub fn BBox::fully_overlaps(Self, Self) -> Bool
+pub fn BBox::height(Self) -> Double
+pub fn BBox::intersection(Self, Self) -> Self?
+pub fn BBox::interval_x(Self) -> (Double, Double)
+pub fn BBox::interval_y(Self) -> (Double, Double)
+pub fn BBox::is_finite(Self) -> Bool
+pub fn BBox::max_point(Self) -> @core.Point
+pub fn BBox::min_point(Self) -> @core.Point
+pub fn BBox::overlaps(Self, Self) -> Bool
+pub fn BBox::padded(Self, Double, Double) -> Self
+pub fn BBox::rotated(Self, Double) -> Self
+pub fn BBox::shrunk(Self, Double, Double) -> Self
+pub fn BBox::shrunk_to_aspect(Self, Double, container? : Self, fig_aspect? : Double) -> Self
+pub fn BBox::size(Self) -> (Double, Double)
+pub fn BBox::split_x(Self, Array[Double]) -> Array[Self]
+pub fn BBox::split_y(Self, Array[Double]) -> Array[Self]
+pub fn BBox::transformed(Self, Affine2D) -> Self
+pub fn BBox::translated(Self, Double, Double) -> Self
+pub fn BBox::union(Self, Self) -> Self
+pub fn BBox::width(Self) -> Double
+pub fn BBox::x0(Self) -> Double
+pub fn BBox::x1(Self) -> Double
+pub fn BBox::xmax(Self) -> Double
+pub fn BBox::xmin(Self) -> Double
+pub fn BBox::y0(Self) -> Double
+pub fn BBox::y1(Self) -> Double
+pub fn BBox::ymax(Self) -> Double
+pub fn BBox::ymin(Self) -> Double
+
+pub struct BezierSegment {
+  control_points : Array[@core.Point]
+}
+pub fn BezierSegment::control_points(Self) -> Array[@core.Point]
+pub fn BezierSegment::degree(Self) -> Int
+pub fn BezierSegment::evaluate(Self, Double) -> @core.Point raise BezierError
+pub fn BezierSegment::length(Self, steps? : Int) -> Double raise BezierError
+pub fn BezierSegment::sample(Self, Int) -> Array[@core.Point] raise BezierError
+pub fn BezierSegment::split(Self, Double) -> (Self, Self) raise BezierError
+
+pub struct Path {
+  vertices : Array[@core.Point]
+  codes : Array[PathCode]
+}
+pub fn Path::clip_to_bbox(Self, BBox, inside? : Bool) -> Self raise PathError
+pub fn Path::codes(Self) -> Array[PathCode]
+pub fn Path::contains_point(Self, @core.Point) -> Bool
+pub fn Path::extents(Self) -> BBox?
+pub fn Path::length(Self) -> Int
+pub fn Path::transformed(Self, Affine2D) -> Self raise PathError
+pub fn Path::vertices(Self) -> Array[@core.Point]
+
+pub(all) enum PathCode {
+  Stop
+  MoveTo
+  LineTo
+  Curve3
+  Curve4
+  ClosePoly
+} derive(Eq, @debug.Debug)
+pub fn PathCode::equal(Self, Self) -> Bool
+pub fn PathCode::not_equal(Self, Self) -> Bool
+pub fn PathCode::to_repr(Self) -> @debug.Repr
+
+pub(all) enum Transform2D {
+  Affine(Affine2D)
+  Composite(Transform2D, Transform2D)
+  BboxMap(BBox, BBox)
+  BboxTo(BBox)
+  BboxFrom(BBox)
+  Blended(Transform2D, Transform2D)
+  ScaledTranslation(Double, Double, Affine2D)
+}
+pub fn Transform2D::affine(Self) -> Affine2D
+pub fn Transform2D::apply(Self, @core.Point) -> @core.Point
+pub fn Transform2D::apply_all(Self, Array[@core.Point]) -> Array[@core.Point]
+pub fn Transform2D::apply_delta(Self, @core.Point) -> @core.Point
+pub fn Transform2D::inverse(Self) -> Self raise TransformError
+pub fn Transform2D::is_separable(Self) -> Bool
+pub fn Transform2D::then(Self, Self) -> Self
+pub fn Transform2D::transform_bbox(Self, BBox) -> BBox
+pub fn Transform2D::transform_path(Self, Path) -> Path raise PathError
+
+// Type aliases
+
+// Traits

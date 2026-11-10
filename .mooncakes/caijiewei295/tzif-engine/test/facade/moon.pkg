@@ -1,0 +1,6 @@
+// Cross-package facade regressions that exercise only the public API.
+
+import {
+  "caijiewei295/tzif-engine" @tzif,
+  "caijiewei295/tzif-engine/types",
+} for "test"

@@ -1,0 +1,270 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Lampese/mathplotlib/core/colors"
+
+// Values
+pub fn boundary_color_norm(BoundaryNorm) -> ColorNorm
+
+pub fn boundary_norm(Array[Double], Int, clip? : Bool, extend_mode? : String) -> BoundaryNorm raise NormalizeError
+
+pub fn centered_color_norm(CenteredNorm) -> ColorNorm
+
+pub fn centered_norm(vcenter? : Double, halfrange? : Double, clip? : Bool) -> CenteredNorm raise NormalizeError
+
+pub fn colormap(String) -> ColorMap raise ColorError
+
+pub fn custom_colormap(String, Array[Rgba]) -> ColorMap raise ColorError
+
+pub fn find_colormap(String) -> ColorMap?
+
+pub fn linear_color_norm(Normalize) -> ColorNorm
+
+pub fn listed_colormap(String, Array[Rgba]) -> ColorMap raise ColorError
+
+pub fn log_color_norm(LogNorm) -> ColorNorm
+
+pub fn log_norm(vmin? : Double, vmax? : Double, clip? : Bool, base? : Double) -> LogNorm raise NormalizeError
+
+pub fn normalize(vmin? : Double, vmax? : Double, clip? : Bool) -> Normalize raise NormalizeError
+
+pub fn parse_color(String) -> Rgba raise ColorError
+
+pub fn power_color_norm(PowerNorm) -> ColorNorm
+
+pub fn power_norm(Double, vmin? : Double, vmax? : Double, clip? : Bool) -> PowerNorm raise NormalizeError
+
+pub fn rgb(Double, Double, Double) -> Rgb raise ColorError
+
+pub fn rgba(Double, Double, Double, alpha? : Double) -> Rgba raise ColorError
+
+pub fn symlog_color_norm(SymLogNorm) -> ColorNorm
+
+pub fn symlog_norm(Double, linscale? : Double, vmin? : Double, vmax? : Double, clip? : Bool, base? : Double) -> SymLogNorm raise NormalizeError
+
+pub fn two_slope_color_norm(TwoSlopeNorm) -> ColorNorm
+
+pub fn two_slope_norm(Double, vmin? : Double, vmax? : Double) -> TwoSlopeNorm raise NormalizeError
+
+// Errors
+pub(all) suberror ColorError {
+  InvalidColor(String)
+  ComponentOutOfRange(String)
+  InvalidColorMap(String)
+}
+
+pub(all) suberror NormalizeError {
+  InvalidBounds(message~ : String)
+  InvalidBase(message~ : String)
+  InvalidValue(message~ : String)
+  NoFiniteData
+  NotScaled
+  NotInvertible
+}
+
+// Types and methods
+pub struct BoundaryNorm {
+  boundaries : Array[Double]
+  ncolors : Int
+  clip : Bool
+  extend_mode : String
+}
+pub fn BoundaryNorm::autoscale_none(Self, Array[Double]) -> Unit
+pub fn BoundaryNorm::boundaries(Self) -> Array[Double]
+pub fn BoundaryNorm::clip(Self) -> Bool
+pub fn BoundaryNorm::extend_mode(Self) -> String
+pub fn BoundaryNorm::index(Self, Double) -> Int raise NormalizeError
+pub fn BoundaryNorm::inverse(Self, Double) -> Double raise NormalizeError
+pub fn BoundaryNorm::is_valid(Self, Double) -> Bool
+pub fn BoundaryNorm::ncolors(Self) -> Int
+pub fn BoundaryNorm::scaled(Self) -> Bool
+pub fn BoundaryNorm::transform(Self, Double) -> Double raise NormalizeError
+
+pub struct CenteredNorm {
+  mut vmin : Double?
+  mut vmax : Double?
+  mut halfrange : Double?
+  mut clip : Bool
+  mut vcenter : Double
+}
+pub fn CenteredNorm::autoscale(Self, Array[Double]) -> Unit raise NormalizeError
+pub fn CenteredNorm::autoscale_none(Self, Array[Double]) -> Unit
+pub fn CenteredNorm::clip(Self) -> Bool
+pub fn CenteredNorm::halfrange(Self) -> Double?
+pub fn CenteredNorm::inverse(Self, Double) -> Double raise NormalizeError
+pub fn CenteredNorm::is_valid(Self, Double) -> Bool
+pub fn CenteredNorm::scaled(Self) -> Bool
+pub fn CenteredNorm::set_clip(Self, Bool) -> Unit
+pub fn CenteredNorm::set_halfrange(Self, Double?) -> Unit raise NormalizeError
+pub fn CenteredNorm::set_vcenter(Self, Double) -> Unit raise NormalizeError
+pub fn CenteredNorm::transform(Self, Double) -> Double raise NormalizeError
+pub fn CenteredNorm::transform_array(Self, Array[Double]) -> Array[Double] raise NormalizeError
+pub fn CenteredNorm::vcenter(Self) -> Double
+pub fn CenteredNorm::vmax(Self) -> Double?
+pub fn CenteredNorm::vmin(Self) -> Double?
+
+pub struct ColorMap {
+  name : String
+  stops : Array[Rgba]
+  discrete : Bool
+  mut under : Rgba?
+  mut over : Rgba?
+  mut bad : Rgba?
+}
+pub fn ColorMap::bad(Self) -> Rgba?
+pub fn ColorMap::is_discrete(Self) -> Bool
+pub fn ColorMap::name(Self) -> String
+pub fn ColorMap::over(Self) -> Rgba?
+pub fn ColorMap::sample(Self, Double) -> Rgba
+pub fn ColorMap::sample_extended(Self, Double) -> Rgba
+pub fn ColorMap::set_bad(Self, Rgba) -> Unit
+pub fn ColorMap::set_over(Self, Rgba) -> Unit
+pub fn ColorMap::set_under(Self, Rgba) -> Unit
+pub fn ColorMap::stops(Self) -> Array[Rgba]
+pub fn ColorMap::under(Self) -> Rgba?
+
+pub(all) enum ColorNorm {
+  Linear(Normalize)
+  Logarithmic(LogNorm)
+  SymmetricLog(SymLogNorm)
+  TwoSlope(TwoSlopeNorm)
+  Power(PowerNorm)
+  Centered(CenteredNorm)
+  Boundary(BoundaryNorm)
+}
+pub fn ColorNorm::autoscale(Self, Array[Double]) -> Unit raise NormalizeError
+pub fn ColorNorm::autoscale_none(Self, Array[Double]) -> Unit
+pub fn ColorNorm::inverse(Self, Double) -> Double raise NormalizeError
+pub fn ColorNorm::is_valid(Self, Double) -> Bool
+pub fn ColorNorm::scaled(Self) -> Bool
+pub fn ColorNorm::transform(Self, Double) -> Double raise NormalizeError
+pub fn ColorNorm::vmax(Self) -> Double?
+pub fn ColorNorm::vmin(Self) -> Double?
+
+pub struct LogNorm {
+  mut vmin : Double?
+  mut vmax : Double?
+  mut clip : Bool
+  base : Double
+}
+pub fn LogNorm::autoscale(Self, Array[Double]) -> Unit raise NormalizeError
+pub fn LogNorm::autoscale_none(Self, Array[Double]) -> Unit
+pub fn LogNorm::base(Self) -> Double
+pub fn LogNorm::clip(Self) -> Bool
+pub fn LogNorm::inverse(Self, Double) -> Double raise NormalizeError
+pub fn LogNorm::is_valid(Self, Double) -> Bool
+pub fn LogNorm::scaled(Self) -> Bool
+pub fn LogNorm::set_clip(Self, Bool) -> Unit
+pub fn LogNorm::set_vmax(Self, Double?) -> Unit raise NormalizeError
+pub fn LogNorm::set_vmin(Self, Double?) -> Unit raise NormalizeError
+pub fn LogNorm::transform(Self, Double) -> Double raise NormalizeError
+pub fn LogNorm::transform_array(Self, Array[Double]) -> Array[Double] raise NormalizeError
+pub fn LogNorm::vmax(Self) -> Double?
+pub fn LogNorm::vmin(Self) -> Double?
+
+pub struct Normalize {
+  mut vmin : Double?
+  mut vmax : Double?
+  mut clip : Bool
+}
+pub fn Normalize::autoscale(Self, Array[Double]) -> Unit raise NormalizeError
+pub fn Normalize::autoscale_none(Self, Array[Double]) -> Unit
+pub fn Normalize::clip(Self) -> Bool
+pub fn Normalize::inverse(Self, Double) -> Double raise NormalizeError
+pub fn Normalize::scaled(Self) -> Bool
+pub fn Normalize::set_clip(Self, Bool) -> Unit
+pub fn Normalize::set_vmax(Self, Double?) -> Unit raise NormalizeError
+pub fn Normalize::set_vmin(Self, Double?) -> Unit raise NormalizeError
+pub fn Normalize::transform(Self, Double) -> Double raise NormalizeError
+pub fn Normalize::transform_array(Self, Array[Double]) -> Array[Double] raise NormalizeError
+pub fn Normalize::vmax(Self) -> Double?
+pub fn Normalize::vmin(Self) -> Double?
+
+pub struct PowerNorm {
+  mut vmin : Double?
+  mut vmax : Double?
+  mut clip : Bool
+  gamma : Double
+}
+pub fn PowerNorm::autoscale(Self, Array[Double]) -> Unit raise NormalizeError
+pub fn PowerNorm::autoscale_none(Self, Array[Double]) -> Unit
+pub fn PowerNorm::clip(Self) -> Bool
+pub fn PowerNorm::gamma(Self) -> Double
+pub fn PowerNorm::inverse(Self, Double) -> Double raise NormalizeError
+pub fn PowerNorm::is_valid(Self, Double) -> Bool
+pub fn PowerNorm::scaled(Self) -> Bool
+pub fn PowerNorm::set_clip(Self, Bool) -> Unit
+pub fn PowerNorm::set_vmax(Self, Double?) -> Unit raise NormalizeError
+pub fn PowerNorm::set_vmin(Self, Double?) -> Unit raise NormalizeError
+pub fn PowerNorm::transform(Self, Double) -> Double raise NormalizeError
+pub fn PowerNorm::transform_array(Self, Array[Double]) -> Array[Double] raise NormalizeError
+pub fn PowerNorm::vmax(Self) -> Double?
+pub fn PowerNorm::vmin(Self) -> Double?
+
+pub struct Rgb {
+  red : Double
+  green : Double
+  blue : Double
+}
+pub fn Rgb::blue(Self) -> Double
+pub fn Rgb::green(Self) -> Double
+pub fn Rgb::red(Self) -> Double
+pub fn Rgb::to_rgba(Self) -> Rgba
+
+pub struct Rgba {
+  red : Double
+  green : Double
+  blue : Double
+  alpha : Double
+}
+pub fn Rgba::alpha(Self) -> Double
+pub fn Rgba::blue(Self) -> Double
+pub fn Rgba::green(Self) -> Double
+pub fn Rgba::red(Self) -> Double
+pub fn Rgba::scale_alpha(Self, Double) -> Self raise ColorError
+pub fn Rgba::to_css(Self) -> String
+
+pub struct SymLogNorm {
+  mut vmin : Double?
+  mut vmax : Double?
+  mut clip : Bool
+  linthresh : Double
+  linscale : Double
+  base : Double
+}
+pub fn SymLogNorm::autoscale(Self, Array[Double]) -> Unit raise NormalizeError
+pub fn SymLogNorm::autoscale_none(Self, Array[Double]) -> Unit
+pub fn SymLogNorm::base(Self) -> Double
+pub fn SymLogNorm::clip(Self) -> Bool
+pub fn SymLogNorm::inverse(Self, Double) -> Double raise NormalizeError
+pub fn SymLogNorm::is_valid(Self, Double) -> Bool
+pub fn SymLogNorm::linscale(Self) -> Double
+pub fn SymLogNorm::linthresh(Self) -> Double
+pub fn SymLogNorm::scaled(Self) -> Bool
+pub fn SymLogNorm::set_clip(Self, Bool) -> Unit
+pub fn SymLogNorm::set_vmax(Self, Double?) -> Unit raise NormalizeError
+pub fn SymLogNorm::set_vmin(Self, Double?) -> Unit raise NormalizeError
+pub fn SymLogNorm::transform(Self, Double) -> Double raise NormalizeError
+pub fn SymLogNorm::transform_array(Self, Array[Double]) -> Array[Double] raise NormalizeError
+pub fn SymLogNorm::vmax(Self) -> Double?
+pub fn SymLogNorm::vmin(Self) -> Double?
+
+pub struct TwoSlopeNorm {
+  mut vmin : Double?
+  mut vmax : Double?
+  vcenter : Double
+}
+pub fn TwoSlopeNorm::autoscale(Self, Array[Double]) -> Unit raise NormalizeError
+pub fn TwoSlopeNorm::autoscale_none(Self, Array[Double]) -> Unit
+pub fn TwoSlopeNorm::inverse(Self, Double) -> Double raise NormalizeError
+pub fn TwoSlopeNorm::is_valid(Self, Double) -> Bool
+pub fn TwoSlopeNorm::scaled(Self) -> Bool
+pub fn TwoSlopeNorm::set_vmax(Self, Double?) -> Unit raise NormalizeError
+pub fn TwoSlopeNorm::set_vmin(Self, Double?) -> Unit raise NormalizeError
+pub fn TwoSlopeNorm::transform(Self, Double) -> Double raise NormalizeError
+pub fn TwoSlopeNorm::transform_array(Self, Array[Double]) -> Array[Double] raise NormalizeError
+pub fn TwoSlopeNorm::vcenter(Self) -> Double
+pub fn TwoSlopeNorm::vmax(Self) -> Double?
+pub fn TwoSlopeNorm::vmin(Self) -> Double?
+
+// Type aliases
+
+// Traits

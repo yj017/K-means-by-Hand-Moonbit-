@@ -1,0 +1,24 @@
+import {
+  "Milky2018/xml",
+  "Lampese/mathplotlib/core",
+  "Lampese/mathplotlib/core/colors",
+  "Lampese/mathplotlib/drawing",
+  "Lampese/mathplotlib/scene/axis",
+  "Lampese/mathplotlib/scene/boxplot",
+  "Lampese/mathplotlib/scene/colorbar",
+  "Lampese/mathplotlib/internal/render",
+  "Lampese/mathplotlib/internal/png",
+  "Lampese/mathplotlib/ticker/scale" @ticker_scale,
+  "Lampese/mathplotlib/ticker",
+  "moonbitlang/core/buffer",
+  "moonbitlang/core/math",
+}
+
+import {
+  "Lampese/mathplotlib/scene/axis",
+} for "test"
+
+import {
+  "Lampese/mathplotlib/ticker",
+  "Lampese/mathplotlib/config",
+} for "wbtest"

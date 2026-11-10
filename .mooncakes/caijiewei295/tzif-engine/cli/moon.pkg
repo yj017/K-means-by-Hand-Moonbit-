@@ -1,0 +1,12 @@
+import {
+  "caijiewei295/tzif-engine" @tzif,
+  "caijiewei295/tzif-engine/types",
+  "moonbitlang/core/string",
+  "moonbitlang/x/sys",
+}
+
+import {
+  "caijiewei295/tzif-engine/test/fixtures",
+} for "wbtest"
+
+pkgtype(kind: "executable")

@@ -1,0 +1,165 @@
+// Blackbox tests for `JoinType` / `JoinOptions`.
+//
+// `JoinOptions` carries no `==` (its key lists are expressions), so these tests
+// pin the three constructors' defaults and their named overrides through
+// `assert_same_join`, which compares the parts that mean something: `how` /
+// `suffix` / `coalesce` and the rendered key lists. Naming a parameter with its
+// default value must yield the bare call's value, a non-default must not. The end-to-end
+// join behaviour they imply (inner default, `"_right"` suffix) is exercised
+// against real frames in the sibling join tests.
+
+///|
+test "JoinType equality" {
+  assert_eq(JoinType::Inner, JoinType::Inner)
+  assert_eq(JoinType::Right, JoinType::Right)
+  assert_eq(JoinType::Outer, JoinType::Outer)
+  assert_not_eq(JoinType::Inner, JoinType::Left)
+  assert_not_eq(JoinType::Inner, JoinType::Cross)
+  assert_not_eq(JoinType::Left, JoinType::Cross)
+  // The two later additions are distinct from each other and from the rest.
+  assert_not_eq(JoinType::Inner, JoinType::Right)
+  assert_not_eq(JoinType::Inner, JoinType::Outer)
+  assert_not_eq(JoinType::Left, JoinType::Right)
+  assert_not_eq(JoinType::Right, JoinType::Outer)
+  assert_not_eq(JoinType::Outer, JoinType::Cross)
+}
+
+///|
+test "cross builds a keyless Cross spec" {
+  // `cross()` is `on([])` switched to `how = Cross` (same default suffix /
+  // coalesce), and differs from a keyed inner spec.
+  assert_same_join(
+    JoinOptions::cross(),
+    JoinOptions::on([], how=JoinType::Cross),
+  )
+  assert_diff_join(JoinOptions::cross(), JoinOptions::on([]))
+  assert_diff_join(JoinOptions::cross(), JoinOptions::on([@expr.col("id")]))
+  // The suffix is the one knob a cross join still honours.
+  assert_same_join(
+    JoinOptions::cross(suffix="_r"),
+    JoinOptions::on([], how=JoinType::Cross, suffix="_r"),
+  )
+  assert_diff_join(JoinOptions::cross(suffix="_r"), JoinOptions::cross())
+}
+
+///|
+test "on / left_on copy their key arrays" {
+  // Mutating the caller's array after building the options must not alter
+  // the join specification (pinned through `assert_same_join`).
+  let keys = [@expr.col("id")]
+  let base = JoinOptions::on(keys)
+  keys.push(@expr.col("v"))
+  assert_same_join(base, JoinOptions::on([@expr.col("id")]))
+  let lkeys = [@expr.col("a")]
+  let rkeys = [@expr.col("b")]
+  let both = JoinOptions::left_on(lkeys, right_on=rkeys)
+  lkeys.clear()
+  rkeys.push(@expr.col("c"))
+  assert_same_join(
+    both,
+    JoinOptions::left_on([@expr.col("a")], right_on=[@expr.col("b")]),
+  )
+}
+
+///|
+test "on defaults to an inner join with the _right suffix and auto coalesce" {
+  let base = JoinOptions::on([@expr.col("id")])
+  // Naming the defaults explicitly must reproduce the same options.
+  assert_same_join(
+    JoinOptions::on([@expr.col("id")], how=JoinType::Inner),
+    base,
+  )
+  assert_same_join(JoinOptions::on([@expr.col("id")], suffix="_right"), base)
+  // A non-default value must differ, on each knob independently.
+  assert_diff_join(JoinOptions::on([@expr.col("id")], how=JoinType::Left), base)
+  assert_diff_join(JoinOptions::on([@expr.col("id")], suffix="_r"), base)
+  assert_diff_join(JoinOptions::on([@expr.col("id")], coalesce=true), base)
+  assert_diff_join(JoinOptions::on([@expr.col("id")], coalesce=false), base)
+  // The two forced coalesce values are distinct from each other, so an
+  // omitted `coalesce` is a third (automatic) state rather than a default.
+  assert_diff_join(
+    JoinOptions::on([@expr.col("id")], coalesce=true),
+    JoinOptions::on([@expr.col("id")], coalesce=false),
+  )
+}
+
+///|
+test "the on knobs are independent of each other" {
+  // Setting one leaves the others at their defaults, so any subset can be
+  // named in any order and still describe the same options.
+  assert_same_join(
+    JoinOptions::on([@expr.col("id")], how=JoinType::Left, suffix="_r"),
+    JoinOptions::on([@expr.col("id")], suffix="_r", how=JoinType::Left),
+  )
+  assert_same_join(
+    JoinOptions::on([@expr.col("id")], suffix="_r"),
+    JoinOptions::on([@expr.col("id")], how=JoinType::Inner, suffix="_r"),
+  )
+  assert_same_join(
+    JoinOptions::on([@expr.col("id")], how=JoinType::Left, coalesce=true),
+    JoinOptions::on([@expr.col("id")], coalesce=true, how=JoinType::Left),
+  )
+}
+
+///|
+test "on carries the key list (distinct key sets give distinct options)" {
+  assert_same_join(
+    JoinOptions::on([@expr.col("a"), @expr.col("b")]),
+    JoinOptions::on([@expr.col("a"), @expr.col("b")]),
+  )
+  assert_diff_join(
+    JoinOptions::on([@expr.col("a"), @expr.col("b")]),
+    JoinOptions::on([@expr.col("b"), @expr.col("a")]),
+  )
+  assert_diff_join(
+    JoinOptions::on([@expr.col("a")]),
+    JoinOptions::on([@expr.col("a"), @expr.col("b")]),
+  )
+  // A derived key is a distinct option from the bare column it builds on.
+  assert_diff_join(
+    JoinOptions::on([@expr.col("a") * @expr.lit_int(2)]),
+    JoinOptions::on([@expr.col("a")]),
+  )
+}
+
+///|
+test "left_on pairs both sides at once, defaults matching on" {
+  let sided = JoinOptions::left_on([@expr.col("a")], right_on=[@expr.col("b")])
+  // Same defaults as `on` (inner, `_right` suffix, coalesce auto).
+  assert_same_join(
+    JoinOptions::left_on(
+      [@expr.col("a")],
+      right_on=[@expr.col("b")],
+      how=JoinType::Inner,
+    ),
+    sided,
+  )
+  assert_same_join(
+    JoinOptions::left_on(
+      [@expr.col("a")],
+      right_on=[@expr.col("b")],
+      suffix="_right",
+    ),
+    sided,
+  )
+  // A sided join keyed left=a / right=b is distinct from an `on([a])` join
+  // (different key plumbing) and from the same keys swapped.
+  assert_diff_join(sided, JoinOptions::on([@expr.col("a")]))
+  assert_diff_join(
+    sided,
+    JoinOptions::left_on([@expr.col("b")], right_on=[@expr.col("a")]),
+  )
+  // Each side is carried independently, and the knobs behave as on `on`.
+  assert_diff_join(
+    sided,
+    JoinOptions::left_on([@expr.col("a")], right_on=[@expr.col("x")]),
+  )
+  assert_diff_join(
+    sided,
+    JoinOptions::left_on(
+      [@expr.col("a")],
+      right_on=[@expr.col("b")],
+      how=JoinType::Left,
+    ),
+  )
+}

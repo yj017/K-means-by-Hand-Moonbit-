@@ -1,0 +1,8 @@
+// Interop tests: diff against GNU date and Python zoneinfo.
+
+import {
+  "caijiewei295/tzif-engine" @tzif,
+  "caijiewei295/tzif-engine/golden",
+  "caijiewei295/tzif-engine/test/fixtures",
+  "caijiewei295/tzif-engine/types",
+} for "test"

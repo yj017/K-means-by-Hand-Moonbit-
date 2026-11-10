@@ -1,0 +1,330 @@
+///|
+/// Reduce each group of a grouped frame to one row, evaluating one
+/// expression per output column. Each expression is a **reduction** over
+/// its group: `col("revenue").sum()`, `col("revenue").max() -
+/// col("revenue").min()` (a per-group range), `(col("revenue") -
+/// col("cost")).sum()` (a reduction over a *derived* column) — the group
+/// collapses to a single cell per expression.
+///
+/// Output shape: the key columns head the frame (in key order, each named
+/// by its key expression's output name and keeping its evaluated dtype —
+/// the backend, like every row gather's, follows the gathered content —
+/// one representative row per group), followed by one column per
+/// expression (in expression order), named by the expression's
+/// output name (alias, else leftmost column reference, else `"literal"`);
+/// one row per group, in the first-appearance group order fixed by
+/// `group_by`. The result routes through `DataFrame::from_parts`, so name
+/// collisions — two expressions sharing an output name, or an expression
+/// shadowing a key column — surface as `DuplicateColumn`, and every output
+/// satisfies `check_invariants()`. `agg([])` degenerates to a distinct over
+/// the key tuples (zero expressions ⇒ zero aggregated columns).
+///
+/// The height is the group count, never inferred from the output columns, so
+/// the one shape with neither a key column nor an aggregated one keeps its
+/// rows: `group_by([]).agg([])` over a non-empty frame is the `1×0` frame
+/// (the grand-total group, reduced to nothing), not `0×0`.
+///
+/// Each expression must be **reduction-shaped** (`reduces_per_group`):
+/// aggregations and literals are per-group scalars, and every combinator —
+/// arithmetic / comparison / Kleene operators, `not` and the null probes,
+/// `cast`, `with_alias`, `when/then/otherwise` — preserves scalarness; a
+/// bare column reference pins the result to the group height, so it is
+/// not a reduction. The check is structural, hence deterministic:
+/// `agg([col("a")])` raises `InvalidOperation` even when every group
+/// happens to hold a single row, where a dynamic length test would
+/// data-dependently pass. (MoonFrame has no list dtype, so a
+/// collect-the-group-into-a-list reading stays out of scope.)
+///
+/// Evaluation reuses the shared expression engine with `scope =` each
+/// group's row indices, inheriting the evaluator's documented aggregation
+/// semantics (the Aggregations enumeration, whose
+/// canonical home is the series reducer's header) verbatim, including the
+/// grouped reading of them: an all-null group sums to the additive
+/// identity and means to a null cell. Dtype errors (`ColumnNotFound`,
+/// `TypeMismatch`) surface from the per-group evaluation itself (the
+/// bare-column fast path still reports them up front, resolving its
+/// reducer before any group work); the output dtype is taken from the
+/// reduced cells themselves, since a `map(...)` closure's result dtype is
+/// scope-dependent. A probe evaluation under the empty scope is consulted
+/// only as a fallback that types — and gates — a zero-group or all-null
+/// result: consulted eagerly it would spuriously reject a dtype-changing
+/// `map(...)` under a numeric reduction, because the closure never runs
+/// under the empty scope and the probe would type the `Map` by its
+/// leftmost input column instead. Computed columns follow the
+/// expression-engine backend convention: an all-valid numeric column
+/// converges onto `Numeric`, anything nullable (or `Bool` / `String`) stays
+/// `Builtin`.
+///
+/// An aggregation directly over a bare column — `col(name).<agg>()` for any
+/// aggregation op, the common case once aliases are peeled — takes a
+/// single-pass fast path (`bare_col_agg`): the shared reduction kernel
+/// resolves its reducer and validity mask once and folds each group's row
+/// indices straight off the source column, instead of gathering a fresh
+/// sub-column per group through the general evaluator. It is purely an
+/// optimization — the result is cell-for-cell and backend identical to the
+/// general path, with the same dtype / null / NaN rules and the same up-front
+/// error surfacing — so an aggregation over a *derived* operand
+/// (`(col("a") - col("b")).sum()`) transparently falls back to it.
+///
+/// Raises:
+/// - `InvalidOperation(...)` — an expression is not reduction-shaped, or
+///   the handle's row groups no longer satisfy the `group_by` invariants (an
+///   empty group, or a row index outside the source). The fields are
+///   `priv`, so no external caller can reach the arrays; only in-package
+///   code could plant such a handle, and it is re-checked here rather than
+///   allowed to drive the folds into an abort.
+/// - `ColumnNotFound(name)` — an expression references an absent column.
+/// - `TypeMismatch(...)` — an expression's dtypes don't unify (e.g. `sum`
+///   over a `String` column), from the first group's evaluation — or from
+///   the fallback probe when zero groups / an all-null result leave no
+///   dtype witness.
+/// - `DuplicateColumn(name)` — two output column names collide.
+/// - `LengthMismatch` — a group's reduction produced something other than one
+///   cell, which is the shared length contract narrowed to a group. The
+///   built-in aggregations, the literals, and the combinators over them cannot;
+///   a `map_batches(returns_scalar=true)` closure declared to reduce can, by
+///   returning a series of another length. Reported on the first group that
+///   does, in group order.
+pub fn GroupedDataFrame::agg(
+  self : GroupedDataFrame,
+  exprs : Array[@expr.Expr],
+) -> DataFrame raise @types.DataError {
+  self.check_handle_invariants()
+  let out_cols : Array[Series] = []
+  // Key columns: gather one representative cell per group from the
+  // materialised key columns `group_by` already built (each named by its
+  // expression's output name and carrying its evaluated dtype) —
+  // `g[0]` is in-bounds since the validation above rejected empty groups,
+  // and `gather_series` keeps the key column's name and dtype. The backend is
+  // canonicalised from the gathered rows, as after any row gather.
+  let reps = self.groups.map(g => g[0])
+  for key_column in self.key_columns {
+    out_cols.push(key_column.gather_series(reps))
+  }
+  for expr in exprs {
+    let out_name = expr.output_name()
+    // `(probe, cells)`: a *deferred* fallback dtype that types (and gates) the
+    // column only when the cells carry no dtype of their own (zero groups, or
+    // an all-null result), plus one reduced `Scalar` per group in group order.
+    // Both branches are typed from the cells themselves below, and an
+    // all-valid numeric result converges onto `Numeric`, so the fast path is
+    // cell-for-cell *and backend* identical to the general one — it only
+    // changes how the cells are computed.
+    let (probe, cells) : (
+      () -> @types.DataType raise @types.DataError,
+      Array[@types.Scalar],
+    ) = match bare_col_agg(expr.node()) {
+      // Fast path: an aggregation over a bare column, `col(name).<agg>()`.
+      // Resolve the reducer and validity mask once through the shared kernel
+      // (which raises `ColumnNotFound` on the absent column and `TypeMismatch`
+      // for a non-numeric `sum` / `mean`, both up front before any group
+      // work), then fold each group's row indices straight off the source
+      // column — no per-group sub-column is gathered.
+      Some((name, rop)) => {
+        let (reducer, probe) = self.source.get_column(name).reducer_for(rop)
+        // A per-group loop, not `map`: the reducer may refuse mid-fold (a
+        // decimal sum past the 18-digit magnitude), so the group walk has
+        // to carry the error out.
+        let cells : Array[@types.Scalar] = []
+        for g in self.groups {
+          cells.push(reducer(g.length(), k => g[k]))
+        }
+        (() => probe, cells)
+      }
+      // General path: a derived or compound reduction such as
+      // `(col("a") - col("b")).sum()` or `col("x").max() - col("x").min()`.
+      // The shape gate rejects non-reductions first; each group is then
+      // evaluated through the general engine and its length-1 result read
+      // off the total `to_scalars` by plain index. The empty-scope probe is
+      // deferred: it is only evaluated — surfacing its `ColumnNotFound` /
+      // `TypeMismatch` — when the reduced cells leave the dtype undecided
+      // (zero groups, or an all-null result). Running it eagerly would
+      // spuriously reject a dtype-changing `map(...)` closure under a
+      // numeric reduction: under the empty scope the closure never runs, so
+      // the probe types the `Map` by its leftmost *input* column (e.g.
+      // `String`) and `sum` / `mean` raise `TypeMismatch` even though every
+      // real group evaluates to a numeric cell. A `map_batches` closure is
+      // the one escape hatch that *does* run under the probe — the
+      // evaluator hands it the 0-row operand, the empty-input call its own
+      // contract (see `Expr::map_batches`) already licenses, and its answer
+      // is the dtype witness zero groups would otherwise lack.
+      None => {
+        if !reduces_per_group(expr) {
+          raise @types.DataError::InvalidOperation(
+            "aggregate expression must reduce each group to a single value: \{expr.to_string()}",
+          )
+        }
+        (
+          () => eval_expr(expr, self.source, []).dtype(),
+          self.groups.map(g => {
+            // The one cell a group's reduction produced. Everything reaching
+            // here passed the structural `reduces_per_group` gate, and the
+            // built-in reductions and literals it admits are length-1 by
+            // construction — but one admitted node computes its own length: a
+            // `map_batches(returns_scalar=true)` closure *declared* to reduce
+            // and handing back a longer series anyway. That is the length
+            // contract `broadcast_series` enforces for every other consumer,
+            // so raise the same `LengthMismatch` here rather than reading
+            // cell 0 — which would silently keep the first of several cells,
+            // and index an empty array on none at all.
+            let reduced = eval_expr(expr, self.source, g)
+            guard reduced.len() == 1 else {
+              raise @types.DataError::LengthMismatch
+            }
+            reduced.to_scalars()[0]
+          }),
+        )
+      }
+    }
+    // Build the output column, typed from the cells themselves: a mixed
+    // `Int`/`Float` result promotes to `Float` (the arithmetic engine's
+    // rule), the first non-null cell then fixes the variant, and an all-valid
+    // numeric result converges onto `Numeric`. So a `map(...)`-wrapped
+    // reduction whose closure returns a dtype other than its input column's
+    // is typed by what it actually produced — not by the empty-scope
+    // `probe`, which never ran the closure; the probe types only zero groups
+    // and all-null results, where the reduction's own declared dtype is the
+    // right witness (an all-null `Map` result is typed by its leftmost
+    // input's dtype — the closure never ran, so no other witness exists).
+    let cells = @kernel.promote_mixed_int_float(cells)
+    let witness = match @kernel.infer_cells_dtype(cells) {
+      Some(p) => p
+      None => probe()
+    }
+    out_cols.push(scalars_to_series(witness, out_name, cells))
+  }
+  // One row per group is the shape of an aggregation, so the group count is
+  // the height — not `out_cols[0].len()`, which is the same number wherever a
+  // column exists but has nothing to read when this frame has neither a key
+  // column nor an aggregated one (`group_by([]).agg([])`).
+  DataFrame::from_parts(out_cols, self.groups.length())
+}
+
+///|
+/// Whether `expr` reduces *any* evaluation scope to a single value — the
+/// structural gate `agg` applies before evaluating. Aggregations
+/// and literals are scalars; the combinators preserve scalarness over
+/// their operands; a bare column reference pins the result to the scope
+/// height, so it is not a reduction — and a `Map` is row-wise the same way
+/// (one cell per row), so a bare `map(...)` is not a reduction either,
+/// though `map(...).sum()` is, by the enclosing `Agg`. A `lit_series(s)` is
+/// likewise row-wise — its own cells, not a single value — so a bare
+/// `lit_series(s)` is not a reduction, though `lit_series(s).sum()` is.
+/// Structural (data-independent) on purpose: group sizes never change the
+/// verdict.
+fn reduces_per_group(expr : @expr.Expr) -> Bool {
+  // Iterative tree walk (explicit stack, not the call stack): a deeply nested
+  // aggregation expression formerly overflowed and aborted in this pre-pass,
+  // which the doc calls structural and total. `Lit` / `Agg` are terminal (an
+  // aggregation reduces regardless of its operand), `Col` / `Map` / `LitSeries`
+  // fail, and the combinators require every child to reduce.
+  let stack : Array[@ir.ExprNode] = [expr.node()]
+  for ;; {
+    match stack.pop() {
+      None => break
+      Some(e) =>
+        match e {
+          @ir.ExprNode::Col(_)
+          | @ir.ExprNode::Map(_, _, _)
+          | @ir.ExprNode::LitSeries(_) => return false
+          // A batch map reduces per group only when flagged `returns_scalar`:
+          // then it is terminal like `Agg` (its result is the group's single
+          // cell); otherwise it is row-wise like `Map` and does not reduce.
+          @ir.ExprNode::MapBatches(_, _, returns_scalar, _) =>
+            if !returns_scalar {
+              return false
+            }
+          @ir.ExprNode::Lit(_) | @ir.ExprNode::Agg(_, _) => ()
+          @ir.ExprNode::Binary(_, l, r)
+          | @ir.ExprNode::FillNull(l, r)
+          | @ir.ExprNode::FillNan(l, r) => {
+            stack.push(l)
+            stack.push(r)
+          }
+          @ir.ExprNode::Unary(_, e2)
+          | @ir.ExprNode::Str(_, e2)
+          | @ir.ExprNode::Positional(_, e2)
+          | @ir.ExprNode::Diff(e2, _)
+          | @ir.ExprNode::Cast(e2, _)
+          | @ir.ExprNode::Alias(e2, _)
+          | @ir.ExprNode::IsIn(e2, _) => stack.push(e2)
+          @ir.ExprNode::Ternary(c, t, f) => {
+            stack.push(c)
+            stack.push(t)
+            stack.push(f)
+          }
+          // A clamp is row-wise over its operand and whichever bounds exist
+          // (`children` order: operand, then lower, then upper).
+          @ir.ExprNode::Clip(x, lo, hi) => {
+            stack.push(x)
+            if lo is Some(l) {
+              stack.push(l)
+            }
+            if hi is Some(h) {
+              stack.push(h)
+            }
+          }
+          @ir.ExprNode::IsBetween(x, lo, hi, _) => {
+            stack.push(x)
+            stack.push(lo)
+            stack.push(hi)
+          }
+        }
+    }
+  }
+  true
+}
+
+///|
+/// Recognise the single-pass fast-path shape — an aggregation directly over
+/// a bare column reference, `col(name).<agg>()` for any aggregation op —
+/// returning the source column name and reduction op,
+/// else `None`. Top-level aliases are peeled first (`strip_alias_layers`): 
+/// `col(name).sum().with_alias("total")` is the common idiom and an alias only
+/// renames the result (the output name comes from `Expr::output_name` either
+/// way). The aggregation's operand must be a *bare* `Col`; an aggregation over
+/// a derived operand (`(col("a") - col("b")).sum()`, `col("x").cast(...).sum()`)
+/// or any non-aggregation returns `None` and takes the general per-group
+/// evaluator — which the fast path reproduces cell for cell.
+fn bare_col_agg(expr : @ir.ExprNode) -> (String, ReduceOp)? {
+  match strip_alias_layers(expr) {
+    // The `Agg`'s operand is an AST node, so its `Col`-ness is a second step.
+    @ir.ExprNode::Agg(op, operand) =>
+      match operand {
+        @ir.ExprNode::Col(name) => Some((name, op))
+        _ => None
+      }
+    _ => None
+  }
+}
+
+///|
+/// Re-validate the `group_by` invariants before any fold: the fields are
+/// `priv`, so no cross-package caller can reach the `groups` arrays — but
+/// in-package code (a future refactor, or the whitebox corruption test)
+/// could still empty a group or plant a stray row index after construction.
+/// The folds below index the source unguarded on the strength of these
+/// invariants (`g[0]`, the bare-column reducer's per-row read), so a corrupted
+/// handle must raise here — one O(total indices) pass, the same order as
+/// `agg` itself — instead of aborting downstream (the never-abort gate).
+/// Shared by `agg` and the whole `group_by_convenience` family, which read
+/// the groups just as directly.
+fn GroupedDataFrame::check_handle_invariants(
+  self : GroupedDataFrame,
+) -> Unit raise @types.DataError {
+  let nrows = self.source.nrows()
+  for g in self.groups {
+    if g.is_empty() {
+      raise @types.DataError::InvalidOperation(
+        "corrupted GroupedDataFrame: a group is empty (groups were mutated after group_by)",
+      )
+    }
+    for i in g {
+      if i < 0 || i >= nrows {
+        raise @types.DataError::InvalidOperation(
+          "corrupted GroupedDataFrame: group row index \{i} outside [0, \{nrows}) (groups were mutated after group_by)",
+        )
+      }
+    }
+  }
+}

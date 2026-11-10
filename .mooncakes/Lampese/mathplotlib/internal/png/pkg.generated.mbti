@@ -1,0 +1,19 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Lampese/mathplotlib/internal/png"
+
+// Values
+pub fn encode_rgba(Int, Int, BytesView) -> Bytes raise EncodeError
+
+pub fn rgba_data_uri(Int, Int, BytesView) -> String raise EncodeError
+
+// Errors
+pub(all) suberror EncodeError {
+  InvalidDimensions
+  InvalidPixelCount
+}
+
+// Types and methods
+
+// Type aliases
+
+// Traits

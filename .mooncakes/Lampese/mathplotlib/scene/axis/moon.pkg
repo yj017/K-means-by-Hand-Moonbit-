@@ -1,0 +1,10 @@
+import {
+  "Lampese/mathplotlib/config",
+  "Lampese/mathplotlib/core",
+  "Lampese/mathplotlib/ticker/category",
+  "Lampese/mathplotlib/ticker/date",
+  "Lampese/mathplotlib/ticker",
+  "Lampese/mathplotlib/ticker/scale",
+  "moonbitlang/core/bigint",
+  "moonbitlang/core/math",
+}

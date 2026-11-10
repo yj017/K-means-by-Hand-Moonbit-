@@ -1,0 +1,88 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "ihb2032/MoonFrame/internal/column"
+
+import {
+  "ihb2032/MoonFrame/internal/buffer",
+  "ihb2032/MoonFrame/types",
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn scalar_of(@types.DataType, ColumnData, Int32) -> @types.Scalar
+
+// Errors
+
+// Types and methods
+pub struct BuiltinColumn {
+  // private fields
+} derive(@debug.Debug)
+pub fn BuiltinColumn::from_bool_options(Array[Bool?]) -> Self
+pub fn BuiltinColumn::from_bools(Array[Bool]) -> Self
+pub fn BuiltinColumn::from_float_options(Array[Double?]) -> Self
+pub fn BuiltinColumn::from_floats(Array[Double]) -> Self
+pub fn BuiltinColumn::from_i64_options(@types.DataType, Array[Int64?]) -> Self
+pub fn BuiltinColumn::from_int_options(Array[Int64?]) -> Self
+pub fn BuiltinColumn::from_ints(Array[Int64]) -> Self
+pub fn BuiltinColumn::from_scalars(@types.DataType, Array[@types.Scalar], name~ : String) -> Self raise @types.DataError
+pub fn BuiltinColumn::from_string_options(Array[String?]) -> Self
+pub fn BuiltinColumn::from_strings(Array[String]) -> Self
+pub fn BuiltinColumn::to_repr(Self) -> @debug.Repr
+
+pub(all) enum ColumnData {
+  I64(ArrayView[Int64])
+  F64(ArrayView[Double])
+  Bool(ArrayView[Bool])
+  Utf8(@buffer.Utf8Array)
+} derive(@debug.Debug)
+pub fn ColumnData::to_repr(Self) -> @debug.Repr
+
+pub(all) enum ColumnStorage {
+  Builtin(BuiltinColumn)
+  Numeric(NumericColumn)
+} derive(@debug.Debug)
+pub fn ColumnStorage::cast(Self, @types.DataType) -> Self raise @types.DataError
+pub fn ColumnStorage::data(Self) -> ColumnData
+pub fn ColumnStorage::dtype(Self) -> @types.DataType
+pub fn ColumnStorage::equal(Self, Self) -> Bool
+pub fn ColumnStorage::get(Self, Int32) -> @types.Scalar raise @types.DataError
+pub fn ColumnStorage::is_empty(Self) -> Bool
+pub fn ColumnStorage::is_null(Self, Int32) -> Bool raise @types.DataError
+pub fn ColumnStorage::kind(Self) -> StorageKind
+pub fn ColumnStorage::len(Self) -> Int32
+pub fn ColumnStorage::not_equal(Self, Self) -> Bool
+pub fn ColumnStorage::null_count(Self) -> Int32
+pub fn ColumnStorage::slice_total(Self, Int32, Int32) -> Self
+pub fn ColumnStorage::take(Self, Array[Int32]) -> Self raise @types.DataError
+pub fn ColumnStorage::to_repr(Self) -> @debug.Repr
+pub fn ColumnStorage::validity(Self) -> @buffer.Bitmap
+pub impl Eq for ColumnStorage
+
+pub struct NumericColumn {
+  // private fields
+} derive(@debug.Debug)
+pub fn NumericColumn::from_floats(ArrayView[Double]) -> Self
+pub fn NumericColumn::from_ints(ArrayView[Int64]) -> Self
+pub fn NumericColumn::max(Self) -> @types.Scalar
+pub fn NumericColumn::mean(Self) -> Double raise @types.DataError
+pub fn NumericColumn::min(Self) -> @types.Scalar
+pub fn NumericColumn::numeric_data(Self) -> NumericData
+pub fn NumericColumn::sum(Self) -> @types.Scalar
+pub fn NumericColumn::to_repr(Self) -> @debug.Repr
+
+pub(all) enum NumericData {
+  Int(ArrayView[Int64])
+  Float(ArrayView[Double])
+} derive(@debug.Debug)
+pub fn NumericData::to_repr(Self) -> @debug.Repr
+
+pub(all) enum StorageKind {
+  Builtin
+  Numeric
+} derive(Eq, @debug.Debug)
+pub fn StorageKind::equal(Self, Self) -> Bool
+pub fn StorageKind::not_equal(Self, Self) -> Bool
+pub fn StorageKind::to_repr(Self) -> @debug.Repr
+
+// Type aliases
+
+// Traits

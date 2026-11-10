@@ -1,0 +1,98 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Lampese/mathplotlib/scene/gridspec"
+
+// Values
+pub fn gridspec(Int, Int, hspace? : Double, vspace? : Double, width_ratios? : Array[Double], height_ratios? : Array[Double]) -> GridSpec raise LayoutError
+
+pub fn rect(Double, Double, Double, Double) -> Rect
+
+// Errors
+pub(all) suberror LayoutError {
+  InvalidDimension
+  InvalidSpacing
+  InvalidRatios
+  InvalidBounds
+  CellOutOfBounds
+}
+
+// Types and methods
+pub struct GridSpec {
+  rows : Int
+  columns : Int
+  mut hspace : Double
+  mut vspace : Double
+  mut width_ratios : Array[Double]
+  mut height_ratios : Array[Double]
+  share_x : ShareMode
+  share_y : ShareMode
+  // private fields
+}
+pub fn GridSpec::cell(Self, Int, Int, Int, Int, Int) -> Rect raise LayoutError
+pub fn GridSpec::cell_spec(Self, Int, Int) -> SubplotSpec raise LayoutError
+pub fn GridSpec::cells(Self, Int, Int, Int) -> Array[Rect] raise LayoutError
+pub fn GridSpec::columns(Self) -> Int
+pub fn GridSpec::geometry(Self) -> (Int, Int)
+pub fn GridSpec::get_geometry(Self) -> (Int, Int)
+pub fn GridSpec::get_height_ratios(Self) -> Array[Double]
+pub fn GridSpec::get_width_ratios(Self) -> Array[Double]
+pub fn GridSpec::height_ratios(Self) -> Array[Double]
+pub fn GridSpec::hspace(Self) -> Double
+pub fn GridSpec::index(Self, Int) -> SubplotSpec raise LayoutError
+pub fn GridSpec::rows(Self) -> Int
+pub fn GridSpec::set_height_ratios(Self, Array[Double]) -> Unit raise LayoutError
+pub fn GridSpec::set_hspace(Self, Double) -> Unit raise LayoutError
+pub fn GridSpec::set_vspace(Self, Double) -> Unit raise LayoutError
+pub fn GridSpec::set_width_ratios(Self, Array[Double]) -> Unit raise LayoutError
+pub fn GridSpec::share_x_mode(Self) -> ShareMode
+pub fn GridSpec::share_y_mode(Self) -> ShareMode
+pub fn GridSpec::subplot(Self, Int, Int, Int, Int) -> SubplotSpec raise LayoutError
+pub fn GridSpec::vspace(Self) -> Double
+pub fn GridSpec::width_ratios(Self) -> Array[Double]
+pub fn GridSpec::with_shared_axes(Self, ShareMode, ShareMode) -> Self
+
+pub struct Rect {
+  x : Double
+  y : Double
+  width : Double
+  height : Double
+}
+pub fn Rect::height(Self) -> Double
+pub fn Rect::width(Self) -> Double
+pub fn Rect::x(Self) -> Double
+pub fn Rect::y(Self) -> Double
+
+pub(all) enum ShareMode {
+  None
+  All
+  Row
+  Column
+}
+
+pub struct SubplotSpec {
+  grid : GridSpec
+  row_start : Int
+  row_end : Int
+  column_start : Int
+  column_end : Int
+}
+pub fn SubplotSpec::column_end(Self) -> Int
+pub fn SubplotSpec::column_span(Self) -> (Int, Int)
+pub fn SubplotSpec::column_start(Self) -> Int
+pub fn SubplotSpec::get_geometry(Self) -> (Int, Int, Int, Int)
+pub fn SubplotSpec::get_gridspec(Self) -> GridSpec
+pub fn SubplotSpec::get_topmost_subplotspec(Self) -> Self
+pub fn SubplotSpec::grid(Self) -> GridSpec
+pub fn SubplotSpec::is_first_col(Self) -> Bool
+pub fn SubplotSpec::is_first_row(Self) -> Bool
+pub fn SubplotSpec::is_last_col(Self) -> Bool
+pub fn SubplotSpec::is_last_row(Self) -> Bool
+pub fn SubplotSpec::rect(Self, Int, Int, Int) -> Rect
+pub fn SubplotSpec::rect_with_bounds(Self, Int, Int, Double, Double, Double, Double, wspace? : Double, hspace? : Double) -> Rect
+pub fn SubplotSpec::row_end(Self) -> Int
+pub fn SubplotSpec::row_span(Self) -> (Int, Int)
+pub fn SubplotSpec::row_start(Self) -> Int
+pub fn SubplotSpec::subgridspec(Self, Int, Int, hspace? : Double, vspace? : Double, width_ratios? : Array[Double], height_ratios? : Array[Double]) -> GridSpec raise LayoutError
+
+// Type aliases
+
+// Traits

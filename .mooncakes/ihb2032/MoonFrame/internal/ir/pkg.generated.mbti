@@ -1,0 +1,170 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "ihb2032/MoonFrame/internal/ir"
+
+import {
+  "ihb2032/MoonFrame/series",
+  "ihb2032/MoonFrame/types",
+  "moonbitlang/core/debug",
+  "moonbitlang/core/set",
+}
+
+// Values
+
+// Errors
+
+// Types and methods
+pub(all) enum BinOp {
+  Add
+  Sub
+  Mul
+  Div
+  FloorDiv
+  Mod
+  Pow
+  Atan2
+  Hypot
+  Eq
+  Ne
+  Lt
+  Le
+  Gt
+  Ge
+  And
+  Or
+} derive(Eq, @debug.Debug)
+pub fn BinOp::equal(Self, Self) -> Bool
+pub fn BinOp::not_equal(Self, Self) -> Bool
+pub fn BinOp::to_repr(Self) -> @debug.Repr
+
+pub(all) enum ExprNode {
+  Col(String)
+  Lit(@types.Scalar)
+  LitSeries(@series.Series)
+  Binary(BinOp, ExprNode, ExprNode)
+  Unary(UnOp, ExprNode)
+  Agg(@series.ReduceOp, ExprNode)
+  Str(StrOp, ExprNode)
+  Positional(PositionalOp, ExprNode)
+  Cast(ExprNode, @types.DataType)
+  Alias(ExprNode, String)
+  Ternary(ExprNode, ExprNode, ExprNode)
+  FillNull(ExprNode, ExprNode)
+  FillNan(ExprNode, ExprNode)
+  Diff(ExprNode, Int32)
+  Clip(ExprNode, ExprNode?, ExprNode?)
+  IsIn(ExprNode, ArrayView[@types.Scalar])
+  IsBetween(ExprNode, ExprNode, ExprNode, @types.ClosedInterval)
+  Map(String, ArrayView[ExprNode], (Array[@types.Scalar]) -> @types.Scalar raise @types.DataError)
+  MapBatches(String, ArrayView[ExprNode], Bool, (Array[@series.Series]) -> @series.Series raise @types.DataError)
+}
+pub fn ExprNode::children(Self) -> Array[Self]
+pub fn ExprNode::each_child(Self, (Self) -> Unit) -> Unit
+pub fn ExprNode::output_name(Self) -> String
+pub fn ExprNode::referenced_columns(Self) -> @set.Set[String]
+pub fn ExprNode::rename_columns(Self, Map[String, String]) -> Self
+
+pub(all) enum PositionalOp {
+  Shift(Int32, @types.Scalar)
+  CumSum(Bool)
+  CumMin(Bool)
+  CumMax(Bool)
+  CumProd(Bool)
+  CumCount(Bool)
+  Rank(@types.RankMethod, Bool)
+  ArgSort(Bool, Bool)
+  Rolling(RollStat, Int32, Int32?, Bool)
+  ForwardFill(Int32?)
+  BackwardFill(Int32?)
+  UniqueCounts
+  IsFirstDistinct
+  IsLastDistinct
+} derive(Eq, @debug.Debug)
+pub fn PositionalOp::equal(Self, Self) -> Bool
+pub fn PositionalOp::not_equal(Self, Self) -> Bool
+pub fn PositionalOp::to_repr(Self) -> @debug.Repr
+
+pub(all) enum RollStat {
+  Sum
+  Mean
+  Min
+  Max
+  Std
+  Var
+  Median
+} derive(Eq, @debug.Debug)
+pub fn RollStat::equal(Self, Self) -> Bool
+pub fn RollStat::not_equal(Self, Self) -> Bool
+pub fn RollStat::to_repr(Self) -> @debug.Repr
+
+pub(all) enum StrOp {
+  ToUppercase
+  ToLowercase
+  StripChars
+  LenChars
+  Contains(String)
+  StartsWith(String)
+  EndsWith(String)
+  Replace(String, String)
+  ReplaceAll(String, String)
+  Reverse
+  PadStart(Int32, Char)
+  PadEnd(Int32, Char)
+  ContainsRegex(String)
+  ReplaceRegex(String, String)
+  ReplaceAllRegex(String, String)
+  Extract(String, Int32)
+  CountMatches(String)
+  Slice(Int32, Int32?)
+  LenBytes
+  StripCharsCustom(String)
+  SplitGet(String, Int32)
+  ZFill(Int32)
+} derive(Eq, @debug.Debug)
+pub fn StrOp::equal(Self, Self) -> Bool
+pub fn StrOp::not_equal(Self, Self) -> Bool
+pub fn StrOp::to_repr(Self) -> @debug.Repr
+
+pub(all) enum UnOp {
+  Neg
+  Not
+  IsNull
+  IsNotNull
+  IsNan
+  IsNotNan
+  IsFinite
+  IsInfinite
+  DtYear
+  DtMonth
+  DtDay
+  DtWeekday
+  Abs
+  Floor
+  Ceil
+  Sign
+  Round(Int32)
+  Sin
+  Cos
+  Tan
+  Asin
+  Acos
+  Atan
+  Sinh
+  Cosh
+  Tanh
+  Asinh
+  Acosh
+  Atanh
+  Ln
+  Log2
+  Log10
+  Exp
+  Cbrt
+  Sqrt
+} derive(Eq, @debug.Debug)
+pub fn UnOp::equal(Self, Self) -> Bool
+pub fn UnOp::not_equal(Self, Self) -> Bool
+pub fn UnOp::to_repr(Self) -> @debug.Repr
+
+// Type aliases
+
+// Traits

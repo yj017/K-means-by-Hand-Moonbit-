@@ -1,0 +1,42 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "caijiewei295/tzif-engine/posix"
+
+import {
+  "caijiewei295/tzif-engine/types",
+}
+
+// Values
+pub fn apply_posix_rule(@types.PosixTzRule, Int64) -> Result[(Int, Bool, String), @types.TzifError]
+
+pub fn checked_add_epoch_seconds(Int64, Int64) -> Result[Int64, @types.TzifError]
+
+pub fn checked_sub_epoch_seconds(Int64, Int64) -> Result[Int64, @types.TzifError]
+
+pub fn civil_from_days(Int64) -> Result[(Int, Int, Int), @types.TzifError]
+
+pub fn compose_epoch(Int, Int, Int, Int, Int, Int) -> Result[Int64, @types.TzifError]
+
+pub fn compute_transition_point(@types.PosixTransitionRule, Int, Int) -> Result[Int64, @types.TzifError]
+
+pub fn day_of_week_of_epoch(Int64) -> Int
+
+pub fn days_from_civil(Int, Int, Int) -> Int64
+
+pub fn days_in_month(Int, Int) -> Int
+
+pub fn decompose_epoch(Int64) -> Result[(Int, Int, Int, Int, Int, Int), @types.TzifError]
+
+pub fn is_leap_year(Int) -> Bool
+
+pub fn is_valid_civil_time(Int, Int, Int) -> Bool
+
+pub fn is_valid_date(Int, Int, Int) -> Bool
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+

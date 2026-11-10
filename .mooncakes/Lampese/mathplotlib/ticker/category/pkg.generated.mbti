@@ -1,0 +1,22 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Lampese/mathplotlib/ticker/category"
+
+// Values
+pub fn category() -> CategoryAxis
+
+// Errors
+
+// Types and methods
+pub struct CategoryAxis {
+  labels : Array[String]
+}
+pub fn CategoryAxis::encode(Self, Array[String]) -> (Array[Double], Self)
+pub fn CategoryAxis::labels(Self) -> Array[String]
+pub fn CategoryAxis::length(Self) -> Int
+pub fn CategoryAxis::tick_labels(Self) -> Array[String]
+pub fn CategoryAxis::tick_positions(Self) -> Array[Double]
+pub fn CategoryAxis::with_labels(Self, Array[String]) -> Self
+
+// Type aliases
+
+// Traits

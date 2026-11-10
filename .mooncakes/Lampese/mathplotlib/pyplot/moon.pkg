@@ -1,0 +1,18 @@
+import {
+  "Lampese/mathplotlib/config",
+  "Lampese/mathplotlib/core",
+  "Lampese/mathplotlib/core/colors",
+  "Lampese/mathplotlib/scene/boxplot",
+  "Lampese/mathplotlib/scene",
+  "Lampese/mathplotlib/scene/colorbar",
+  "Lampese/mathplotlib/scene/gridspec",
+  "Lampese/mathplotlib/ticker/scale",
+  "Lampese/mathplotlib/ticker",
+  "Lampese/mathplotlib/ticker/date",
+  "Lampese/mathplotlib/transforms",
+  "moonbitlang/core/ref",
+}
+
+import {
+  "Lampese/mathplotlib/ticker/date/tzdb",
+} for "test"

@@ -1,0 +1,10 @@
+import {
+  "moonbitlang/x/fs",
+}
+
+options(
+  targets: {
+    "file_js.mbt": [ "js" ],
+    "file_runtime.mbt": [ "native", "wasm", "wasm-gc", "llvm" ],
+  },
+)

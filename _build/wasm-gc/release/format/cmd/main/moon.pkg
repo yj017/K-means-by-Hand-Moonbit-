@@ -1,0 +1,21 @@
+// import {
+//   "username/hello_moon" @lib,
+// }
+
+pkgtype(kind: "executable")
+
+import {
+  "username/hello_moon",
+}
+
+import {
+  "ihb2032/MoonFrame" @moonframe,
+  "ihb2032/MoonFrame/io",
+  "Lampese/mathplotlib",
+  "moonbitlang/x/fs",
+}
+
+import {
+  "moonbitlang/core",
+  "moonbitlang/core/strconv",
+}

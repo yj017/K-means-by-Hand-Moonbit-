@@ -1,0 +1,186 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Lampese/mathplotlib/config"
+
+import {
+  "Lampese/mathplotlib/core",
+  "moonbitlang/core/bigint",
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn axes_autolimit_mode() -> String
+
+pub fn classic_mode() -> Bool
+
+pub fn color_cycle() -> Array[String]
+
+pub fn date_autoformats() -> Array[String]
+
+pub fn date_autoformatter(String) -> String raise @core.DataError
+
+pub fn date_converter() -> String
+
+pub fn date_epoch() -> String
+
+pub fn date_interval_multiples() -> Bool
+
+pub fn formatter_limits() -> Array[@bigint.BigInt]
+
+pub fn formatter_min_exponent() -> @bigint.BigInt
+
+pub fn formatter_offset_threshold() -> @bigint.BigInt
+
+pub fn formatter_use_locale() -> Bool
+
+pub fn formatter_use_math_text() -> Bool
+
+pub fn formatter_use_offset() -> Bool
+
+pub fn grid_color() -> String
+
+pub fn grid_linewidth() -> Double
+
+pub fn grid_visible() -> Bool
+
+pub fn lines_dashdot_pattern() -> Array[Double]
+
+pub fn lines_dashed_pattern() -> Array[Double]
+
+pub fn lines_dotted_pattern() -> Array[Double]
+
+pub fn lines_scale_dashes() -> Bool
+
+pub fn minor_tick_divisions(horizontal? : Bool) -> MinorTickDivisions
+
+pub fn minor_ticks_visible(horizontal? : Bool) -> Bool
+
+pub fn numeric_locale() -> NumericLocale
+
+pub fn rc_params() -> RcParams
+
+pub fn reset() -> Unit
+
+pub fn set_axes_autolimit_mode(String) -> Unit raise @core.DataError
+
+pub fn set_classic_mode(Bool) -> Unit
+
+pub fn set_color_cycle(Array[String]) -> Unit raise @core.DataError
+
+pub fn set_date_autoformatter(String, String) -> Unit raise @core.DataError
+
+pub fn set_date_converter(String) -> Unit raise @core.DataError
+
+pub fn set_date_epoch(String) -> Unit raise @core.DataError
+
+pub fn set_date_interval_multiples(Bool) -> Unit
+
+pub fn set_formatter_limits(Array[@bigint.BigInt]) -> Unit raise @core.DataError
+
+pub fn set_formatter_min_exponent(@bigint.BigInt) -> Unit
+
+pub fn set_formatter_offset_threshold(@bigint.BigInt) -> Unit
+
+pub fn set_formatter_use_locale(Bool) -> Unit
+
+pub fn set_formatter_use_math_text(Bool) -> Unit
+
+pub fn set_formatter_use_offset(Bool) -> Unit
+
+pub fn set_grid(Bool, String, Double) -> Unit raise @core.DataError
+
+pub fn set_lines_dashdot_pattern(Array[Double]) -> Unit
+
+pub fn set_lines_dashed_pattern(Array[Double]) -> Unit
+
+pub fn set_lines_dotted_pattern(Array[Double]) -> Unit
+
+pub fn set_lines_scale_dashes(Bool) -> Unit
+
+pub fn set_minor_tick_divisions(MinorTickDivisions, horizontal? : Bool) -> Unit raise @core.DataError
+
+pub fn set_minor_ticks_visible(Bool, horizontal? : Bool) -> Unit
+
+pub fn set_numeric_locale(NumericLocale) -> Unit
+
+pub fn set_text_usetex(Bool) -> Unit
+
+pub fn set_timezone(String) -> Unit
+
+pub fn set_unicode_minus(Bool) -> Unit
+
+pub fn set_x_margin(Double) -> Unit raise @core.DataError
+
+pub fn set_y_margin(Double) -> Unit raise @core.DataError
+
+pub fn text_usetex() -> Bool
+
+pub fn timezone() -> String
+
+pub fn unicode_minus() -> Bool
+
+pub fn x_margin() -> Double
+
+pub fn y_margin() -> Double
+
+// Errors
+
+// Types and methods
+pub(all) enum MinorTickDivisions {
+  Text(String)
+  Number(Double)
+  Integer(@bigint.BigInt)
+} derive(Eq, @debug.Debug)
+pub fn MinorTickDivisions::equal(Self, Self) -> Bool
+pub fn MinorTickDivisions::not_equal(Self, Self) -> Bool
+pub fn MinorTickDivisions::to_repr(Self) -> @debug.Repr
+
+pub struct NumericLocale {
+  // private fields
+}
+pub fn NumericLocale::decimal_point(Self) -> String
+pub fn NumericLocale::grouping(Self) -> Array[Int]
+pub fn NumericLocale::new(decimal_point? : String, thousands_sep? : String, grouping? : Array[Int]) -> Self
+pub fn NumericLocale::thousands_sep(Self) -> String
+
+pub struct RcParams {
+  mut date_epoch : String
+  color_cycle : Array[String]
+  mut x_margin : Double
+  mut y_margin : Double
+  mut grid_visible : Bool
+  mut grid_color : String
+  mut grid_linewidth : Double
+  // private fields
+}
+pub fn RcParams::axes_autolimit_mode(Self) -> String
+pub fn RcParams::classic_mode(Self) -> Bool
+pub fn RcParams::color_cycle(Self) -> Array[String]
+pub fn RcParams::date_autoformats(Self) -> Array[String]
+pub fn RcParams::date_autoformatter(Self, String) -> String raise @core.DataError
+pub fn RcParams::date_converter(Self) -> String
+pub fn RcParams::date_epoch(Self) -> String
+pub fn RcParams::date_interval_multiples(Self) -> Bool
+pub fn RcParams::formatter_limits(Self) -> Array[@bigint.BigInt]
+pub fn RcParams::formatter_min_exponent(Self) -> @bigint.BigInt
+pub fn RcParams::formatter_offset_threshold(Self) -> @bigint.BigInt
+pub fn RcParams::formatter_use_locale(Self) -> Bool
+pub fn RcParams::formatter_use_math_text(Self) -> Bool
+pub fn RcParams::formatter_use_offset(Self) -> Bool
+pub fn RcParams::grid_color(Self) -> String
+pub fn RcParams::grid_linewidth(Self) -> Double
+pub fn RcParams::grid_visible(Self) -> Bool
+pub fn RcParams::lines_dashdot_pattern(Self) -> Array[Double]
+pub fn RcParams::lines_dashed_pattern(Self) -> Array[Double]
+pub fn RcParams::lines_dotted_pattern(Self) -> Array[Double]
+pub fn RcParams::lines_scale_dashes(Self) -> Bool
+pub fn RcParams::minor_tick_divisions(Self, horizontal? : Bool) -> MinorTickDivisions
+pub fn RcParams::minor_ticks_visible(Self, horizontal? : Bool) -> Bool
+pub fn RcParams::text_usetex(Self) -> Bool
+pub fn RcParams::timezone(Self) -> String
+pub fn RcParams::unicode_minus(Self) -> Bool
+pub fn RcParams::x_margin(Self) -> Double
+pub fn RcParams::y_margin(Self) -> Double
+
+// Type aliases
+
+// Traits

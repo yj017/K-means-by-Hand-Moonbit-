@@ -1,0 +1,6 @@
+import {
+  "ihb2032/MoonFrame" @moonframe,
+  "ihb2032/MoonFrame/examples/data_cleaning/clean",
+}
+
+pkgtype(kind: "executable")

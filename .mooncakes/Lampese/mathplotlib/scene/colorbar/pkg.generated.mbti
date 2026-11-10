@@ -1,0 +1,36 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Lampese/mathplotlib/scene/colorbar"
+
+import {
+  "Lampese/mathplotlib/core/colors",
+}
+
+// Values
+pub fn colorbar(@colors.ColorNorm, @colors.ColorMap, orientation? : Orientation) -> Colorbar
+
+// Errors
+
+// Types and methods
+pub struct Colorbar {
+  norm : @colors.ColorNorm
+  cmap : @colors.ColorMap
+  orientation : Orientation
+  mut label : String?
+  mut tick_count : Int
+}
+pub fn Colorbar::cmap(Self) -> @colors.ColorMap
+pub fn Colorbar::label(Self) -> String?
+pub fn Colorbar::norm(Self) -> @colors.ColorNorm
+pub fn Colorbar::orientation(Self) -> Orientation
+pub fn Colorbar::set_label(Self, String) -> Unit
+pub fn Colorbar::set_tick_count(Self, Int) -> Unit
+pub fn Colorbar::tick_count(Self) -> Int
+
+pub(all) enum Orientation {
+  Vertical
+  Horizontal
+}
+
+// Type aliases
+
+// Traits

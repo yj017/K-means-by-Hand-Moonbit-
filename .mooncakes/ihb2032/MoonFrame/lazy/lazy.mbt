@@ -1,0 +1,679 @@
+///|
+/// The public face of the lazy layer: `LazyFrame` wraps a `LogicalPlan`
+/// and grows it through builder methods that mirror the eager `DataFrame`
+/// verbs name-for-name. Building is **total** — every builder just wraps
+/// the plan in one more node, so a `LazyFrame` can always be constructed,
+/// chained, and `explain`ed, even when collecting it would fail. All
+/// computation (and all failure) happens in `collect`, which optimizes the
+/// plan and then interprets it through the public eager operators:
+/// `LazyFrame::LazyFrame(df).f(…).g(…).collect()` equals `df.f(…).g(…)` — the
+/// faithful-deferred-executor contract the package's tests pin, and
+/// the reason the optimizer's rewrites have to preserve results rather than
+/// merely preserve rows.
+///
+/// Every builder that takes an array copies it, so a plan can never
+/// observe later mutation of a caller's argument — the immutability the
+/// paragraph above promises holds for the arguments too, not just the
+/// captured frames.
+///
+/// The entry point is the type's own constructor, `LazyFrame::LazyFrame(df)`
+/// — not a `DataFrame` method, which would have to live in `frame` and close a
+/// `frame ↔ lazy` import cycle, and not `lazy(df)`, since `lazy` is a MoonBit
+/// reserved word.
+pub struct LazyFrame {
+  priv plan : LogicalPlan
+}
+
+///|
+/// Wrap an in-memory frame as the leaf of a new plan (a `Scan` node):
+/// `LazyFrame::LazyFrame(df).filter(…).collect()`. Total — the frame is
+/// captured as-is, and frames are immutable, so the plan can never observe
+/// later state.
+pub fn LazyFrame::LazyFrame(df : @frame.DataFrame) -> LazyFrame {
+  { plan: Scan(InMemory(df)), }
+}
+
+///|
+/// Defer `DataFrame::filter`: keep the rows where `predicate`
+/// evaluates to `true` (`false` / null cells drop the row). Total at build
+/// time — a predicate over missing columns or of a non-`Bool` type only
+/// fails when the plan is collected.
+pub fn LazyFrame::filter(self : LazyFrame, predicate : @expr.Expr) -> LazyFrame {
+  { plan: Unary(self.plan, Filter(predicate)), }
+}
+
+///|
+/// Defer `DataFrame::with_columns`: derive new columns (or replace
+/// same-named ones) from expressions, keeping every existing column.
+pub fn LazyFrame::with_columns(
+  self : LazyFrame,
+  exprs : Array[@expr.Expr],
+) -> LazyFrame {
+  { plan: Unary(self.plan, WithColumns(exprs.copy())), }
+}
+
+///|
+/// Defer `DataFrame::select`: project the frame down to exactly the
+/// evaluated expressions (an all-scalar selection collapses to one row,
+/// like its eager counterpart).
+pub fn LazyFrame::select(
+  self : LazyFrame,
+  exprs : Array[@expr.Expr],
+) -> LazyFrame {
+  { plan: Unary(self.plan, Select(exprs.copy())), }
+}
+
+///|
+/// Defer `DataFrame::sort`: reorder rows by one or more
+/// `(key, descending, nulls_last)` keys, later keys breaking ties. Each key
+/// is an `Expr` evaluated over the whole frame at collect time, so a
+/// missing column or a dtype clash only surfaces then.
+pub fn LazyFrame::sort(
+  self : LazyFrame,
+  by : Array[(@expr.Expr, Bool, Bool)],
+) -> LazyFrame {
+  { plan: Unary(self.plan, Sort(by.copy())), }
+}
+
+///|
+/// Defer `DataFrame::head`: the first `n` rows. Inherits eager `head`'s
+/// total clamp — `n` beyond the frame keeps every row, a negative `n`
+/// keeps every row but the last `|n|` — so collecting can't fail on this
+/// node. Also exposed under its SQL name `limit` (via `#alias`): the same
+/// deferred node, so `lf.limit(n)` collects to the same rows and
+/// `explain`s as `HEAD n`.
+#alias(limit)
+pub fn LazyFrame::head(self : LazyFrame, n : Int32) -> LazyFrame {
+  { plan: Unary(self.plan, Head(n)), }
+}
+
+///|
+/// Defer `DataFrame::tail`: the last `n` rows, with the same total clamp
+/// as `head`.
+pub fn LazyFrame::tail(self : LazyFrame, n : Int32) -> LazyFrame {
+  { plan: Unary(self.plan, Tail(n)), }
+}
+
+///|
+/// Defer `DataFrame::slice`: a saturating length-first row window, an
+/// omitted `length` running to the end. Like eager `slice` this never
+/// fails — saturation resolves against the collected frame's height.
+pub fn LazyFrame::slice(
+  self : LazyFrame,
+  offset : Int32,
+  length? : Int32,
+) -> LazyFrame {
+  { plan: Unary(self.plan, Slice(offset, length)), }
+}
+
+///|
+/// Defer `DataFrame::gather_every`: every `n`-th row from `offset`. The
+/// stride validation (`n >= 1`, a non-negative `offset`) surfaces as the
+/// eager error at collect, keeping the two layers' failures identical.
+pub fn LazyFrame::gather_every(
+  self : LazyFrame,
+  n : Int32,
+  offset~ : Int32 = 0,
+) -> LazyFrame {
+  { plan: Unary(self.plan, GatherEvery(n, offset)), }
+}
+
+///|
+/// Defer the first row as a 1-row frame (an exclusively lazy verb — the
+/// eager face reaches the same rows through `head(1)`). A 0-row input
+/// collects to the 0-row frame: the `slice` window simply closes.
+pub fn LazyFrame::first(self : LazyFrame) -> LazyFrame {
+  { plan: Unary(self.plan, Slice(0, Some(1))), }
+}
+
+///|
+/// Defer the last row as a 1-row frame (an exclusively lazy verb, the twin
+/// of `first`): the window from one past-the-end — a negative offset
+/// counts from the end — so a 0-row input collects to the 0-row frame.
+pub fn LazyFrame::last(self : LazyFrame) -> LazyFrame {
+  { plan: Unary(self.plan, Slice(-1, None)), }
+}
+
+///|
+/// Defer `DataFrame::top_k`: the `k` rows largest under `by`, `reverse~`
+/// flipping the end. One node, not a sort+head composition, so the eager
+/// verb's argument validation (`k >= 0`, a non-empty `by`) surfaces at
+/// collect with the eager error.
+pub fn LazyFrame::top_k(
+  self : LazyFrame,
+  k : Int32,
+  by~ : Array[@expr.Expr],
+  reverse~ : Bool = false,
+) -> LazyFrame {
+  { plan: Unary(self.plan, TopK(k, by.copy(), reverse)), }
+}
+
+///|
+/// Defer `DataFrame::bottom_k`: the `k` rows smallest under `by`, `reverse~`
+/// flipping the end — `top_k`'s mirror with its own node for the same
+/// collect-time-validation reason.
+pub fn LazyFrame::bottom_k(
+  self : LazyFrame,
+  k : Int32,
+  by~ : Array[@expr.Expr],
+  reverse~ : Bool = false,
+) -> LazyFrame {
+  { plan: Unary(self.plan, BottomK(k, by.copy(), reverse)), }
+}
+
+///|
+/// Defer `DataFrame::drop`: remove the columns named by `exprs` (bare `col`
+/// references), keeping every other column. A name absent from the frame, or a
+/// non-`col` expression, surfaces as the eager `drop`'s error at collect time.
+pub fn LazyFrame::drop(
+  self : LazyFrame,
+  exprs : Array[@expr.Expr],
+) -> LazyFrame {
+  { plan: Unary(self.plan, Drop(exprs.copy())), }
+}
+
+///|
+/// Defer `DataFrame::rename`: apply each `(from, to)` rename in order. A
+/// missing source name or a colliding target surfaces at collect time.
+pub fn LazyFrame::rename(
+  self : LazyFrame,
+  pairs : Array[(String, String)],
+) -> LazyFrame {
+  { plan: Unary(self.plan, Rename(pairs.copy())), }
+}
+
+///|
+/// Defer `DataFrame::rename_with`: rename every column through `f`
+/// (`new = f(old)`). A collision — two columns `f` maps to the same name —
+/// surfaces as the eager `rename_with`'s `DuplicateColumn` at collect time.
+pub fn LazyFrame::rename_with(
+  self : LazyFrame,
+  f : (String) -> String,
+) -> LazyFrame {
+  { plan: Unary(self.plan, RenameWith(f)), }
+}
+
+///|
+/// Defer `DataFrame::reverse`: flip the row order at collect time. Total.
+pub fn LazyFrame::reverse(self : LazyFrame) -> LazyFrame {
+  { plan: Unary(self.plan, Reverse), }
+}
+
+///|
+/// Defer `DataFrame::with_row_index`: prepend an `Int` counter column named
+/// `name` (default `"index"`) running from `offset`. Total like every builder
+/// — a name that collides with an existing column surfaces as
+/// `DuplicateColumn` at `collect`, and an `offset` the counter would overflow
+/// as `InvalidOperation` there.
+pub fn LazyFrame::with_row_index(
+  self : LazyFrame,
+  name~ : String = "index",
+  offset~ : Int64 = 0,
+) -> LazyFrame {
+  { plan: Unary(self.plan, WithRowIndex(name, offset)), }
+}
+
+///|
+/// Defer `DataFrame::unique`: drop duplicate rows, keeping survivors in their
+/// original order. `subset` and `keep` mirror the eager verb — `subset` picks
+/// the columns forming the duplicate key (every column when omitted, and the
+/// output always carries all columns), `First` (the default) keeps each key's
+/// first occurrence, `Last` its last, and `None` keeps only rows that occur
+/// exactly once. Total like every builder: an unknown `subset` name surfaces
+/// as `ColumnNotFound` at `collect`.
+pub fn LazyFrame::unique(
+  self : LazyFrame,
+  subset? : Array[@expr.Expr],
+  keep~ : @frame.KeepStrategy = First,
+) -> LazyFrame {
+  { plan: Unary(self.plan, Unique(keep, subset.map(keys => keys.copy()))), }
+}
+
+///|
+/// Defer `DataFrame::drop_nulls`: drop every row with a null in `subset` (a
+/// list of `col` references), or — with no `subset` — in any column. A name
+/// absent from the frame surfaces at collect time.
+pub fn LazyFrame::drop_nulls(
+  self : LazyFrame,
+  subset? : Array[@expr.Expr],
+) -> LazyFrame {
+  { plan: Unary(self.plan, DropNulls(subset.map(s => s.copy()))), }
+}
+
+///|
+/// Defer `DataFrame::fill_null`: replace every null cell, in every column,
+/// with `value`. A column whose dtype does not match `value` surfaces the
+/// eager verb's error at collect time.
+pub fn LazyFrame::fill_null(
+  self : LazyFrame,
+  value : @types.Scalar,
+) -> LazyFrame {
+  { plan: Unary(self.plan, FillNull(value)), }
+}
+
+///|
+/// Defer `DataFrame::fill_null_forward`: every column's nulls filled from
+/// above, `limit?` capping the consecutive slots one value may fill. The
+/// `limit` validation surfaces as the eager error at collect.
+pub fn LazyFrame::fill_null_forward(
+  self : LazyFrame,
+  limit? : Int32,
+) -> LazyFrame {
+  { plan: Unary(self.plan, FillNullDir(false, limit)), }
+}
+
+///|
+/// Defer `DataFrame::fill_null_backward`: the from-below mirror of
+/// `fill_null_forward`.
+pub fn LazyFrame::fill_null_backward(
+  self : LazyFrame,
+  limit? : Int32,
+) -> LazyFrame {
+  { plan: Unary(self.plan, FillNullDir(true, limit)), }
+}
+
+///|
+/// Defer `DataFrame::fill_nan`: every `Float` column's `NaN` cells replaced
+/// with `value`, every other column verbatim.
+pub fn LazyFrame::fill_nan(self : LazyFrame, value : Double) -> LazyFrame {
+  { plan: Unary(self.plan, FillNan(value)), }
+}
+
+///|
+/// Defer `DataFrame::pivot`: the long → wide reshape, one output row per
+/// distinct `index?` combination and one output column per distinct `on~`
+/// value, slots collapsed by `aggregate_function?` (omitted: a multi-cell
+/// slot's `InvalidOperation`, at collect). The omission defaults resolve
+/// against the collected frame, so `collect` is the eager result verbatim;
+/// a derived key evaluates there too, exactly as the eager verb's.
+pub fn LazyFrame::pivot(
+  self : LazyFrame,
+  on~ : Array[@expr.Expr],
+  index? : Array[@expr.Expr],
+  values? : Array[@expr.Expr],
+  aggregate_function? : @frame.PivotAgg,
+) -> LazyFrame {
+  {
+    plan: Unary(
+      self.plan,
+      Pivot(
+        on.copy(),
+        index.map(keys => keys.copy()),
+        values.map(vs => vs.copy()),
+        aggregate_function,
+      ),
+    ),
+  }
+}
+
+///|
+/// Defer `DataFrame::unpivot`: the wide → long reshape, the `on?` columns
+/// folding into a `variable_name?` / `value_name?` pair under the `index?`
+/// columns. Building stays total; the name-only column resolution and the
+/// dtype unification surface as the eager verb's errors at collect.
+pub fn LazyFrame::unpivot(
+  self : LazyFrame,
+  on? : Array[@expr.Expr],
+  index? : Array[@expr.Expr],
+  variable_name~ : String = "variable",
+  value_name~ : String = "value",
+) -> LazyFrame {
+  {
+    plan: Unary(
+      self.plan,
+      Unpivot(
+        on.map(keys => keys.copy()),
+        index.map(keys => keys.copy()),
+        variable_name,
+        value_name,
+      ),
+    ),
+  }
+}
+
+///|
+/// Defer `DataFrame::sum`: collapse the plan to a 1-row frame of each column's
+/// sum (numeric columns their sum in the source dtype, non-numeric columns a
+/// `Null` cell). `collect` equals the eager `df.sum()`.
+pub fn LazyFrame::sum(self : LazyFrame) -> LazyFrame {
+  { plan: Unary(self.plan, Reduce(LazyReduceOp::Sum)), }
+}
+
+///|
+/// Defer `DataFrame::mean`: a 1-row frame of each numeric column's mean as
+/// `Float` (empty / all-null → `Null`), non-numeric columns a `Null` cell.
+pub fn LazyFrame::mean(self : LazyFrame) -> LazyFrame {
+  { plan: Unary(self.plan, Reduce(LazyReduceOp::Mean)), }
+}
+
+///|
+/// Defer `DataFrame::min`: a 1-row frame of each numeric column's minimum
+/// (`NaN` skipped, source dtype kept), non-numeric columns a `Null` cell.
+pub fn LazyFrame::min(self : LazyFrame) -> LazyFrame {
+  { plan: Unary(self.plan, Reduce(LazyReduceOp::Min)), }
+}
+
+///|
+/// Defer `DataFrame::max`: the maximum counterpart of `min`.
+pub fn LazyFrame::max(self : LazyFrame) -> LazyFrame {
+  { plan: Unary(self.plan, Reduce(LazyReduceOp::Max)), }
+}
+
+///|
+/// Defer `DataFrame::count`: a 1-row `Int` frame of each column's non-null cell
+/// count (every dtype).
+pub fn LazyFrame::count(self : LazyFrame) -> LazyFrame {
+  { plan: Unary(self.plan, Reduce(LazyReduceOp::Count)), }
+}
+
+///|
+/// Defer `DataFrame::null_count`: a 1-row `Int` frame of each column's null
+/// count — the complement of `count`.
+pub fn LazyFrame::null_count(self : LazyFrame) -> LazyFrame {
+  { plan: Unary(self.plan, Reduce(LazyReduceOp::NullCount)), }
+}
+
+///|
+/// Defer `DataFrame::median`: a 1-row frame of each numeric column's median
+/// as `Float` (`NaN` propagating, the two middles averaged on an even
+/// count), non-numeric / empty / all-null columns a `Null` cell.
+pub fn LazyFrame::median(self : LazyFrame) -> LazyFrame {
+  { plan: Unary(self.plan, Reduce(LazyReduceOp::Median)), }
+}
+
+///|
+/// Defer `DataFrame::quantile`: a 1-row frame of each numeric column's
+/// `q`-th quantile under `interpolation` (default `Nearest`), with `median`'s
+/// `Float`-or-`Null` cell rules. A `q` outside `[0, 1]` surfaces as
+/// `InvalidOperation` at collect.
+pub fn LazyFrame::quantile(
+  self : LazyFrame,
+  q : Double,
+  interpolation~ : @series.QuantileInterpolation = @series.QuantileInterpolation::Nearest,
+) -> LazyFrame {
+  { plan: Unary(self.plan, Reduce(LazyReduceOp::Quantile(q, interpolation))), }
+}
+
+///|
+/// Defer `DataFrame::std`: a 1-row frame of each numeric column's sample
+/// standard deviation (`ddof = 1`) as `Float`; a column with fewer than two
+/// non-null cells — like a non-numeric one — takes a `Null` cell.
+pub fn LazyFrame::std(self : LazyFrame) -> LazyFrame {
+  { plan: Unary(self.plan, Reduce(LazyReduceOp::Std)), }
+}
+
+///|
+/// Defer `DataFrame::variance`: the `ddof = 1` variance, `std`'s
+/// `Float`-or-`Null` cell rules. Spelled `variance` because `var` is a
+/// reserved MoonBit word.
+pub fn LazyFrame::variance(self : LazyFrame) -> LazyFrame {
+  { plan: Unary(self.plan, Reduce(LazyReduceOp::Var)), }
+}
+
+///|
+/// Defer `DataFrame::n_unique`: a 1-row `Int` frame of each column's
+/// distinct value count (every dtype; a null counts as one distinct value,
+/// every `NaN` one bucket — the documented `n_unique` rule).
+pub fn LazyFrame::n_unique(self : LazyFrame) -> LazyFrame {
+  { plan: Unary(self.plan, Reduce(LazyReduceOp::NUnique)), }
+}
+
+///|
+/// Defer `DataFrame::join`: combine this plan's output (the left side)
+/// with another plan's output (the right side) under `options` — each
+/// side carries its own deferred pipeline. Key resolution, type checks,
+/// and the cross-join key rules all surface at collect time.
+pub fn LazyFrame::join(
+  self : LazyFrame,
+  other : LazyFrame,
+  options : @frame.JoinOptions,
+) -> LazyFrame {
+  { plan: Join(self.plan, other.plan, options), }
+}
+
+///|
+/// Defer `DataFrame::group_by`: attach grouping key expressions to the plan
+/// and return a `LazyGroupBy` waiting for its aggregations. Each key is an
+/// `Expr` evaluated over the whole frame at collect time (a bare `col`, a
+/// derived key, or a length-1 key broadcasting to one group), exactly like
+/// the eager verb. Nothing is partitioned yet — like every builder this is
+/// total, so a missing column, a dtype clash, or a repeated output name
+/// only surfaces at collect time, as the eager `group_by`'s
+/// `ColumnNotFound` / `TypeMismatch` / `DuplicateColumn`. Only
+/// `LazyGroupBy::agg` grows the plan; a `LazyGroupBy` is never itself
+/// collectable, mirroring how the eager `GroupedDataFrame` is not a frame.
+pub fn LazyFrame::group_by(
+  self : LazyFrame,
+  keys : Array[@expr.Expr],
+) -> LazyGroupBy {
+  { plan: self.plan, keys: keys.copy(), }
+}
+
+///|
+/// A deferred `group_by` awaiting its aggregations — the lazy mirror of
+/// the eager `GroupedDataFrame` stage in `group_by(keys).agg(…)`,
+/// except it holds no groups: just the input plan and the key
+/// expressions, which `agg` completes into a single `Aggregate` node. Both
+/// fields stay private — a `LazyGroupBy` is only ever the step between
+/// `LazyFrame::group_by` and `LazyGroupBy::agg`, and sharing one across
+/// several `agg` calls just forks the plan, like every other builder.
+pub struct LazyGroupBy {
+  priv plan : LogicalPlan
+  priv keys : Array[@expr.Expr]
+}
+
+///|
+/// Complete the deferred group-by: defer `group_by(keys).agg(exprs)`
+/// as one `Aggregate` node and return to the `LazyFrame` chain. Each
+/// expression must be reduction-shaped (aggregations / literals and their
+/// combinators — a bare column reference is not); building stays total,
+/// so a non-reduction expression, a missing column, a dtype clash, or an
+/// output-name collision waits for collect and surfaces as the eager
+/// `agg` error (`InvalidOperation` / `ColumnNotFound` /
+/// `TypeMismatch` / `DuplicateColumn`).
+pub fn LazyGroupBy::agg(
+  self : LazyGroupBy,
+  exprs : Array[@expr.Expr],
+) -> LazyFrame {
+  { plan: Aggregate(self.plan, self.keys, exprs.copy()), }
+}
+
+///|
+/// The convenience verbs — `LazyGroupBy::sum()` and its siblings (`mean`,
+/// `count`, `len`, …) — one aggregation applied to
+/// every **non-key column** of the grouped plan. A plan cannot name those
+/// columns (only the collected frame has them), so each method defers the
+/// operation *tag* in an `AggregateAll` node and `collect` resolves it
+/// against the eager `GroupedDataFrame` verb — bit-for-bit the eager
+/// `group_by(keys).<verb>()`, including its error surface (`TypeMismatch`
+/// for a non-numeric column under the numeric-only ops). The column-blind
+/// node is an optimizer barrier: nothing below it is droppable, and a
+/// filter above stays above.
+fn LazyGroupBy::agg_all(self : LazyGroupBy, op : LazyAggAll) -> LazyFrame {
+  { plan: AggregateAll(self.plan, self.keys, op), }
+}
+
+///|
+/// Defer the eager `group_by(keys).sum()`: the sum of every non-key column
+/// per group (numeric columns keep their dtype, an all-null group the
+/// additive identity).
+pub fn LazyGroupBy::sum(self : LazyGroupBy) -> LazyFrame {
+  self.agg_all(Sum)
+}
+
+///|
+/// Defer the eager `group_by(keys).mean()`: each non-key column's mean as
+/// `Float` per group.
+pub fn LazyGroupBy::mean(self : LazyGroupBy) -> LazyFrame {
+  self.agg_all(Mean)
+}
+
+///|
+/// Defer the eager `group_by(keys).median()`: each non-key column's median
+/// per group.
+pub fn LazyGroupBy::median(self : LazyGroupBy) -> LazyFrame {
+  self.agg_all(Median)
+}
+
+///|
+/// Defer the eager `group_by(keys).quantile(q, interpolation?)`: each
+/// non-key column's `q`-th quantile under `interpolation` (default
+/// `Nearest`) per group.
+pub fn LazyGroupBy::quantile(
+  self : LazyGroupBy,
+  q : Double,
+  interpolation~ : @series.QuantileInterpolation = @series.QuantileInterpolation::Nearest,
+) -> LazyFrame {
+  self.agg_all(Quantile(q, interpolation))
+}
+
+///|
+/// Defer the eager `group_by(keys).std()`: each non-key column's sample
+/// standard deviation (`ddof = 1`) per group.
+pub fn LazyGroupBy::std(self : LazyGroupBy) -> LazyFrame {
+  self.agg_all(Std)
+}
+
+///|
+/// Defer the eager `group_by(keys).variance()`: the `ddof = 1` variance,
+/// `std` squared (`var` is a reserved MoonBit word).
+pub fn LazyGroupBy::variance(self : LazyGroupBy) -> LazyFrame {
+  self.agg_all(Var)
+}
+
+///|
+/// Defer the eager `group_by(keys).min()`: each non-key column's minimum
+/// per group, total over every dtype (`NaN` skipped).
+pub fn LazyGroupBy::min(self : LazyGroupBy) -> LazyFrame {
+  self.agg_all(Min)
+}
+
+///|
+/// Defer the eager `group_by(keys).max()`: the maximum counterpart of
+/// `min`.
+pub fn LazyGroupBy::max(self : LazyGroupBy) -> LazyFrame {
+  self.agg_all(Max)
+}
+
+///|
+/// Defer the eager `group_by(keys).count()`: each non-key column's non-null
+/// cell count per group (the row count regardless of nulls is `len`).
+pub fn LazyGroupBy::count(self : LazyGroupBy) -> LazyFrame {
+  self.agg_all(Count)
+}
+
+///|
+/// Defer the eager `group_by(keys).first()`: each non-key column's first
+/// cell per group, in group row order.
+pub fn LazyGroupBy::first(self : LazyGroupBy) -> LazyFrame {
+  self.agg_all(First)
+}
+
+///|
+/// Defer the eager `group_by(keys).last()`: each non-key column's last cell
+/// per group, in group row order.
+pub fn LazyGroupBy::last(self : LazyGroupBy) -> LazyFrame {
+  self.agg_all(Last)
+}
+
+///|
+/// Defer the eager `group_by(keys).n_unique()`: each non-key column's
+/// distinct value count per group (a null counts as one distinct value,
+/// every `NaN` one bucket).
+pub fn LazyGroupBy::n_unique(self : LazyGroupBy) -> LazyFrame {
+  self.agg_all(NUnique)
+}
+
+///|
+/// Defer the eager `group_by(keys).len()`: the single `Int` column `"len"`
+/// holding each group's row count — nulls included, dtype-blind.
+pub fn LazyGroupBy::len(self : LazyGroupBy) -> LazyFrame {
+  self.agg_all(Len)
+}
+
+///|
+/// Run the plan and materialize the result — the only point in the lazy
+/// layer that computes (or fails). The plan first passes through the
+/// total optimizer rewrites (the optimizer's pass and rule tables are
+/// the pipeline's inventory):
+/// row-window nodes sink toward the scan — neighbouring windows fusing
+/// into their composite where the composite provably keeps the eager
+/// rows — filters sink below the
+/// stages they provably commute with, so rows drop as early as possible,
+/// and a required-columns pass then drops scan columns nothing downstream
+/// reads (and, for a `scan_csv` source, never parses them); the rules
+/// then fold column-free expression subtrees to literals and merge
+/// adjacent `with_columns` stages that commute — unless the
+/// plan is DAG-shaped (the same `LazyFrame` reaching both sides of a
+/// `join`), in which case it runs as built: a shared subtree makes the
+/// rewrite passes' node count explode, so they stand down rather than
+/// trade soundness for the work. The rewrites'
+/// contract is exactly this method's, so they change
+/// what work happens, and for a successful result never what comes back: the
+/// (optimized) plan is walked bottom-up, delegating each node to the public
+/// eager operator it defers, so the result equals running the same
+/// verbs eagerly in the same order. Errors match the eager operators'
+/// (`ColumnNotFound`, `TypeMismatch`, `IndexOutOfBounds`, …) with one
+/// carve-out: a `scan_csv` / `scan_ndjson` source absorbs projection and
+/// predicate pushdown, so it never parses a column no consumer reads, nor the
+/// non-predicate cells of a row the predicate drops — a `ParseError` confined
+/// there, which an eager read-then-filter would raise, does not surface; and
+/// in a file where several columns each hold a parse error, the pushed-down
+/// read (which builds its predicate key columns first) can name a different
+/// one than the eager read would. Every
+/// other operator still produces its eager error. To see the rewritten plan
+/// this method actually runs, render it with `explain(optimized=true)`.
+pub fn LazyFrame::collect(
+  self : LazyFrame,
+) -> @frame.DataFrame raise @types.DataError {
+  self.plan.optimize().execute()
+}
+
+///|
+/// Render the logical plan as an indented tree — the root operation on
+/// the first line, inputs two spaces deeper, expressions in their
+/// documented `Show` form, and `SCAN [rows×cols]` leaves:
+///
+/// ```text
+/// SELECT [col(region), col(adj)]
+///   WITH_COLUMNS [(col(revenue) * 1.1) as adj]
+///     FILTER (col(region) == "west")
+///       SCAN [4×3]
+/// ```
+///
+/// By default this is the plan **as built** — a faithful mirror of the
+/// chained verbs, which is the package's contract. Pass `optimized=true`
+/// to render the plan `collect` actually runs instead: a sunk `FILTER`
+/// appears below the stages it crossed — or disappears into the leaf as a
+/// `WHERE` suffix, when the stage it reaches is a file source that can apply
+/// it while reading — and the projection pushdown shows
+/// up as a narrowing `SELECT` over an in-memory `SCAN` or as the column list
+/// on a `SCAN_CSV` source, so printing both forms is the before/after view
+/// of what the optimizer moved and pruned — except on a DAG-shaped plan
+/// (the same `LazyFrame` on both sides of a `join`), which `collect` runs
+/// as built, so `optimized=true` renders the same tree as the default
+/// under a leading `NOTE: shared subplan` line saying the rewrites were
+/// skipped (a shared subtree is also marked `"(shared, rendered above)"`).
+/// (Plans are immutable, so the flag rewrites a copy and never perturbs
+/// this frame.)
+///
+/// Total either way — the rewrite is a pure tree walk, so a plan that
+/// would fail to `collect` still explains, which is the point: inspect
+/// first, compute later.
+pub fn LazyFrame::explain(
+  self : LazyFrame,
+  optimized~ : Bool = false,
+) -> String {
+  let buf = StringBuilder()
+  if optimized && self.plan.has_shared_subplan() {
+    // A DAG-shaped plan runs as built — the passes rebuild tree-wise, so a
+    // shared subplan is left unoptimized (see `optimize`). Say so up front;
+    // without this line the tree below would look optimized when it is the
+    // as-built plan verbatim.
+    buf <+
+      "NOTE: shared subplan — optimization skipped; the tree below is the as-built plan\n"
+  }
+  let plan = if optimized { self.plan.optimize() } else { self.plan }
+  plan.render(buf, 0)
+  buf.to_string()
+}

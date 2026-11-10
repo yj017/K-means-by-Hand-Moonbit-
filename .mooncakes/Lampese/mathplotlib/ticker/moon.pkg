@@ -1,0 +1,31 @@
+import {
+  "Lampese/mathplotlib/config",
+  "Lampese/mathplotlib/ticker/scale",
+  "Lampese/mathplotlib/internal/tick_grid",
+  "Lampese/mathplotlib/core",
+  "moonbitlang/core/math",
+  "moonbitlang/core/bigint",
+  "moonbitlang/core/debug",
+  "moonbitlang/core/string",
+}
+
+import {
+  "moonbitlang/core/encoding/base64",
+} for "wbtest"
+
+// Generated payloads enter only white-box tests, never the production package.
+
+options(
+  "pre-build": [
+    {
+      "input": "../testdata/packed/logit_object_sort.base64",
+      "output": "logit_object_sort_fixture.generated_wbtest.mbt",
+      "command": ":embed -i $input -o $output --name logit_object_sort_fixture --text",
+    },
+    {
+      "input": "../testdata/packed/logit_sort.base64",
+      "output": "logit_sort_fixture.generated_wbtest.mbt",
+      "command": ":embed -i $input -o $output --name logit_sort_fixture --text",
+    },
+  ],
+)

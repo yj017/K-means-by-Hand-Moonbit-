@@ -1,0 +1,206 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Lampese/mathplotlib"
+
+import {
+  "Lampese/mathplotlib/core",
+  "Lampese/mathplotlib/core/colors",
+  "Lampese/mathplotlib/drawing",
+  "Lampese/mathplotlib/scene",
+  "Lampese/mathplotlib/scene/axis",
+  "Lampese/mathplotlib/scene/gridspec",
+  "Lampese/mathplotlib/ticker",
+  "Lampese/mathplotlib/ticker/category",
+  "Lampese/mathplotlib/ticker/scale",
+}
+
+// Values
+pub fn asinh_scale(linear_width? : Double) -> @scale.Scale raise @core.DataError
+
+pub fn axis(horizontal? : Bool) -> @axis.Axis
+
+pub fn bar_segment(Double, Double, baseline? : Double, width? : Double, category? : String?) -> @core.BarSegment
+
+pub fn bounds(Double, Double, Double, Double) -> @core.Bounds
+
+pub fn bounds_from_points(Array[@core.Point]) -> @core.Bounds?
+
+pub fn category() -> @category.CategoryAxis
+
+pub fn eng_formatter(unit? : String, places? : Int, sep? : String) -> @ticker.Formatter raise @core.DataError
+
+pub fn figure(width? : Int, height? : Int) -> @scene.Figure
+
+pub fn filled_region(Array[Array[(Double, Double)]], even_odd? : Bool) -> @drawing.FilledRegion
+
+pub fn fixed_formatter(Array[String]) -> @ticker.Formatter
+
+pub fn format_str_formatter(String) -> @ticker.Formatter
+
+pub fn func_formatter((Double) -> String) -> @ticker.Formatter
+
+pub fn gridspec(Int, Int, hspace? : Double, vspace? : Double, width_ratios? : Array[Double], height_ratios? : Array[Double]) -> @gridspec.GridSpec raise @gridspec.LayoutError
+
+pub fn index_formatter(Array[String]) -> @ticker.Formatter
+
+pub fn limits(Double, Double) -> @core.Limits
+
+pub fn line_stroke(String, offset? : Double, dashes? : Array[Double]?) -> @core.LineStroke
+
+pub fn linear_scale() -> @scale.Scale
+
+pub fn log_formatter(base? : Double, label_only_base? : Bool) -> @ticker.Formatter raise @core.DataError
+
+pub fn log_scale() -> @scale.Scale
+
+pub fn logit_scale(nonpositive? : String) -> @scale.Scale raise @core.DataError
+
+pub fn masked_array(Array[Double], mask? : Array[Bool]) -> @core.MaskedArray raise @core.MaskError
+
+pub fn masked_matrix(Array[Array[Double]], mask? : Array[Array[Bool]]) -> @core.MaskedMatrix raise @core.MaskError
+
+pub fn null_formatter() -> @ticker.Formatter
+
+pub fn percent_formatter(xmax? : Double, decimals? : Int, symbol? : String) -> @ticker.Formatter raise @core.DataError
+
+pub fn plot_svg(Array[Double], Array[Double]) -> String raise @core.DataError
+
+pub fn point(Double, Double) -> @core.Point
+
+pub fn rgb(Double, Double, Double) -> @colors.Rgb raise @colors.ColorError
+
+pub fn rgba(Double, Double, Double, alpha? : Double) -> @colors.Rgba raise @colors.ColorError
+
+pub fn scalar_formatter(use_offset? : Bool, use_math_text? : Bool, power_min? : Int, power_max? : Int) -> @ticker.Formatter raise @core.DataError
+
+pub fn series(Array[Double], Array[Double]) -> @core.Series raise @core.DataError
+
+pub fn str_method_formatter(String) -> @ticker.Formatter
+
+pub fn streamplot_info(Int, Double, Double, color_value? : Double?) -> @drawing.StreamplotInfo
+
+pub fn style(String, width? : Double, radius? : Double, fill? : String, font_size? : Double, marker? : String, line_alpha? : Double?, line_stroke? : @core.LineStroke, line_gapcolor? : String?) -> @core.Style
+
+pub fn tricolor_info((Int, Int, Int), vertex_mean? : Bool) -> @drawing.TriColorInfo
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+pub using @scene {type Artist}
+
+pub using @scene {type Axes}
+
+pub using @axis {type Axis}
+
+pub using @drawing {type BandInfo}
+
+pub using @core {type BarSegment}
+
+pub using @core {type Bounds}
+
+pub using @drawing {type BoxInfo}
+
+pub using @drawing {type BoxPart}
+
+pub using @category {type CategoryAxis}
+
+pub using @drawing {type CellInfo}
+
+pub using @scene {type ContourSet}
+
+pub using @core {type DataError}
+
+pub using @drawing {type Drawing}
+
+pub using @drawing {type ErrorInfo}
+
+pub using @scene {type Figure}
+
+pub using @drawing {type FilledRegion}
+
+pub using @ticker {type Formatter}
+
+pub using @gridspec {type GridSpec}
+
+pub using @drawing {type HexbinInfo}
+
+pub using @drawing {type HexbinReduction}
+
+pub using @scene {type Histogram}
+
+pub using @drawing {type HitInfo}
+
+pub using @drawing {type HitKind}
+
+pub using @drawing {type HitMode}
+
+pub using @drawing {type HitPoint}
+
+pub using @drawing {type HitShape}
+
+pub using @drawing {type HitTarget}
+
+pub using @gridspec {type LayoutError}
+
+pub using @core {type LegendPosition}
+
+pub using @core {type Limits}
+
+pub using @scene {type Line2D}
+
+pub using @scene {type LineData}
+
+pub using @core {type LineStroke}
+
+pub using @core {type MaskError}
+
+pub using @core {type MaskedArray}
+
+pub using @core {type MaskedMatrix}
+
+pub using @core {type Point}
+
+pub using @scene {type PolarAxes}
+
+pub using @scene {type PolarDirection}
+
+pub using @gridspec {type Rect}
+
+pub using @colors {type Rgb}
+
+pub using @colors {type Rgba}
+
+pub using @scale {type Scale}
+
+pub using @scene {type SecondaryAxis}
+
+pub using @scene {type SecondaryAxisAlignment}
+
+pub using @scene {type SecondaryAxisLocation}
+
+pub using @core {type Series}
+
+pub using @drawing {type StreamplotInfo}
+
+pub using @scene {type StreamplotSet}
+
+pub using @core {type Style}
+
+pub using @scene {type SubFigure}
+
+pub using @drawing {type TriColorInfo}
+
+pub using @drawing {type VectorInfo}
+
+pub using @scene {type ViolinBandwidth}
+
+pub using @drawing {type ViolinInfo}
+
+pub using @drawing {type ViolinPart}
+
+pub using @scene {type ViolinSide}
+
+pub using @scene {type ViolinStats}
+
+// Traits

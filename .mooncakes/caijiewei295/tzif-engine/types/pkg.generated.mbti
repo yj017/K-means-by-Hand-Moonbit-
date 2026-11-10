@@ -1,0 +1,156 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "caijiewei295/tzif-engine/types"
+
+// Values
+
+// Errors
+
+// Types and methods
+pub(all) enum AmbiguityStrategy {
+  PreferEarlier
+  PreferLater
+}
+
+pub(all) enum ClockChange {
+  NoClockChange
+  ClockForward
+  ClockBackward
+}
+
+pub(all) struct LeapSecond {
+  transition_time : Int64
+  correction : Int
+}
+
+pub(all) struct LocalDateTime {
+  year : Int
+  month : Int
+  day : Int
+  hour : Int
+  minute : Int
+  second : Int
+  utoff : Int
+  is_dst : Bool
+  abbr : String
+}
+
+pub(all) enum LocalTimeResolution {
+  Unique(Int64)
+  Ambiguous(Array[Int64])
+  Gap
+}
+
+pub(all) struct OffsetDateTime {
+  local_time : LocalDateTime
+  utc_time : Int64
+  offset : Int
+}
+
+pub(all) struct OffsetInfo {
+  utoff : Int
+  is_dst : Bool
+  abbr : String
+  source : OffsetSource
+}
+
+pub(all) enum OffsetSource {
+  InitialType
+  ExplicitTransition(Int)
+  PosixFooter
+}
+
+pub(all) enum PosixDateRule {
+  JulianNoLeap(Int)
+  DayOfYear(Int)
+  MonthWeekDay(Int, Int, Int)
+}
+
+pub(all) enum PosixTimeBasis {
+  Wall
+  Standard
+  Utc
+}
+
+pub(all) struct PosixTransitionRule {
+  date_rule : PosixDateRule
+  time_of_day : Int
+  time_basis : PosixTimeBasis
+}
+
+pub(all) struct PosixTzRule {
+  std_abbr : String
+  std_offset : Int
+  dst_abbr : String?
+  dst_offset : Int?
+  start_rule : PosixTransitionRule?
+  end_rule : PosixTransitionRule?
+}
+
+pub(all) enum PostTransitionBehavior {
+  PosixFooter
+  LastExplicitType
+}
+
+pub(all) struct TimeType {
+  utoff : Int
+  is_dst : Bool
+  abbr : String
+}
+
+pub(all) struct Transition {
+  utc_time : Int64
+  type_index : Int
+}
+
+pub(all) struct TransitionDetail {
+  index : Int
+  utc_time : Int64
+  before : TimeType
+  after : TimeType
+  offset_change : Int
+  clock_change : ClockChange
+  local_before : Int64
+  local_after : Int64
+}
+
+pub(all) struct TzifData {
+  version : Byte
+  time_types : Array[TimeType]
+  transitions : Array[Transition]
+  leap_seconds : Array[LeapSecond]
+  standard_indicators : Array[Bool]?
+  utc_indicators : Array[Bool]?
+  posix_rule : PosixTzRule?
+}
+
+pub(all) struct TzifDiagnostics {
+  version : Byte
+  transition_count : Int
+  time_type_count : Int
+  leap_second_count : Int
+  standard_indicator_count : Int
+  utc_indicator_count : Int
+  first_transition : Int64?
+  last_transition : Int64?
+  has_posix_footer : Bool
+  post_transition_behavior : PostTransitionBehavior
+}
+
+pub(all) enum TzifError {
+  InvalidMagic(String)
+  UnsupportedVersion(Byte)
+  TruncatedData
+  ResourceLimitExceeded(String)
+  InvalidTransitionTable(String)
+  TimestampOutOfRange(Int64)
+  InvalidLocalTime(LocalDateTime)
+  AmbiguousLocalTime(LocalDateTime, LocalDateTime)
+  PosixParseError(String)
+  InvalidIso8601(String)
+}
+
+// Type aliases
+pub type TzifResult[T] = Result[T, TzifError]
+
+// Traits
+

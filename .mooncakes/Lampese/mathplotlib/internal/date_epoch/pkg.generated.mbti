@@ -1,0 +1,18 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Lampese/mathplotlib/internal/date_epoch"
+
+// Values
+pub fn parse(String) -> Result[Stamp, String]
+
+// Errors
+
+// Types and methods
+pub struct Stamp {
+  source : String
+  seconds : Int64
+  microsecond : Int
+}
+
+// Type aliases
+
+// Traits

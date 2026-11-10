@@ -1,0 +1,116 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "ihb2032/MoonFrame"
+
+import {
+  "ihb2032/MoonFrame/chart",
+  "ihb2032/MoonFrame/expr",
+  "ihb2032/MoonFrame/frame",
+  "ihb2032/MoonFrame/io",
+  "ihb2032/MoonFrame/lazy",
+  "ihb2032/MoonFrame/series",
+  "ihb2032/MoonFrame/types",
+}
+
+// Values
+pub fn col(String) -> @expr.Expr
+
+pub fn cols(Array[String]) -> Array[@expr.Expr]
+
+pub fn format_vega_lite(@frame.DataFrame, @chart.ChartSpec) -> String raise @types.DataError
+
+pub fn lit(@types.Scalar) -> @expr.Expr
+
+pub fn lit_bool(Bool) -> @expr.Expr
+
+pub fn lit_float(Double) -> @expr.Expr
+
+pub fn lit_int(Int64) -> @expr.Expr
+
+pub fn lit_series(@series.Series) -> @expr.Expr
+
+pub fn lit_str(String) -> @expr.Expr
+
+pub fn map_many(label~ : String, Array[@expr.Expr], (Array[@types.Scalar]) -> @types.Scalar raise @types.DataError) -> @expr.Expr
+
+pub fn read_csv(String, options? : @io.CsvReadOptions) -> @frame.DataFrame raise @types.DataError
+
+pub fn read_json(String, options? : @io.JsonReadOptions) -> @frame.DataFrame raise @types.DataError
+
+pub fn read_ndjson(String, options? : @io.JsonReadOptions) -> @frame.DataFrame raise @types.DataError
+
+pub fn scan_csv(String, options? : @io.CsvReadOptions) -> @lazy.LazyFrame
+
+pub fn scan_json(String, options? : @io.JsonReadOptions) -> @lazy.LazyFrame
+
+pub fn scan_ndjson(String, options? : @io.JsonReadOptions) -> @lazy.LazyFrame
+
+pub fn when(@expr.Expr) -> @expr.WhenThen
+
+pub fn write_csv(String, @frame.DataFrame, options? : @io.CsvWriteOptions) -> Unit raise @types.DataError
+
+pub fn write_json(String, @frame.DataFrame) -> Unit raise @types.DataError
+
+pub fn write_ndjson(String, @frame.DataFrame) -> Unit raise @types.DataError
+
+pub fn write_vega_lite(String, @frame.DataFrame, @chart.ChartSpec) -> Unit raise @types.DataError
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+pub using @types {type CellParseLocation}
+
+pub using @chart {type ChartKind}
+
+pub using @chart {type ChartSpec}
+
+pub using @types {type ClosedInterval}
+
+pub using @io {type CsvReadOptions}
+
+pub using @io {type CsvWriteOptions}
+
+pub using @types {type DataError}
+
+pub using @frame {type DataFrame}
+
+pub using @types {type DataType}
+
+pub using @expr {type Expr}
+
+pub using @types {type Field}
+
+pub using @frame {type HtmlOptions}
+
+pub using @frame {type JoinOptions}
+
+pub using @frame {type JoinType}
+
+pub using @io {type JsonReadOptions}
+
+pub using @frame {type KeepStrategy}
+
+pub using @lazy {type LazyFrame}
+
+pub using @io {type OnParseError}
+
+pub using @types {type ParseErrorDetail}
+
+pub using @frame {type PivotAgg}
+
+pub using @series {type QuantileInterpolation}
+
+pub using @types {type RankMethod}
+
+pub using @types {type Scalar}
+
+pub using @types {type Schema}
+
+pub using @series {type Series}
+
+pub using @types {type TypeMismatchDetail}
+
+pub using @chart {type VegaType}
+
+// Traits

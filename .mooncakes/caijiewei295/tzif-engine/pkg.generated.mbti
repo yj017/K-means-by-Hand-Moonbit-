@@ -1,0 +1,60 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "caijiewei295/tzif-engine"
+
+import {
+  "caijiewei295/tzif-engine/types",
+}
+
+// Values
+pub fn active_offset(@types.TzifData, Int64) -> Result[@types.OffsetInfo, @types.TzifError]
+
+pub fn diagnostics(@types.TzifData) -> @types.TzifDiagnostics
+
+pub fn format_iso_local(@types.LocalDateTime) -> Result[String, @types.TzifError]
+
+pub fn format_iso_offset(Int64, Int) -> Result[String, @types.TzifError]
+
+pub fn format_iso_utc(Int64) -> Result[String, @types.TzifError]
+
+pub fn format_iso_zoned(@types.LocalDateTime) -> Result[String, @types.TzifError]
+
+pub fn format_numeric_offset(Int) -> Result[String, @types.TzifError]
+
+pub fn info(@types.TzifData) -> String
+
+pub fn load(Bytes) -> Result[@types.TzifData, @types.TzifError]
+
+pub fn local_time_candidates(@types.TzifData, @types.LocalDateTime) -> Result[Array[Int64], @types.TzifError]
+
+pub fn local_to_utc(@types.TzifData, @types.LocalDateTime, @types.AmbiguityStrategy) -> Result[Int64, @types.TzifError]
+
+pub fn next_transition(@types.TzifData, Int64) -> @types.Transition?
+
+pub fn parse_iso_local(String) -> Result[@types.LocalDateTime, @types.TzifError]
+
+pub fn parse_iso_offset(String) -> Result[@types.OffsetDateTime, @types.TzifError]
+
+pub fn parse_iso_utc(String) -> Result[Int64, @types.TzifError]
+
+pub fn previous_transition(@types.TzifData, Int64) -> @types.Transition?
+
+pub fn resolve_local(@types.TzifData, @types.LocalDateTime) -> Result[@types.LocalTimeResolution, @types.TzifError]
+
+pub fn transition_at(@types.TzifData, Int) -> @types.Transition?
+
+pub fn transition_detail(@types.TzifData, Int) -> Result[@types.TransitionDetail, @types.TzifError]
+
+pub fn transition_details_between(@types.TzifData, Int64, Int64) -> Result[Array[@types.TransitionDetail], @types.TzifError]
+
+pub fn utc_to_local(@types.TzifData, Int64) -> Result[@types.LocalDateTime, @types.TzifError]
+
+pub fn validate(@types.TzifData) -> Result[Unit, @types.TzifError]
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+

@@ -1,0 +1,6 @@
+import {
+  "ihb2032/MoonFrame" @moonframe,
+  "ihb2032/MoonFrame/examples/sales_analysis/pipeline",
+}
+
+pkgtype(kind: "executable")

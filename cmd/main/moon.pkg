@@ -1,0 +1,19 @@
+// import {
+//   "username/hello_moon" @lib,
+// }
+
+pkgtype(kind: "executable")
+
+import {
+  "username/hello_moon",
+}
+import {
+  "Lampese/mathplotlib" @mathplotlib,
+  "moonbitlang/x/fs" @fs,
+}
+import {
+  "moonbit-community/NyaCSV" @NyaCSV,
+}
+import {
+  "moonbitlang/core/string",
+}

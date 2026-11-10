@@ -1,0 +1,17 @@
+import {
+  "Lampese/mathplotlib/drawing",
+  "moonbit-community/rabbita",
+  "moonbit-community/rabbita/html",
+  "moonbit-community/rabbita/svg",
+  "moonbit-community/rabbita/dom",
+  "Milky2018/xml",
+  "moonbitlang/core/debug",
+  "moonbitlang/core/string",
+}
+
+supported_targets = "js"
+
+import {
+  "Lampese/mathplotlib" @plot,
+  "moonbitlang/core/ref",
+} for "wbtest"

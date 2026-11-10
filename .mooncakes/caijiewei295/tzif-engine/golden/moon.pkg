@@ -1,0 +1,2 @@
+// Checked-in, compile-time TZif golden data used by integration tests and
+// embedding examples.  It has no runtime filesystem dependency.

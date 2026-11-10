@@ -1,0 +1,212 @@
+///|
+/// The engine behind `collect`: a bottom-up plan interpreter that delegates
+/// each node to the public eager operator it defers, plus the `Scan`-leaf and
+/// `Unary`-node halves (`execute_scan`, `apply_frame_op`), kept apart from
+/// the IR definition and the renderer so each reads alone.
+
+///|
+/// Bottom-up plan interpreter — the whole of `collect`. Each node
+/// delegates to the public eager operator it mirrors (`Filter` →
+/// `filter`, `WithColumns` → `with_columns`, …), so with no
+/// optimizer in front the lazy layer is a *faithful deferred executor*:
+/// collecting a plan is equal to running the same verbs eagerly in
+/// the same order. Errors are exactly the eager operators' errors,
+/// surfacing here rather than at build time. `Scan` returns the captured
+/// frame as-is — frames are immutable, so no defensive copy is needed.
+/// A file source (a `Csv` / `Ndjson` scan) reads through `@io` —
+/// `read_csv` / `read_ndjson` for the as-built plan (every column) or
+/// `read_*_projected` once the optimizer has filled its projection — so a
+/// missing file (`IoError`) or a parse failure (`ParseError`) surfaces here
+/// too.
+fn LogicalPlan::execute(
+  self : LogicalPlan,
+) -> @frame.DataFrame raise @types.DataError {
+  // Memoised post-order fold (not the call stack), so a deep plan collects
+  // without overflowing and aborting — the never-abort contract the
+  // expression evaluator (`eval_expr`) also keeps. Each node applies the
+  // same eager verb its recursive form did, reading its child frame(s) out
+  // of the memo by node identity; a leaf computes the frame it reads. On a
+  // tree this is the exact old deepest-first order (a `Join`'s left before
+  // its right), so a failing plan surfaces the same `DataError` first; on a
+  // DAG-shaped plan (nested self-joins sharing node objects) each shared
+  // subplan runs ONCE — including a file source's read — where the
+  // per-occurrence fold re-ran it 2^depth times.
+  let memo : Array[(LogicalPlan, @frame.DataFrame)] = []
+  for node in self.post_order_unique() {
+    let result : @frame.DataFrame = match node {
+      Scan(source) => source.execute_scan()
+      // Every unary verb defers through `apply_frame_op` on its collected input.
+      Unary(input, op) => apply_frame_op(memo_result(memo, input), op)
+      Join(left, right, options) =>
+        memo_result(memo, left).join(memo_result(memo, right), options)
+      Aggregate(input, keys, exprs) =>
+        memo_result(memo, input).group_by(keys).agg(exprs)
+      // The convenience half: the tag resolves against the eager verb on the
+      // collected input, so `collect` is the eager `group_by(keys).<verb>()`
+      // bit-for-bit.
+      AggregateAll(input, keys, op) => {
+        let grouped = memo_result(memo, input).group_by(keys)
+        match op {
+          Sum => grouped.sum()
+          Mean => grouped.mean()
+          Median => grouped.median()
+          Quantile(q, interpolation) => grouped.quantile(q, interpolation~)
+          Std => grouped.std()
+          Var => grouped.variance()
+          Min => grouped.min()
+          Max => grouped.max()
+          Count => grouped.count()
+          First => grouped.first()
+          Last => grouped.last()
+          NUnique => grouped.n_unique()
+          Len => grouped.len()
+        }
+      }
+    }
+    memo.push((node, result))
+  }
+  memo_result(memo, self)
+}
+
+///|
+/// Read one `ScanSource` into a frame — the `Scan` leaf's half of `execute`.
+/// An in-memory source returns its captured frame as-is (frames are
+/// immutable, so no defensive copy); a file source reads through its driver —
+/// the whole-file read for the as-built plan, the projected read once the
+/// optimizer filled a projection, the pruned read once it absorbed a
+/// predicate — then assembles the batch into a frame here: the engine, not
+/// the driver, owns assembly. A missing file (`IoError`) or a parse failure
+/// (`ParseError`) surfaces here too. One place to add a new scannable
+/// format's read.
+fn ScanSource::execute_scan(
+  self : ScanSource,
+) -> @frame.DataFrame raise @types.DataError {
+  match self {
+    InMemory(df) => df
+    File(fs) => {
+      let batch = fs.driver.scan(
+        projection=fs.projection,
+        predicate=fs.predicate,
+      )
+      @frame.DataFrame::from_parts(batch.columns(), batch.height())
+    }
+  }
+}
+
+///|
+/// Apply one deferred unary op to a collected input frame — the `Unary` node's
+/// half of `execute`. Each arm delegates to the public eager `DataFrame` verb
+/// it mirrors, so `collect` stays bit-for-bit the eager result and the errors
+/// are exactly the eager operators'. One place to add a new unary verb's
+/// execution.
+fn apply_frame_op(
+  df : @frame.DataFrame,
+  op : FrameOp,
+) -> @frame.DataFrame raise @types.DataError {
+  match op {
+    Select(exprs) => df.select(exprs)
+    WithColumns(exprs) => df.with_columns(exprs)
+    Filter(predicate) => df.filter(predicate)
+    Sort(by) => df.sort(by)
+    Head(n) => df.head(n)
+    Tail(n) => df.tail(n)
+    Slice(offset, length) =>
+      match length {
+        Some(l) => df.slice(offset, length=l)
+        None => df.slice(offset)
+      }
+    GatherEvery(n, offset) => df.gather_every(n, offset~)
+    // The ranking selections are single nodes rather than sort+head
+    // compositions so the eager verb's argument validation (`k >= 0`, a
+    // non-empty `by`) surfaces at collect with the eager error, not a
+    // silently-clamped window.
+    TopK(k, by, reverse) => df.top_k(k, by~, reverse~)
+    BottomK(k, by, reverse) => df.bottom_k(k, by~, reverse~)
+    Drop(exprs) => df.drop(exprs)
+    Rename(pairs) => df.rename(pairs)
+    RenameWith(f) => df.rename_with(f)
+    Unique(keep, subset) =>
+      match subset {
+        None => df.unique(keep~)
+        Some(keys) => df.unique(subset=keys, keep~)
+      }
+    Reverse => df.reverse()
+    WithRowIndex(name, offset) => df.with_row_index(name~, offset~)
+    DropNulls(subset) => df.drop_nulls(subset?)
+    Pivot(on, index, values, aggregate_function) => {
+      // Each optional payload arm forwards the eager verb's own default
+      // shape — `pivot`'s omission rules resolve against the collected
+      // frame either way, so `collect` keeps the eager result verbatim.
+      let p = match index {
+        Some(keys) =>
+          match values {
+            Some(vs) =>
+              df.pivot(on~, index=keys, values=vs, aggregate_function?)
+            None => df.pivot(on~, index=keys, aggregate_function?)
+          }
+        None =>
+          match values {
+            Some(vs) => df.pivot(on~, values=vs, aggregate_function?)
+            None => df.pivot(on~, aggregate_function?)
+          }
+      }
+      p
+    }
+    Unpivot(on, index, variable, value) => {
+      let u = match on {
+        Some(keys) =>
+          match index {
+            Some(ix) =>
+              df.unpivot(
+                on=keys,
+                index=ix,
+                variable_name=variable,
+                value_name=value,
+              )
+            None =>
+              df.unpivot(on=keys, variable_name=variable, value_name=value)
+          }
+        None =>
+          match index {
+            Some(ix) =>
+              df.unpivot(index=ix, variable_name=variable, value_name=value)
+            None => df.unpivot(variable_name=variable, value_name=value)
+          }
+      }
+      u
+    }
+    FillNullDir(backward, limit) =>
+      match limit {
+        Some(k) =>
+          if backward {
+            df.fill_null_backward(limit=k)
+          } else {
+            df.fill_null_forward(limit=k)
+          }
+        None =>
+          if backward {
+            df.fill_null_backward()
+          } else {
+            df.fill_null_forward()
+          }
+      }
+    FillNan(value) => df.fill_nan(value)
+    FillNull(value) => df.fill_null(value)
+    // Each reduction executes as its eager `DataFrame` verb on the collected
+    // input, so `collect` is bit-for-bit the eager 1-row result.
+    Reduce(op) =>
+      match op {
+        Sum => df.sum()
+        Mean => df.mean()
+        Min => df.min()
+        Max => df.max()
+        Count => df.count()
+        NullCount => df.null_count()
+        Median => df.median()
+        Quantile(q, interpolation) => df.quantile(q, interpolation~)
+        Std => df.std()
+        Var => df.variance()
+        NUnique => df.n_unique()
+      }
+  }
+}

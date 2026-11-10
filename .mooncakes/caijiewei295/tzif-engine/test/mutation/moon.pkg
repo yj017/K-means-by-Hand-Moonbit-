@@ -1,0 +1,4 @@
+import {
+  "caijiewei295/tzif-engine" @tzif,
+  "caijiewei295/tzif-engine/test/fixtures",
+} for "test"

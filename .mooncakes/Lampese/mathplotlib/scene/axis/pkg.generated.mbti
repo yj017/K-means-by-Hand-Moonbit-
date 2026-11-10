@@ -1,0 +1,227 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Lampese/mathplotlib/scene/axis"
+
+import {
+  "Lampese/mathplotlib/core",
+  "Lampese/mathplotlib/ticker",
+  "Lampese/mathplotlib/ticker/category",
+  "Lampese/mathplotlib/ticker/date",
+  "Lampese/mathplotlib/ticker/scale",
+}
+
+// Values
+pub fn axis(horizontal? : Bool) -> Axis
+
+pub fn short_format_pixel_delta(Double, Double, Double, Double, Double, (Double) -> Double, (Double) -> Double) -> Double raise @core.DataError
+
+pub fn tick_space_from_length(Double, Double, Bool) -> Double
+
+// Errors
+
+// Types and methods
+pub struct Axis {
+  mut limits : @core.Limits?
+  mut auto_view : @core.Limits?
+  mut inverted : Bool
+  mut label : String?
+  mut tick_count : Int
+  mut category : @category.CategoryAxis?
+  mut date_format : String?
+  mut date_offset_minutes : Int
+  mut date_timezone : @date.DateTimeZone?
+  mut scale : @scale.Scale
+  mut tick_position : TickPosition?
+  mut grid_visible : Bool
+  mut grid_color : String
+  mut grid_width : Double
+  mut minor_grid_visible : Bool
+  mut minor_grid_color : String
+  mut minor_grid_width : Double
+  // private fields
+}
+pub fn Axis::auto_date_locator(Self) -> @date.AutoDateLocator?
+pub fn Axis::autoscale_bounds_checked(Self, Array[Double], margin~ : Double, stickies~ : Array[Double], tight~ : Bool, data_minpos? : (() -> Array[Double] raise @core.DataError)?, tight_provider? : (() -> Bool)?, log_stickies? : Bool?) -> @core.Limits? raise @core.DataError
+pub fn Axis::autoscale_on(Self) -> Bool
+pub fn Axis::autoscale_stale(Self) -> Bool
+pub fn Axis::bind_autoscale_minpos(Self, () -> Array[Double] raise @core.DataError) -> Unit
+pub fn Axis::bind_autoscale_view(Self, () -> Unit raise @core.DataError) -> Unit
+pub fn Axis::bind_data_interval(Self, () -> (Double, Double)) -> Unit
+pub fn Axis::bind_formatter_axis(Self, minor? : Bool) -> Unit
+pub fn Axis::bind_formatter_geometry(Self, () -> (Double, Double)) -> Unit
+pub fn Axis::bind_locator_data(Self, minor? : Bool) -> Unit
+pub fn Axis::bind_minpos(Self, () -> Double raise @core.DataError) -> Unit
+pub fn Axis::bind_render_autoscale_minpos(Self, () -> Array[Double] raise @core.DataError) -> Unit
+pub fn Axis::bind_render_minpos(Self, () -> Double raise @core.DataError, () -> Array[Double] raise @core.DataError) -> Unit
+pub fn Axis::bind_render_view_interval(Self, () -> (Double, Double) raise @core.DataError) -> Unit
+pub fn Axis::bind_shared_minpos(Self, () -> Array[Double] raise @core.DataError) -> Unit
+pub fn Axis::bind_tick_geometry(Self, () -> Double, Bool) -> Unit
+pub fn Axis::bind_unit_data_mutated(Self, () -> Bool) -> Unit
+pub fn Axis::bind_unit_group(Self, () -> Array[Self]) -> Unit
+pub fn Axis::bind_units_changed(Self, () -> Unit raise @core.DataError) -> Unit
+pub fn Axis::bind_view_interval(Self, () -> (Double, Double) raise @core.DataError) -> Unit
+pub fn Axis::categories(Self) -> Array[String]?
+pub fn Axis::category_positions(Self, Array[String]) -> Array[Double] raise @core.DataError
+pub fn Axis::clear(Self) -> Unit
+pub fn Axis::clear_autoscale_request(Self) -> Unit
+pub fn Axis::clear_categories(Self) -> Unit
+pub fn Axis::clear_date(Self) -> Unit
+pub fn Axis::clear_formatter(Self) -> Unit
+pub fn Axis::clear_limits(Self) -> Unit
+pub fn Axis::clear_locator(Self) -> Unit
+pub fn Axis::clear_minor_date_formatter(Self) -> Unit
+pub fn Axis::clear_minor_locator(Self) -> Unit
+pub fn Axis::clear_minor_named_formatter(Self) -> Unit
+pub fn Axis::clear_named_formatter(Self) -> Unit
+pub fn Axis::clear_tick_layout(Self) -> Unit
+pub fn Axis::clear_tick_position(Self) -> Unit
+pub fn Axis::clear_ticks(Self) -> Unit
+pub fn Axis::configure_function_scale(Self, (Double) -> Double, (Double) -> Double, logarithmic? : Bool) -> Unit raise @core.DataError
+pub fn Axis::convert_category_units(Self, Array[String]) -> Array[Double] raise @core.DataError
+pub fn Axis::convert_date_units(Self, Array[@date.RRuleDateTime]) -> Array[Double] raise @core.DataError
+pub fn Axis::coordinate_inverse(Self) -> (Double) -> Double
+pub fn Axis::coordinate_scale_name(Self) -> String
+pub fn Axis::coordinate_transform(Self) -> (Double) -> Double
+pub fn Axis::current_view_limits(Self) -> @core.Limits?
+pub fn Axis::data_interval(Self) -> @core.Limits
+pub fn Axis::date_converter(Self) -> @date.DateConverter?
+pub fn Axis::date_format(Self) -> String?
+pub fn Axis::date_formatter(Self) -> @date.DateFormatter?
+pub fn Axis::date_locator(Self) -> @date.DateLocator?
+pub fn Axis::date_nonsingular_bounds(Self, Double, Double) -> @core.Limits
+pub fn Axis::date_offset_minutes(Self) -> Int
+pub fn Axis::date_timezone(Self) -> @date.DateTimeZone?
+pub fn Axis::formatter(Self) -> @ticker.Formatter?
+pub fn Axis::formatter_axis_binding(Self) -> @ticker.FormatterAxisBinding
+pub fn Axis::formatter_display_geometry(Self) -> (Double, Double)?
+pub fn Axis::formatter_offset_label(Self, Array[Double]) -> String
+pub fn Axis::formatter_offset_label_checked(Self, Array[Double], view? : @core.Limits) -> String raise @core.DataError
+pub fn Axis::formatter_offset_label_with_view(Self, Array[Double], @core.Limits?) -> String
+pub fn Axis::formatter_tick_locations_checked(Self, @core.Limits, minor? : Bool) -> @ticker.FormatterLocations raise @core.DataError
+pub fn Axis::formatter_warnings(Self) -> Array[String]
+pub fn Axis::get_category_units(Self) -> CategoryUnits?
+pub fn Axis::get_minpos(Self) -> Double raise @core.DataError
+pub fn Axis::get_tick_space(Self) -> Double
+pub fn Axis::grid_color(Self) -> String
+pub fn Axis::grid_visible(Self) -> Bool
+pub fn Axis::grid_width(Self) -> Double
+pub fn Axis::has_autoscale_view_provider(Self) -> Bool
+pub fn Axis::has_named_log_locator(Self) -> Bool
+pub fn Axis::has_named_logit_locator(Self) -> Bool
+pub fn Axis::have_units(Self) -> Bool
+pub fn Axis::inherit_scale_from(Self, Self) -> Unit
+pub fn Axis::inverted(Self) -> Bool
+pub fn Axis::is_default_formatter(Self, minor? : Bool) -> Bool
+pub fn Axis::is_default_locator(Self, minor? : Bool) -> Bool
+pub fn Axis::label(Self) -> String?
+pub fn Axis::lifecycle_view_interval_checked(Self) -> (Double, Double) raise @core.DataError
+pub fn Axis::limits(Self) -> @core.Limits?
+pub fn Axis::locator(Self) -> @ticker.Locator?
+pub fn Axis::locator_default_limits(Self) -> (Double, Double) raise @core.DataError
+pub fn Axis::minor_date_formatter(Self) -> @date.DateFormatter?
+pub fn Axis::minor_date_locator(Self) -> @date.DateLocator?
+pub fn Axis::minor_grid_color(Self) -> String
+pub fn Axis::minor_grid_visible(Self) -> Bool
+pub fn Axis::minor_grid_width(Self) -> Double
+pub fn Axis::minor_locator(Self) -> @ticker.MinorLocator?
+pub fn Axis::minor_named_formatter(Self) -> @ticker.BaseFormatter?
+pub fn Axis::minor_overlap_removal(Self) -> Bool
+pub fn Axis::minor_tick_labels(Self, Array[Double], view? : @core.Limits) -> Array[String]
+pub fn Axis::minor_tick_labels_checked(Self, Array[Double], view? : @core.Limits) -> Array[String] raise @core.DataError
+pub fn Axis::minor_tick_values(Self, @core.Limits) -> Array[Double]
+pub fn Axis::minor_tick_values_checked(Self, @core.Limits) -> Array[Double] raise @core.DataError
+pub fn Axis::named_formatter(Self) -> @ticker.BaseFormatter?
+pub fn Axis::numeric_nonsingular_bounds(Self, Double, Double) -> @core.Limits
+pub fn Axis::numeric_nonsingular_bounds_checked(Self, Double, Double) -> @core.Limits raise @core.DataError
+pub fn Axis::request_autoscale(Self) -> Unit
+pub fn Axis::resolve_autoscale_view(Self) -> Unit raise @core.DataError
+pub fn Axis::scale(Self) -> @scale.Scale
+pub fn Axis::set_auto_limits(Self, Double, Double) -> Unit
+pub fn Axis::set_autoscale_on(Self, Bool) -> Unit
+pub fn Axis::set_bound_limits_checked(Self, Double, Double, automatic? : Bool?) -> @core.Limits raise @core.DataError
+pub fn Axis::set_categories(Self, Array[String]) -> Unit raise @core.DataError
+pub fn Axis::set_category_units(Self, CategoryUnits) -> Unit raise @core.DataError
+pub fn Axis::set_cleared_view_limits(Self, Double, Double, automatic~ : Bool) -> Unit raise @core.DataError
+pub fn Axis::set_date(Self) -> Unit raise @core.DataError
+pub fn Axis::set_date_converter(Self, @date.DateConverter) -> Unit raise @core.DataError
+pub fn Axis::set_date_format(Self, String) -> Unit raise @core.DataError
+pub fn Axis::set_date_formatter(Self, @date.DateFormatter) -> Unit
+pub fn Axis::set_date_locator(Self, @date.DateLocator) -> Unit raise @core.DataError
+pub fn Axis::set_date_offset(Self, Int) -> Unit raise @core.DataError
+pub fn Axis::set_date_timezone(Self, @date.DateTimeZone) -> Unit raise @core.DataError
+pub fn Axis::set_explicit_category_converter(Self) -> Unit raise @core.DataError
+pub fn Axis::set_explicit_date_converter(Self, @date.DateConverter) -> Unit raise @core.DataError
+pub fn Axis::set_formatter(Self, @ticker.Formatter) -> Unit
+pub fn Axis::set_grid(Self, Bool, String, Double) -> Unit raise @core.DataError
+pub fn Axis::set_label(Self, String) -> Unit
+pub fn Axis::set_limits(Self, Double, Double) -> Unit raise @core.DataError
+pub fn Axis::set_locator(Self, @ticker.Locator) -> Unit raise @core.DataError
+pub fn Axis::set_minor_date_formatter(Self, @date.DateFormatter) -> Unit
+pub fn Axis::set_minor_date_locator(Self, @date.DateLocator) -> Unit
+pub fn Axis::set_minor_grid(Self, Bool, String, Double) -> Unit raise @core.DataError
+pub fn Axis::set_minor_locator(Self, @ticker.MinorLocator) -> Unit raise @core.DataError
+pub fn Axis::set_minor_named_formatter(Self, @ticker.BaseFormatter) -> Unit
+pub fn Axis::set_minor_overlap_removal(Self, Bool) -> Unit
+pub fn Axis::set_named_formatter(Self, @ticker.BaseFormatter) -> Unit
+pub fn Axis::set_scale(Self, @scale.Scale) -> Unit raise @core.DataError
+pub fn Axis::set_source_ticks(Self, Array[Double]) -> Unit raise @core.DataError
+pub fn Axis::set_tick_count(Self, Int) -> Unit
+pub fn Axis::set_tick_label_size(Self, Double) -> Unit
+pub fn Axis::set_tick_labels(Self, Array[String]) -> Unit raise @core.DataError
+pub fn Axis::set_tick_layout(Self, Double, Bool, active? : Bool, origin? : Double) -> Unit
+pub fn Axis::set_tick_position(Self, TickPosition) -> Unit
+pub fn Axis::set_tick_view(Self, Double, Double) -> Unit
+pub fn Axis::set_ticks(Self, Array[Double]) -> Unit raise @core.DataError
+pub fn Axis::set_unit_tag(Self, AxisUnitTag?) -> Unit raise @core.DataError
+pub fn Axis::set_view_limits(Self, Double, Double) -> Unit raise @core.DataError
+pub fn Axis::share_numeric_tickers(Self, Self) -> Unit
+pub fn Axis::shared_minpos_checked(Self) -> Array[Double] raise @core.DataError
+pub fn Axis::stored_view_limits(Self) -> @core.Limits
+pub fn Axis::tick_count(Self) -> Int
+pub fn Axis::tick_group_is_null(Self, minor? : Bool) -> Bool
+pub fn Axis::tick_label_size(Self) -> Double
+pub fn Axis::tick_labels(Self, Array[Double]) -> Array[String]
+pub fn Axis::tick_labels_checked(Self, Array[Double], view? : @core.Limits) -> Array[String] raise @core.DataError
+pub fn Axis::tick_labels_with_view(Self, Array[Double], @core.Limits?) -> Array[String]
+pub fn Axis::tick_position(Self) -> TickPosition?
+pub fn Axis::tick_space_length(Self) -> Double?
+pub fn Axis::tick_values(Self, @core.Limits) -> Array[Double]
+pub fn Axis::tick_values_checked(Self, @core.Limits) -> Array[Double] raise @core.DataError
+pub fn Axis::ticks(Self) -> Array[Double]?
+pub fn Axis::unit_converter_explicit(Self) -> Bool
+pub fn Axis::unit_converter_kind(Self) -> String?
+pub fn Axis::unit_tag(Self) -> AxisUnitTag?
+pub fn Axis::update_category_units(Self, Array[String]) -> Bool raise @core.DataError
+pub fn Axis::update_date_units(Self, Array[@date.RRuleDateTime]) -> Bool raise @core.DataError
+pub fn Axis::update_unit_axisinfo(Self) -> Unit raise @core.DataError
+pub fn Axis::uses_numeric_autoscale(Self) -> Bool
+pub fn Axis::validate_date_converter(Self, converter? : @date.DateConverter) -> Unit raise @core.DataError
+pub fn Axis::view_interval_checked(Self) -> (Double, Double) raise @core.DataError
+pub fn Axis::view_limits(Self, @core.Limits) -> @core.Limits
+pub fn Axis::view_limits_checked(Self, @core.Limits) -> @core.Limits raise @core.DataError
+pub fn Axis::view_mutated(Self) -> Bool
+
+pub(all) enum AxisUnitTag {
+  Date(@date.DateTimeZone)
+  Category(CategoryUnits)
+}
+
+pub struct CategoryUnits {
+  // private fields
+}
+pub fn CategoryUnits::encode(Self, Array[String]) -> Array[Double]
+pub fn CategoryUnits::format_values(Self, Array[Double]) -> Array[String] raise @core.DataError
+pub fn CategoryUnits::labels(Self) -> Array[String]
+pub fn CategoryUnits::new(Array[String]) -> Self
+pub fn CategoryUnits::positions(Self) -> Array[Double]
+
+pub(all) enum TickPosition {
+  Top
+  Bottom
+  Left
+  Right
+  Both
+}
+
+// Type aliases
+
+// Traits

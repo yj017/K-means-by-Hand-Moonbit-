@@ -1,0 +1,25 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Lampese/mathplotlib/ticker/date/tzdb"
+
+import {
+  "Lampese/mathplotlib/ticker/date",
+}
+
+// Values
+pub fn available_timezones() -> Array[String]
+
+pub fn parser_context(String, clock? : () -> Int64) -> @date.DateParserContext raise @date.DateError
+
+pub fn register_timezone(String) -> Unit raise @date.DateError
+
+pub fn timezone(String) -> @date.DateTimeZone raise @date.DateError
+
+pub fn version() -> String
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits

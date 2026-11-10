@@ -1,0 +1,289 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Lampese/mathplotlib/drawing"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn band_info(Double, Double, horizontal? : Bool, stacked? : Bool) -> BandInfo
+
+pub fn box_info(Int, q1~ : Double, median~ : Double, q3~ : Double, lower_whisker~ : Double, upper_whisker~ : Double, part? : BoxPart) -> BoxInfo
+
+pub fn cell_info(Int, Int, (Double, Double), (Double, Double)) -> CellInfo
+
+pub fn drawing(Int, Int, String, Array[HitPoint], targets? : Array[HitTarget], exclusions? : Array[(Int, (Double, Double, Double, Double))], polar_circles? : Array[(Int, (Double, Double, Double))]) -> Drawing
+
+pub fn error_info((Double, Double), (Double, Double)) -> ErrorInfo
+
+pub fn filled_region(Array[Array[(Double, Double)]], even_odd? : Bool) -> FilledRegion
+
+pub fn hexbin_info(Int, Int, Int, reduction? : HexbinReduction) -> HexbinInfo
+
+pub fn hit_info(HitPoint, HitKind, value~ : Double, series? : String, category? : String?, interval? : (Double, Double)?, fraction? : Double?, cell? : CellInfo?, error? : ErrorInfo?, band? : BandInfo?, box? : BoxInfo?, hexbin? : HexbinInfo?, violin? : ViolinInfo?, vector? : VectorInfo?, tricolor? : TriColorInfo?, streamplot? : StreamplotInfo?) -> HitInfo
+
+pub fn hit_point(Int, Int, Int, Double, Double, Double, Double) -> HitPoint
+
+pub fn hit_target(HitInfo, HitShape, (Double, Double, Double, Double)) -> HitTarget
+
+pub fn streamplot_info(Int, Double, Double, color_value? : Double?) -> StreamplotInfo
+
+pub fn tricolor_info((Int, Int, Int), vertex_mean? : Bool) -> TriColorInfo
+
+pub fn vector_info(Double, Double) -> VectorInfo
+
+pub fn violin_info(Int, position~ : Double, mean~ : Double, median~ : Double, minimum~ : Double, maximum~ : Double, part~ : ViolinPart, horizontal? : Bool) -> ViolinInfo
+
+// Errors
+
+// Types and methods
+pub struct BandInfo {
+  lower : Double
+  upper : Double
+  horizontal : Bool
+  stacked : Bool
+} derive(Eq, @debug.Debug)
+pub fn BandInfo::equal(Self, Self) -> Bool
+pub fn BandInfo::not_equal(Self, Self) -> Bool
+pub fn BandInfo::to_repr(Self) -> @debug.Repr
+
+pub struct BoxInfo {
+  group_index : Int
+  q1 : Double
+  median : Double
+  q3 : Double
+  lower_whisker : Double
+  upper_whisker : Double
+  part : BoxPart
+} derive(Eq, @debug.Debug)
+pub fn BoxInfo::equal(Self, Self) -> Bool
+pub fn BoxInfo::not_equal(Self, Self) -> Bool
+pub fn BoxInfo::to_repr(Self) -> @debug.Repr
+
+pub(all) enum BoxPart {
+  Box
+  LowerWhisker
+  UpperWhisker
+  LowerCap
+  UpperCap
+  Outlier(Double)
+} derive(Eq, @debug.Debug)
+pub fn BoxPart::equal(Self, Self) -> Bool
+pub fn BoxPart::not_equal(Self, Self) -> Bool
+pub fn BoxPart::to_repr(Self) -> @debug.Repr
+
+pub struct CellInfo {
+  row : Int
+  column : Int
+  x_range : (Double, Double)
+  y_range : (Double, Double)
+} derive(Eq, @debug.Debug)
+pub fn CellInfo::equal(Self, Self) -> Bool
+pub fn CellInfo::not_equal(Self, Self) -> Bool
+pub fn CellInfo::to_repr(Self) -> @debug.Repr
+
+pub struct Drawing {
+  // private fields
+}
+pub fn Drawing::height(Self) -> Int
+pub fn Drawing::hit_info(Self, HitPoint) -> HitInfo?
+pub fn Drawing::hit_test(Self, Double, Double, radius? : Double, mode? : HitMode) -> HitPoint?
+pub fn Drawing::hit_test_client(Self, Double, Double, Double, Double, Double, Double, radius? : Double, mode? : HitMode) -> HitPoint?
+pub fn Drawing::points(Self) -> Array[HitPoint]
+pub fn Drawing::polar_circle(Self, Int) -> (Double, Double, Double)?
+pub fn Drawing::svg(Self) -> String
+pub fn Drawing::targets(Self) -> Array[HitTarget]
+pub fn Drawing::viewport_point(Self, Double, Double, Double, Double, Double, Double) -> (Double, Double)?
+pub fn Drawing::width(Self) -> Int
+
+pub struct ErrorInfo {
+  x_range : (Double, Double)
+  y_range : (Double, Double)
+} derive(Eq, @debug.Debug)
+pub fn ErrorInfo::equal(Self, Self) -> Bool
+pub fn ErrorInfo::not_equal(Self, Self) -> Bool
+pub fn ErrorInfo::to_repr(Self) -> @debug.Repr
+
+pub struct FilledRegion {
+  // private fields
+} derive(Eq, @debug.Debug)
+pub fn FilledRegion::equal(Self, Self) -> Bool
+pub fn FilledRegion::even_odd(Self) -> Bool
+pub fn FilledRegion::not_equal(Self, Self) -> Bool
+pub fn FilledRegion::rings(Self) -> Array[Array[(Double, Double)]]
+pub fn FilledRegion::to_repr(Self) -> @debug.Repr
+
+pub struct HexbinInfo {
+  row : Int
+  column : Int
+  count : Int
+  reduction : HexbinReduction
+} derive(Eq, @debug.Debug)
+pub fn HexbinInfo::equal(Self, Self) -> Bool
+pub fn HexbinInfo::not_equal(Self, Self) -> Bool
+pub fn HexbinInfo::to_repr(Self) -> @debug.Repr
+
+pub(all) enum HexbinReduction {
+  Count
+  Mean
+  Sum
+  Min
+  Max
+  Custom
+} derive(Eq, @debug.Debug)
+pub fn HexbinReduction::equal(Self, Self) -> Bool
+pub fn HexbinReduction::not_equal(Self, Self) -> Bool
+pub fn HexbinReduction::to_repr(Self) -> @debug.Repr
+
+pub struct HitInfo {
+  point : HitPoint
+  kind : HitKind
+  series : String
+  category : String?
+  value : Double
+  interval : (Double, Double)?
+  fraction : Double?
+  cell : CellInfo?
+  error : ErrorInfo?
+  band : BandInfo?
+  box : BoxInfo?
+  hexbin : HexbinInfo?
+  violin : ViolinInfo?
+  vector : VectorInfo?
+  tricolor : TriColorInfo?
+  streamplot : StreamplotInfo?
+} derive(Eq, @debug.Debug)
+pub fn HitInfo::equal(Self, Self) -> Bool
+pub fn HitInfo::not_equal(Self, Self) -> Bool
+pub fn HitInfo::to_repr(Self) -> @debug.Repr
+
+pub(all) enum HitKind {
+  Line
+  Scatter
+  Bar
+  BarH
+  Histogram
+  Histogram2D
+  Hexbin
+  Pie
+  Heatmap
+  ErrorBar
+  Area
+  BoxPlot
+  Violin
+  Step
+  Stairs
+  Ecdf
+  Stem
+  Quiver
+  Barbs
+  Contour
+  ContourF
+  Tripcolor
+  Streamplot
+  Polar
+  PolarBar
+} derive(Eq, @debug.Debug)
+pub fn HitKind::equal(Self, Self) -> Bool
+pub fn HitKind::not_equal(Self, Self) -> Bool
+pub fn HitKind::to_repr(Self) -> @debug.Repr
+
+pub(all) enum HitMode {
+  Nearest
+  XNearest
+} derive(Eq, @debug.Debug)
+pub fn HitMode::equal(Self, Self) -> Bool
+pub fn HitMode::not_equal(Self, Self) -> Bool
+pub fn HitMode::to_repr(Self) -> @debug.Repr
+
+pub struct HitPoint {
+  panel_index : Int
+  artist_index : Int
+  point_index : Int
+  data_x : Double
+  data_y : Double
+  screen_x : Double
+  screen_y : Double
+} derive(Eq, @debug.Debug)
+pub fn HitPoint::equal(Self, Self) -> Bool
+pub fn HitPoint::not_equal(Self, Self) -> Bool
+pub fn HitPoint::to_repr(Self) -> @debug.Repr
+
+pub(all) enum HitShape {
+  Point
+  Segment(Double, Double, Double, Double)
+  FilledRegion(FilledRegion)
+  Rectangle(Double, Double, Double, Double)
+  Sector(Double, Double, Double, Double, Double)
+  AnnularSector(Double, Double, Double, Double, Double, Double)
+  Quadrilateral(Double, Double, Double, Double, Double, Double, Double, Double)
+} derive(Eq, @debug.Debug)
+pub fn HitShape::equal(Self, Self) -> Bool
+pub fn HitShape::not_equal(Self, Self) -> Bool
+pub fn HitShape::to_repr(Self) -> @debug.Repr
+
+pub struct HitTarget {
+  info : HitInfo
+  shape : HitShape
+  bounds : (Double, Double, Double, Double)
+} derive(Eq, @debug.Debug)
+pub fn HitTarget::equal(Self, Self) -> Bool
+pub fn HitTarget::not_equal(Self, Self) -> Bool
+pub fn HitTarget::to_repr(Self) -> @debug.Repr
+
+pub struct StreamplotInfo {
+  seed_index : Int
+  u : Double
+  v : Double
+  color_value : Double?
+} derive(Eq, @debug.Debug)
+pub fn StreamplotInfo::equal(Self, Self) -> Bool
+pub fn StreamplotInfo::not_equal(Self, Self) -> Bool
+pub fn StreamplotInfo::to_repr(Self) -> @debug.Repr
+
+pub struct TriColorInfo {
+  vertices : (Int, Int, Int)
+  vertex_mean : Bool
+} derive(Eq, @debug.Debug)
+pub fn TriColorInfo::equal(Self, Self) -> Bool
+pub fn TriColorInfo::not_equal(Self, Self) -> Bool
+pub fn TriColorInfo::to_repr(Self) -> @debug.Repr
+
+pub struct VectorInfo {
+  u : Double
+  v : Double
+} derive(Eq, @debug.Debug)
+pub fn VectorInfo::equal(Self, Self) -> Bool
+pub fn VectorInfo::not_equal(Self, Self) -> Bool
+pub fn VectorInfo::to_repr(Self) -> @debug.Repr
+
+pub struct ViolinInfo {
+  group_index : Int
+  position : Double
+  horizontal : Bool
+  mean : Double
+  median : Double
+  minimum : Double
+  maximum : Double
+  part : ViolinPart
+} derive(Eq, @debug.Debug)
+pub fn ViolinInfo::equal(Self, Self) -> Bool
+pub fn ViolinInfo::not_equal(Self, Self) -> Bool
+pub fn ViolinInfo::to_repr(Self) -> @debug.Repr
+
+pub(all) enum ViolinPart {
+  Body(Int, Double, Double)
+  Mean
+  Median
+  Minimum
+  Maximum
+  Range
+  Quantile(Int, Double)
+} derive(Eq, @debug.Debug)
+pub fn ViolinPart::equal(Self, Self) -> Bool
+pub fn ViolinPart::not_equal(Self, Self) -> Bool
+pub fn ViolinPart::to_repr(Self) -> @debug.Repr
+
+// Type aliases
+
+// Traits

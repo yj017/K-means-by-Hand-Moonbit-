@@ -1,0 +1,169 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Lampese/mathplotlib/core"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn bar_segment(Double, Double, baseline? : Double, width? : Double, category? : String?) -> BarSegment
+
+pub fn bounds(Double, Double, Double, Double) -> Bounds
+
+pub fn bounds_from_points(Array[Point]) -> Bounds?
+
+pub fn limits(Double, Double) -> Limits
+
+pub fn line_stroke(String, offset? : Double, dashes? : Array[Double]?) -> LineStroke
+
+pub fn masked_array(Array[Double], mask? : Array[Bool]) -> MaskedArray raise MaskError
+
+pub fn masked_matrix(Array[Array[Double]], mask? : Array[Array[Bool]]) -> MaskedMatrix raise MaskError
+
+pub fn point(Double, Double) -> Point
+
+pub fn series(Array[Double], Array[Double]) -> Series raise DataError
+
+pub fn style(String, width? : Double, radius? : Double, fill? : String, font_size? : Double, marker? : String, line_alpha? : Double?, line_stroke? : LineStroke, line_gapcolor? : String?) -> Style
+
+// Errors
+pub(all) suberror DataError {
+  LengthMismatch(expected~ : Int, actual~ : Int)
+  NonFiniteLimit(axis~ : String)
+  InvalidErrorBar(message~ : String)
+  InvalidBins
+  InvalidImage(message~ : String)
+  InvalidPie(message~ : String)
+  InvalidBoxPlot(message~ : String)
+  InvalidQuiver(message~ : String)
+  InvalidViolin(message~ : String)
+  InvalidContour(message~ : String)
+  InvalidAnnotation(message~ : String)
+  InvalidReference(message~ : String)
+  InvalidStreamplot(message~ : String)
+  InvalidStatistics(message~ : String)
+  InvalidTicks(message~ : String)
+  InvalidCollection(message~ : String)
+}
+
+pub(all) suberror MaskError {
+  InvalidShape(message~ : String)
+}
+
+// Types and methods
+pub struct BarSegment {
+  position : Double
+  value : Double
+  baseline : Double
+  width : Double
+  category : String?
+}
+
+pub struct Bounds {
+  xmin : Double
+  xmax : Double
+  ymin : Double
+  ymax : Double
+}
+pub fn Bounds::is_finite(Self) -> Bool
+pub fn Bounds::xmax(Self) -> Double
+pub fn Bounds::xmin(Self) -> Double
+pub fn Bounds::ymax(Self) -> Double
+pub fn Bounds::ymin(Self) -> Double
+
+pub(all) enum LegendPosition {
+  UpperRight
+  UpperLeft
+  LowerRight
+  LowerLeft
+} derive(Eq, @debug.Debug)
+pub fn LegendPosition::equal(Self, Self) -> Bool
+pub fn LegendPosition::not_equal(Self, Self) -> Bool
+pub fn LegendPosition::to_repr(Self) -> @debug.Repr
+
+pub struct Limits {
+  lower : Double
+  upper : Double
+}
+pub fn Limits::is_finite(Self) -> Bool
+pub fn Limits::lower(Self) -> Double
+pub fn Limits::upper(Self) -> Double
+
+pub struct LineStroke {
+  // private fields
+}
+pub fn LineStroke::dash_offset(Self) -> Double
+pub fn LineStroke::dash_sequence(Self) -> Array[Double]?
+pub fn LineStroke::linestyle(Self) -> String
+
+pub struct MaskedArray {
+  // private fields
+}
+pub fn MaskedArray::all_masked(Self) -> Bool
+pub fn MaskedArray::compressed(Self) -> Array[Double]
+pub fn MaskedArray::count(Self) -> Int
+pub fn MaskedArray::filled(Self, Double) -> Array[Double]
+pub fn MaskedArray::finite_values(Self) -> Array[Double]
+pub fn MaskedArray::is_masked(Self, Int) -> Bool
+pub fn MaskedArray::length(Self) -> Int
+pub fn MaskedArray::map(Self, (Double) -> Double) -> Self
+pub fn MaskedArray::mask(Self) -> Array[Bool]
+pub fn MaskedArray::to_array(Self) -> Array[Double]
+pub fn MaskedArray::values(Self) -> Array[Double]
+pub fn MaskedArray::zip_map(Self, Self, (Double, Double) -> Double) -> Self raise DataError
+
+pub struct MaskedMatrix {
+  // private fields
+}
+pub fn MaskedMatrix::columns(Self) -> Int
+pub fn MaskedMatrix::count(Self) -> Int
+pub fn MaskedMatrix::filled(Self, Double) -> Array[Array[Double]]
+pub fn MaskedMatrix::finite_values(Self) -> Array[Double]
+pub fn MaskedMatrix::is_masked(Self, Int, Int) -> Bool
+pub fn MaskedMatrix::map(Self, (Double) -> Double) -> Self
+pub fn MaskedMatrix::mask(Self) -> Array[Array[Bool]]
+pub fn MaskedMatrix::rows(Self) -> Int
+pub fn MaskedMatrix::to_array(Self) -> Array[Array[Double]]
+pub fn MaskedMatrix::values(Self) -> Array[Array[Double]]
+
+pub struct Point {
+  x : Double
+  y : Double
+}
+pub fn Point::is_finite(Self) -> Bool
+pub fn Point::is_missing(Self) -> Bool
+pub fn Point::x(Self) -> Double
+pub fn Point::y(Self) -> Double
+
+pub struct Series {
+  xs : Array[Double]
+  ys : Array[Double]
+}
+pub fn Series::finite_bounds(Self) -> Bounds?
+pub fn Series::length(Self) -> Int
+pub fn Series::points(Self) -> Array[Point]
+pub fn Series::x(Self) -> Array[Double]
+pub fn Series::y(Self) -> Array[Double]
+
+pub struct Style {
+  color : String
+  width : Double
+  radius : Double
+  fill : String
+  font_size : Double
+  marker : String
+  // private fields
+}
+pub fn Style::color(Self) -> String
+pub fn Style::fill(Self) -> String
+pub fn Style::font_size(Self) -> Double
+pub fn Style::line_alpha(Self) -> Double?
+pub fn Style::line_gapcolor(Self) -> String?
+pub fn Style::line_stroke(Self) -> LineStroke
+pub fn Style::marker(Self) -> String
+pub fn Style::radius(Self) -> Double
+pub fn Style::width(Self) -> Double
+
+// Type aliases
+
+// Traits

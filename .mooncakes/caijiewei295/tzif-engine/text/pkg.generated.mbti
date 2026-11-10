@@ -1,0 +1,32 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "caijiewei295/tzif-engine/text"
+
+import {
+  "caijiewei295/tzif-engine/types",
+}
+
+// Values
+pub fn format_iso_local(@types.LocalDateTime) -> Result[String, @types.TzifError]
+
+pub fn format_iso_offset(Int64, Int) -> Result[String, @types.TzifError]
+
+pub fn format_iso_utc(Int64) -> Result[String, @types.TzifError]
+
+pub fn format_iso_zoned(@types.LocalDateTime) -> Result[String, @types.TzifError]
+
+pub fn format_numeric_offset(Int) -> Result[String, @types.TzifError]
+
+pub fn parse_iso_local(String) -> Result[@types.LocalDateTime, @types.TzifError]
+
+pub fn parse_iso_offset(String) -> Result[@types.OffsetDateTime, @types.TzifError]
+
+pub fn parse_iso_utc(String) -> Result[Int64, @types.TzifError]
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+

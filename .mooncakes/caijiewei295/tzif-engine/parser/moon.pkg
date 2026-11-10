@@ -1,0 +1,10 @@
+import {
+  "caijiewei295/tzif-engine/types",
+  "moonbitlang/core/encoding/utf8",
+}
+
+import {
+  "caijiewei295/tzif-engine/test/fixtures",
+} for "test"
+
+// TZif binary parser — header, data block, POSIX footer.

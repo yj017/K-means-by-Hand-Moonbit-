@@ -1,0 +1,560 @@
+///|
+/// Blackbox tests for the `Map` escape hatch — `Expr::map_elements` /
+/// `map_many` — driven through the expression verbs. Covers single- and
+/// multi-input application, the per-row `Scalar` interface (null cells in,
+/// null / typed cells out), dtype inference (each backend, the `Numeric`
+/// convergence, the all-null fallback and the zero-input raise), the literal / aggregation
+/// broadcast, closure error propagation, and the multi-input form's use as
+/// a `filter` predicate, matching the equivalent native expression.
+
+///|
+/// Mixed frame: a nullable Int, an all-valid Int, and a String, exercising
+/// the single- / multi-input maps and the null-in / typed-out paths.
+fn map_df() -> DataFrame raise @types.DataError {
+  DataFrame::DataFrame([
+    Series::from_int_options("q", [Some(1), None, Some(3)]),
+    Series::from_ints("base", [10, 20, 30]),
+    Series::from_strings("tag", ["a", "b", "c"]),
+  ])
+}
+
+///|
+test "map_elements: applies the closure per row over a column (Int out)" {
+  // Double the nullable column; the closure sees `Scalar::Null` for the null
+  // cell and decides its own output (here it passes the null through).
+  let out = map_df().with_columns([
+    @expr.col("q").map_elements(label="double", s => {
+      match s {
+        @types.Scalar::Int(v) => @types.Scalar::Int(v * 2)
+        _ => @types.Scalar::Null
+      }
+    }),
+  ])
+  assert_eq(out.get_column("q").dtype(), @types.DataType::Int)
+  assert_eq(out.get_column("q").to_scalars(), [
+    @types.Scalar::Int(2),
+    @types.Scalar::Null,
+    @types.Scalar::Int(6),
+  ])
+}
+
+///|
+test "map_elements: an all-valid numeric result converges onto Numeric" {
+  let out = map_df().with_columns([
+    @expr.col("base")
+    .map_elements(label="half", s => {
+      @types.Scalar::Float(s.as_int().to_double() / 2.0)
+    })
+    .with_alias("half"),
+  ])
+  assert_eq(out.get_column("half").dtype(), @types.DataType::Float)
+  assert_eq(out.get_column("half").to_scalars(), [
+    @types.Scalar::Float(5.0),
+    @types.Scalar::Float(10.0),
+    @types.Scalar::Float(15.0),
+  ])
+  // A computed, all-valid numeric column rides the `Numeric` fast path — the
+  // expression engine's backend convention.
+  assert_eq(out.get_column("half").storage_kind(), @column.StorageKind::Numeric)
+}
+
+///|
+test "map_many: combines several inputs row by row (heterogeneous dtypes)" {
+  // The closure receives one cell per input, in order — an Int and a String.
+  let out = map_df().with_columns([
+    @expr.map_many(label="label", [@expr.col("base"), @expr.col("tag")], vs => {
+      @types.Scalar::String(vs[0].to_string() + "-" + vs[1].as_string())
+    }).with_alias("combo"),
+  ])
+  assert_eq(out.get_column("combo").dtype(), @types.DataType::String)
+  assert_eq(out.get_column("combo").to_scalars(), [
+    @types.Scalar::String("10-a"),
+    @types.Scalar::String("20-b"),
+    @types.Scalar::String("30-c"),
+  ])
+}
+
+///|
+test "map: a Bool result is usable as a filter predicate" {
+  // The reified row predicate: a `map_many` returning `Scalar::Bool`.
+  let kept = map_df().filter(
+    @expr.map_many(label="keep", [@expr.col("q")], vs => {
+      match vs[0] {
+        @types.Scalar::Int(v) => @types.Scalar::Bool(v >= 3)
+        _ => @types.Scalar::Bool(false)
+      }
+    }),
+  )
+  // Only the third row (q = 3) survives; the null row drops (false).
+  assert_eq(kept.nrows(), 1)
+  assert_eq(kept.get_column("base").to_scalars(), [@types.Scalar::Int(30)])
+}
+
+///|
+test "map: a closure returning null on some rows yields a nullable column" {
+  let out = map_df().with_columns([
+    @expr.col("base")
+    .map_elements(label="gate", s => {
+      match s {
+        @types.Scalar::Int(v) =>
+          if v > 15 {
+            @types.Scalar::Int(v)
+          } else {
+            @types.Scalar::Null
+          }
+        _ => @types.Scalar::Null
+      }
+    })
+    .with_alias("gated"),
+  ])
+  // The leading null cell is skipped for dtype inference; the first non-null
+  // (row 1) fixes the column to Int.
+  assert_eq(out.get_column("gated").to_scalars(), [
+    @types.Scalar::Null,
+    @types.Scalar::Int(20),
+    @types.Scalar::Int(30),
+  ])
+  // A nullable result stays on the Builtin backend.
+  assert_eq(
+    out.get_column("gated").storage_kind(),
+    @column.StorageKind::Builtin,
+  )
+}
+
+///|
+test "map: a closure raise propagates from the consuming verb" {
+  let result = Ok(
+    map_df().with_columns([
+      @expr.col("q").map_elements(label="boom", s => {
+        match s {
+          @types.Scalar::Int(v) => @types.Scalar::Int(v)
+          _ => raise @types.DataError::InvalidOperation("null cell")
+        }
+      }),
+    ]),
+  ) catch {
+    e => Err(e)
+  }
+  assert_eq(result, Err(@types.DataError::InvalidOperation("null cell")))
+}
+
+///|
+test "map: an all-null result falls back to the input dtype as an all-null column" {
+  // Every cell maps to null, so no non-null cell fixes the dtype. Rather than
+  // fail, the map borrows the leftmost input's dtype (q is Int) and yields an
+  // all-null Int column — a null-returning map is tolerated. The dtype is
+  // all that is borrowed: an all-null column carries a validity bitmap, so the
+  // result is `Builtin` whatever backend `q` was stored on.
+  let out = map_df().with_columns([
+    @expr.col("q").map_elements(label="nullify", _s => @types.Scalar::Null),
+  ])
+  assert_eq(out.get_column("q").dtype(), @types.DataType::Int)
+  assert_eq(out.get_column("q").to_scalars(), [
+    @types.Scalar::Null,
+    @types.Scalar::Null,
+    @types.Scalar::Null,
+  ])
+  assert_eq(out.check_invariants(), Ok(()))
+  // Mapping a `Numeric`-backed input the same way pins that the backend is not
+  // borrowed with the dtype: the result's own content decides it, as for every
+  // computed column.
+  assert_eq(
+    map_df().get_column("base").storage_kind(),
+    @column.StorageKind::Numeric,
+  )
+  let from_numeric = map_df().with_columns([
+    @expr.col("base").map_elements(label="nullify", _s => @types.Scalar::Null),
+  ])
+  assert_eq(from_numeric.get_column("base").dtype(), @types.DataType::Int)
+  assert_eq(
+    from_numeric.get_column("base").storage_kind(),
+    @column.StorageKind::Builtin,
+  )
+}
+
+///|
+test "map: a zero-input all-null map has no dtype witness and raises" {
+  // With no input expression at all there is no dtype to borrow as the witness,
+  // so an all-null result still has nowhere to land and raises (like a Null
+  // literal). This is the only remaining all-null raise.
+  let result = Ok(
+    map_df().with_columns([
+      @expr.map_many(label="void", [], _vs => @types.Scalar::Null),
+    ]),
+  ) catch {
+    e => Err(e)
+  }
+  assert_eq(
+    result,
+    Err(
+      @types.DataError::Unsupported(
+        "cannot infer the dtype of a map result with no non-null cell and no input expression: no Null-dtype column backend",
+      ),
+    ),
+  )
+}
+
+///|
+test "map: an all-null map borrows a literal input's dtype, not just a column's" {
+  // The witness is the leftmost *evaluated input*, so a literal supplies one as
+  // readily as a column read — which is why the raise above needs a map with no
+  // input at all, not merely one that reads no frame column.
+  let out = map_df().with_columns([
+    @expr.map_many(label="void", [@expr.lit_float(1.5)], _vs => {
+      @types.Scalar::Null
+    }).with_alias("o"),
+  ])
+  assert_eq(out.get_column("o").dtype(), @types.DataType::Float)
+  assert_eq(out.get_column("o").to_scalars(), [
+    @types.Scalar::Null,
+    @types.Scalar::Null,
+    @types.Scalar::Null,
+  ])
+}
+
+///|
+test "map_many: an empty input list is a constant broadcast over the frame" {
+  // `map_many([], f)` calls the closure once with no cells — a length-1
+  // constant that broadcasts to every row, named "literal".
+  let out = map_df().with_columns([
+    @expr.map_many(label="const", [], _vs => @types.Scalar::Int(42)),
+  ])
+  assert_eq(out.get_column("literal").to_scalars(), [
+    @types.Scalar::Int(42),
+    @types.Scalar::Int(42),
+    @types.Scalar::Int(42),
+  ])
+}
+
+///|
+test "map_many: a length-1 input broadcasts against a column input" {
+  // Mixing a column and a literal — the literal is stretched to the column's
+  // height before the closure runs.
+  let out = map_df().with_columns([
+    @expr.map_many(label="bump", [@expr.col("base"), @expr.lit_int(100)], vs => {
+      @types.Scalar::Int(vs[0].as_int() + vs[1].as_int())
+    }).with_alias("bumped"),
+  ])
+  assert_eq(out.get_column("bumped").to_scalars(), [
+    @types.Scalar::Int(110),
+    @types.Scalar::Int(120),
+    @types.Scalar::Int(130),
+  ])
+}
+
+///|
+test "map_elements: used in select, producing a standalone column" {
+  let out = map_df().select([
+    @expr.col("tag").map_elements(label="up", s => {
+      @types.Scalar::String(s.as_string() + "!")
+    }),
+  ])
+  assert_eq(out.ncols(), 1)
+  assert_eq(out.get_column("tag").to_scalars(), [
+    @types.Scalar::String("a!"),
+    @types.Scalar::String("b!"),
+    @types.Scalar::String("c!"),
+  ])
+}
+
+///|
+test "map over an empty frame yields an empty column mirroring the input dtype" {
+  // The closure runs once per row — zero times here — so its result dtype is
+  // unobservable. Instead of raising (which would make map the one expression
+  // that cannot survive an empty frame), map mirrors the leftmost input's
+  // dtype and returns an empty column. Covers an Int and a String input.
+  let empty = DataFrame::DataFrame([
+    Series::from_ints("i", []),
+    Series::from_strings("s", []),
+  ])
+  let out = empty.with_columns([
+    @expr.col("i").map_elements(label="id", s => s),
+    @expr.col("s").map_elements(label="echo", s => s),
+  ])
+  assert_eq(out.shape(), (0, 2))
+  assert_eq(out.get_column("i").dtype(), @types.DataType::Int)
+  assert_eq(out.get_column("i").to_scalars(), [])
+  assert_eq(out.get_column("s").dtype(), @types.DataType::String)
+  assert_eq(out.get_column("s").to_scalars(), [])
+}
+
+///|
+test "map: a closure mixing Int and Float promotes to a Float column" {
+  // The engine promotes Int <-> Float, so a closure returning Int on some rows
+  // and Float on others yields a Float column with every value present (Ints
+  // promoted), not one that nulls the minority type. A null cell stays null.
+  let df = DataFrame::DataFrame([Series::from_ints("q", [2, 3, 4])])
+  let out = df.with_columns([
+    @expr.col("q").map_elements(label="mix", s => {
+      let v = s.as_int()
+      if v == 3 {
+        @types.Scalar::Float(0.5)
+      } else if v == 4 {
+        @types.Scalar::Null
+      } else {
+        @types.Scalar::Int(v)
+      }
+    }),
+  ])
+  assert_eq(out.get_column("q").dtype(), @types.DataType::Float)
+  assert_eq(out.get_column("q").to_scalars(), [
+    @types.Scalar::Float(2.0),
+    @types.Scalar::Float(0.5),
+    @types.Scalar::Null,
+  ])
+}
+
+///|
+test "map_many as a filter predicate matches the native expression" {
+  let df = map_df()
+  // The `map_many` escape hatch reproduces a native predicate — keep rows
+  // where `q >= 3`. The closure returns `Bool(false)` for the null cell
+  // while the native `ge` returns null there, but both drop the row, so the
+  // two filters agree row for row.
+  let by_map = df.filter(
+    @expr.map_many(label="keep", [@expr.col("q")], vs => {
+      match vs[0] {
+        @types.Scalar::Int(v) => @types.Scalar::Bool(v >= 3)
+        _ => @types.Scalar::Bool(false)
+      }
+    }),
+  )
+  let by_native = df.filter(@expr.col("q").ge(@expr.lit_int(3)))
+  assert_eq(by_map, by_native)
+}
+
+///|
+/// Blackbox tests for the batched escape hatch `Expr::map_batches` — the
+/// whole-`Series` UDF. Covers the row-wise form (`returns_scalar=false`)
+/// through `with_columns` / `select`, backend canonicalisation, null handling,
+/// closure error propagation, the length-1 broadcast, and the
+/// `returns_scalar=true` form as a custom aggregation inside
+/// `group_by(...).agg` (plus its rejection when the flag is omitted).
+
+///|
+/// A grouping key and a nullable Int payload — exercises the batched map's
+/// null-through path and its use as a per-group reduction.
+fn mb_df() -> DataFrame raise @types.DataError {
+  DataFrame::DataFrame([
+    Series::from_strings("region", ["west", "east", "west", "east", "west"]),
+    Series::from_int_options("q", [Some(1), None, Some(3), Some(4), Some(5)]),
+  ])
+}
+
+///|
+test "map_batches: applies the closure to the whole column at once (Int out)" {
+  // Double every cell in one batched call; the null cell stays null.
+  let out = mb_df().with_columns([
+    @expr.col("q").map_batches(label="double", s => {
+      Series::from_int_options(
+        s.name(),
+        s
+        .to_scalars()
+        .map(sc => {
+          match sc {
+            @types.Scalar::Int(v) => Some(v * 2)
+            _ => None
+          }
+        }),
+      )
+    }),
+  ])
+  assert_eq(out.get_column("q").dtype(), @types.DataType::Int)
+  assert_eq(out.get_column("q").to_scalars(), [
+    @types.Scalar::Int(2),
+    @types.Scalar::Null,
+    @types.Scalar::Int(6),
+    @types.Scalar::Int(8),
+    @types.Scalar::Int(10),
+  ])
+}
+
+///|
+test "map_batches: an all-valid numeric result converges onto Numeric" {
+  let df = DataFrame::DataFrame([Series::from_ints("base", [10, 20, 30])])
+  let out = df.with_columns([
+    @expr.col("base")
+    .map_batches(label="halved", s => {
+      Series::from_floats(
+        s.name(),
+        s.to_scalars().map(sc => sc.as_int().to_double() / 2.0),
+      )
+    })
+    .with_alias("half"),
+  ])
+  assert_eq(out.get_column("half").dtype(), @types.DataType::Float)
+  assert_eq(out.get_column("half").to_scalars(), [
+    @types.Scalar::Float(5.0),
+    @types.Scalar::Float(10.0),
+    @types.Scalar::Float(15.0),
+  ])
+  // A computed, all-valid numeric column rides the `Numeric` fast path — the
+  // canonicalisation that keeps `collect ≡ execute` even though the closure
+  // built a plain `Builtin` series.
+  assert_eq(out.get_column("half").storage_kind(), @column.StorageKind::Numeric)
+}
+
+///|
+test "map_batches: used in select produces a standalone column" {
+  // The identity closure returns its input verbatim; the result is named
+  // after the leftmost input ("q").
+  let out = mb_df().select([@expr.col("q").map_batches(label="id", s => s)])
+  assert_eq(out.ncols(), 1)
+  assert_eq(out.get_column("q").to_scalars(), [
+    @types.Scalar::Int(1),
+    @types.Scalar::Null,
+    @types.Scalar::Int(3),
+    @types.Scalar::Int(4),
+    @types.Scalar::Int(5),
+  ])
+}
+
+///|
+test "map_batches: a closure raise propagates from the consuming verb" {
+  let result = Ok(
+    mb_df().with_columns([
+      @expr.col("q").map_batches(label="boom", _s => {
+        raise @types.DataError::InvalidOperation("boom")
+      }),
+    ]),
+  ) catch {
+    e => Err(e)
+  }
+  assert_eq(result, Err(@types.DataError::InvalidOperation("boom")))
+}
+
+///|
+test "map_batches: the closure meets an empty series over a zero-row frame" {
+  // The batched contract: `f` receives the whole column, an empty one
+  // included — selecting over a zero-row frame hands it 0 rows, where the
+  // row-level map's closure would simply never run. A closure total over
+  // an empty series answers an empty series of its own dtype, and that is
+  // the witness the 0-row output carries.
+  let empty = DataFrame::DataFrame([Series::from_ints("q", [])])
+  let mut saw_zero_rows = false
+  let out = empty.select([
+    @expr.col("q")
+    .map_batches(label="double", s => {
+      if s.len() == 0 {
+        saw_zero_rows = true
+      }
+      Series::from_strings("double", [])
+    })
+    .with_alias("d"),
+  ])
+  assert_true(saw_zero_rows)
+  assert_eq(out.nrows(), 0)
+  assert_eq(out.get_column("d").dtype(), @types.DataType::String)
+}
+
+///|
+test "map_batches: a length-1 result broadcasts over the frame in with_columns" {
+  // A reducing closure used outside `agg`: its length-1 result broadcasts to
+  // every row, exactly like a scalar literal.
+  let df = DataFrame::DataFrame([Series::from_ints("v", [10, 20, 30])])
+  let out = df.with_columns([
+    @expr.col("v")
+    .map_batches(label="total", returns_scalar=true, s => {
+      Series::from_ints("total", [s.sum().as_int()])
+    })
+    .with_alias("total"),
+  ])
+  assert_eq(out.get_column("total").to_scalars(), [
+    @types.Scalar::Int(60),
+    @types.Scalar::Int(60),
+    @types.Scalar::Int(60),
+  ])
+}
+
+///|
+test "map_batches: returns_scalar acts as a custom aggregation in agg" {
+  // A "range" reduction (max - min) — not one of the built-in aggregations.
+  // Each group's rows are handed to the closure, which returns a length-1
+  // series that becomes the group's cell.
+  let out = DataFrame::DataFrame([
+      Series::from_strings("region", ["west", "east", "west", "east", "west"]),
+      Series::from_ints("v", [10, 20, 30, 40, 50]),
+    ])
+    .group_by([@expr.col("region")])
+    .agg([
+      @expr.col("v")
+      .map_batches(label="range", returns_scalar=true, s => {
+        let hi = s.max()
+        let lo = s.min()
+        match (hi, lo) {
+          (@types.Scalar::Int(h), @types.Scalar::Int(l)) =>
+            Series::from_ints("range", [h - l])
+          _ => Series::from_ints("range", [])
+        }
+      })
+      .with_alias("v_range"),
+    ])
+  assert_eq(out.check_invariants(), Ok(()))
+  assert_eq(out.columns(), ["region", "v_range"])
+  // west = rows [0,2,4] (10/30/50) → range 40; east = rows [1,3] (20/40) → 20.
+  assert_eq(out.get_column("v_range").to_scalars(), [
+    @types.Scalar::Int(40),
+    @types.Scalar::Int(20),
+  ])
+}
+
+///|
+test "map_batches: a returns_scalar closure that does not reduce raises LengthMismatch" {
+  // `returns_scalar` is a *declaration*, checked structurally before evaluation;
+  // whether the closure honours it is only knowable per group. Two cells is the
+  // silent-truncation case (cell 0 would have been kept) and zero cells the
+  // index-an-empty-array one, so both must reach the length contract every other
+  // expression consumer enforces.
+  let grouped = () => {
+    DataFrame::DataFrame([
+      Series::from_strings("region", ["west", "east", "west"]),
+      Series::from_ints("q", [1, 2, 3]),
+    ]).group_by([@expr.col("region")])
+  }
+  let wrong_lengths : Array[Array[Int64]] = [[7, 8], []]
+  for cells in wrong_lengths {
+    assert_eq(
+      Ok(
+        grouped().agg([
+          @expr.col("q")
+          .map_batches(label="wrong", returns_scalar=true, _s => {
+            Series::from_ints("wrong", cells)
+          })
+          .with_alias("q_wrong"),
+        ]),
+      ) catch {
+        e => Err(e)
+      },
+      Err(@types.DataError::LengthMismatch),
+    )
+  }
+}
+
+///|
+test "map_batches: a bare (non-scalar) map is rejected as an aggregation" {
+  // Without `returns_scalar`, the node is row-wise, so the reduction-shape
+  // gate rejects it before evaluation — the same gate a bare `col` trips.
+  assert_eq(
+    Ok(
+      mb_df()
+      .group_by([@expr.col("region")])
+      .agg([@expr.col("q").map_batches(label="x", s => s)]),
+    ) catch {
+      e => Err(e)
+    },
+    Err(
+      @types.DataError::InvalidOperation(
+        "aggregate expression must reduce each group to a single value: map_batches(\"x\", [col(q)])",
+      ),
+    ),
+  )
+}
+
+///|
+test "map_batches over an empty frame yields an empty column" {
+  let empty = DataFrame::DataFrame([Series::from_ints("i", [])])
+  let out = empty.with_columns([@expr.col("i").map_batches(label="id", s => s)])
+  assert_eq(out.shape(), (0, 1))
+  assert_eq(out.get_column("i").dtype(), @types.DataType::Int)
+  assert_eq(out.get_column("i").to_scalars(), [])
+}

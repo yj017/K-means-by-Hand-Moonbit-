@@ -1,0 +1,52 @@
+import {
+  "moonbitlang/core/int64",
+  "moonbitlang/core/int",
+  "moonbitlang/core/string",
+  "moonbitlang/core/json",
+  "moonbitlang/core/encoding/utf8",
+  "moonbitlang/x/time/internal/tzif",
+}
+
+import {
+  "moonbitlang/core/bench",
+  "moonbitlang/core/test",
+  "moonbitlang/core/buffer",
+} for "wbtest"
+
+import {
+  "moonbitlang/core/test",
+  "moonbitlang/core/buffer",
+} for "test"
+
+rule(
+  name: "embed-paris-tzif",
+  command: ":embed --binary --name paris_tzif -i $input -o $output",
+)
+
+dev_build(
+  rule: "embed-paris-tzif",
+  input: "testdata/Europe/Paris.tzif",
+  output: "tzif_paris_generated_wbtest.mbt",
+)
+
+rule(
+  name: "embed-pyongyang-tzif",
+  command: ":embed --binary --name pyongyang_tzif -i $input -o $output",
+)
+
+dev_build(
+  rule: "embed-pyongyang-tzif",
+  input: "testdata/Asia/Pyongyang.tzif",
+  output: "tzif_pyongyang_generated_wbtest.mbt",
+)
+
+options(
+  "native-stub": [ "local_zone_native.c" ],
+  targets: {
+    "local_zone_native.mbt": [ "native", "llvm" ],
+    "local_zone_other.mbt": [ "wasm", "wasm-gc" ],
+    "local_zone_js.mbt": [ "js" ],
+    "local_zone_js_wbtest.mbt": [ "js" ],
+    "local_zone_native_wbtest.mbt": [ "native", "llvm" ],
+  },
+)

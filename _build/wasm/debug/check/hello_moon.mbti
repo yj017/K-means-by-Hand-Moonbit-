@@ -1,0 +1,17 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "username/hello_moon"
+
+// Values
+pub fn squared_distance(Point, Point) -> Double
+
+// Errors
+
+// Types and methods
+pub struct Point {
+  coords : Array[Double]
+}
+pub fn Point::dim(Self) -> Int32
+
+// Type aliases
+
+// Traits

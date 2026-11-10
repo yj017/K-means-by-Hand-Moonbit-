@@ -1,0 +1,23 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "ihb2032/MoonFrame/internal/order"
+
+// Values
+pub fn between_bounds(Int32?, Int32?, Int32) -> (Int32, Int32)
+
+pub fn clamp_take(Int32, Int32) -> Int32
+
+pub fn slice_len(Int32, Int32, Int32?) -> Int32
+
+pub fn slice_start(Int32, Int32) -> Int32
+
+pub fn stable_mergesort_indices(Int32, (Int32, Int32) -> Int32) -> Array[Int32]
+
+pub fn window_take(Int32, Int32) -> Int32
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits

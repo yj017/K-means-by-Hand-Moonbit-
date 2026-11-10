@@ -1,0 +1,183 @@
+///|
+/// How an equi-join combines rows that share (or fail to share) a key.
+///
+/// `pub(all)` so callers can name the variants directly (e.g.
+/// `JoinOptions::on(keys, how=Left)`):
+///   * `Inner` — keep only rows whose key matches on both sides.
+///   * `Left` — keep every left row; where it has no right match, the
+///     right-hand columns are filled with nulls.
+///   * `Right` — the mirror of `Left`: keep every right row; where it has
+///     no left match, the left-hand columns are filled with nulls. The
+///     output leads with the right frame's columns (key included, values
+///     from the right) and the left non-key columns follow, a clashing left
+///     one suffixed — the left join's own layout with the sides exchanged.
+///   * `Outer` — the full outer join: keep matched pairs plus every
+///     unmatched row from **both** sides (the missing side's columns null).
+///     Left rows (matched and unmatched) come first in left order, then the
+///     unmatched right rows in right order.
+///   * `Cross` — the Cartesian product (every left row paired with every
+///     right row); takes **no** key columns.
+pub(all) enum JoinType {
+  Inner
+  Left
+  Right
+  Outer
+  Cross
+  Semi
+  Anti
+} derive(Eq, Debug)
+
+///|
+pub extend JoinType with Eq::{equal, not_equal}
+
+///|
+pub extend JoinType with Debug::{to_repr}
+
+///|
+/// The knobs for `DataFrame::join`: which columns to match on, the join
+/// `how`, the `suffix` disambiguating a right column whose name collides
+/// with a left one, and whether to `coalesce` the key columns. Fields are
+/// read-only outside the package — build options through `JoinOptions::on` /
+/// `JoinOptions::left_on` / `JoinOptions::cross`, naming only the knobs that
+/// differ from their defaults. The three entry points are the legal shapes: an
+/// `on` join, a paired `left_on` / `right_on` join, and a keyless cross join —
+/// no combination of them can be spelled.
+///
+///   * `on` — the key **expressions**, evaluated over **both** frames.
+///     A bare `col("id")` matches on an existing
+///     column; a derived key such as `col("ts") / lit_int(86400)` matches
+///     on the computed value. `["region", "product"]`-style multi-key joins
+///     become `[col("region"), col("product")]`, matched on the tuple. An
+///     empty key list is **invalid** for `on` — a non-`Cross` join requires at
+///     least one key (`DataFrame::join` raises `InvalidOperation`); use
+///     `JoinOptions::cross()` for a Cartesian product.
+///   * `left_on` / `right_on` — paired key expressions evaluated on the
+///     left and right frame respectively, for joining on differently-named
+///     or differently-derived keys (`left_on([col("a")])` against
+///     `right_on([col("b")])`). Mutually exclusive with `on`, and the two
+///     lists must name the same number of keys; key `i` on the left is
+///     matched against key `i` on the right.
+///   * `how` — `Inner` (the `on` / `left_on` default), `Left`, `Right`,
+///     `Outer`, `Cross`, `Semi`, or `Anti`. `Semi` keeps the left rows
+///     whose key matches some right row — the left frame filtered, each
+///     surviving row once, no right columns; `Anti` the mirror, the left
+///     rows with **no** match. Both keep the left schema and left row
+///     order, and a null key cell matches nothing, so a null-keyed left
+///     row survives `Anti` and never survives `Semi`.
+///   * `suffix` — appended to the side that would otherwise be squeezed
+///     out of its own name: a **right** column whose name also occurs in
+///     the left frame (default `"_right"`), except under `Right`, where
+///     the right frame leads and a clashing **left** column takes the
+///     suffix instead (the left join's rule with the sides exchanged —
+///     see `Right` above). The un-suffixed spelling always belongs to the
+///     side the join leads with.
+///   * `coalesce` — whether each key column is merged into a single output
+///     column. `None` (the default) auto-selects by `how`:
+///     an inner / left / right join **coalesces** (the key appears once),
+///     while `Outer` does **not** (the right key is kept as
+///     `<key><suffix>`, null wherever its row had no match, so matched and
+///     unmatched rows are distinguishable). `Some(true)` always coalesces;
+///     `Some(false)` never does. Coalescing only applies when keying by
+///     `on` whose every key is a bare `col(...)` (the precondition for the
+///     key to name a single column on both sides); `left_on` / `right_on`
+///     and any derived key turn it off, keeping both key columns. When
+///     coalesced the single key takes its value from whichever side is
+///     present on that row (the two are equal on a matched pair) — the left
+///     on `Inner` / `Left`, the right on `Right`, and the present side per
+///     row on `Outer`.
+/// The three key lists are `priv`, read through the copying `on_keys()` /
+/// `left_keys()` / `right_keys()`. A public `Array` field is readable, and
+/// reading an array hands over the array *itself* — enough to push a key into
+/// an options value a `LazyFrame::join` already captured, changing what a
+/// built plan collects. The constructors copy on the way in for the same
+/// reason; these accessors close the way out. The remaining fields are
+/// immutable values, so they stay public.
+pub struct JoinOptions {
+  priv on : Array[@expr.Expr]
+  priv left_on : Array[@expr.Expr]
+  priv right_on : Array[@expr.Expr]
+  how : JoinType
+  suffix : String
+  coalesce : Bool?
+} derive(Debug)
+
+///|
+/// The shared key expressions (`JoinOptions::on`), or an empty array for a
+/// sided or cross join. A copy: mutating it cannot alter the options, or any
+/// plan holding them.
+pub fn JoinOptions::on_keys(self : JoinOptions) -> Array[@expr.Expr] {
+  self.on.copy()
+}
+
+///|
+/// The left-side key expressions (`JoinOptions::left_on`), or an empty array
+/// when the join keys by `on` or is a cross join. A copy, like `on_keys`.
+pub fn JoinOptions::left_keys(self : JoinOptions) -> Array[@expr.Expr] {
+  self.left_on.copy()
+}
+
+///|
+/// The right-side key expressions paired with `left_keys`, or an empty array
+/// when the join keys by `on` or is a cross join. A copy, like `on_keys`.
+pub fn JoinOptions::right_keys(self : JoinOptions) -> Array[@expr.Expr] {
+  self.right_on.copy()
+}
+
+///|
+pub extend JoinOptions with Debug::{to_repr}
+
+///|
+/// Start a join on shared key columns — each key expression is evaluated on
+/// **both** frames (`JoinOptions::on([col("id")])`). `how` defaults to an
+/// inner join, `suffix` to `"_right"` for a right column whose name collides
+/// with a left one, and an omitted `coalesce` leaves key coalescing on
+/// automatic (by `how`); pass `coalesce=true` / `false` to
+/// force it.
+///
+/// The `keys` array is copied (as in `left_on`), so mutating it after
+/// construction cannot alter the join specification.
+pub fn JoinOptions::on(
+  keys : Array[@expr.Expr],
+  how~ : JoinType = Inner,
+  suffix~ : String = "_right",
+  coalesce? : Bool,
+) -> JoinOptions {
+  { on: keys.copy(), left_on: [], right_on: [], how, suffix, coalesce, }
+}
+
+///|
+/// Start a join on differently-named (or differently-derived) keys: `keys` is
+/// evaluated on the **left** frame, paired position-by-position with
+/// `right_on` on the right
+/// (`JoinOptions::left_on([col("a")], right_on=[col("b")])`). Taking both
+/// sides at once makes an unpaired specification unspellable. Defaults match
+/// `on`, except that `left_on` / `right_on` keys never coalesce — both key
+/// columns are kept.
+///
+/// Both arrays are copied, so mutating them after construction cannot alter
+/// the join specification.
+pub fn JoinOptions::left_on(
+  keys : Array[@expr.Expr],
+  right_on~ : Array[@expr.Expr],
+  how~ : JoinType = Inner,
+  suffix~ : String = "_right",
+  coalesce? : Bool,
+) -> JoinOptions {
+  {
+    on: [],
+    left_on: keys.copy(),
+    right_on: right_on.copy(),
+    how,
+    suffix,
+    coalesce,
+  }
+}
+
+///|
+/// Start a cross-join specification — the Cartesian product of the two
+/// frames, with no key columns (`how = Cross`, all key lists empty).
+/// `suffix` still applies to a right column whose name clashes with a left
+/// one; `coalesce` is irrelevant (there are no keys to merge).
+pub fn JoinOptions::cross(suffix~ : String = "_right") -> JoinOptions {
+  { on: [], left_on: [], right_on: [], how: Cross, suffix, coalesce: None, }
+}

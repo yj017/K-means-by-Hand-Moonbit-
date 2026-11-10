@@ -1,0 +1,1067 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Lampese/mathplotlib/ticker"
+
+import {
+  "Lampese/mathplotlib/config",
+  "Lampese/mathplotlib/core",
+  "Lampese/mathplotlib/ticker/scale",
+  "moonbitlang/core/bigint",
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn asinh_default_minor_subs() -> AsinhSubsTuple
+
+pub fn auto_minor_locator(subdivisions? : Int) -> MinorLocator raise @core.DataError
+
+pub fn eng_formatter(unit? : String, places? : Int, sep? : String) -> Formatter raise @core.DataError
+
+pub fn fixed_formatter(Array[String]) -> Formatter
+
+pub fn fixed_locator(Array[Double]) -> Locator raise @core.DataError
+
+pub fn fixed_minor_locator(Array[Double]) -> MinorLocator raise @core.DataError
+
+pub fn format_str_formatter(String) -> Formatter
+
+pub fn format_tick(Double) -> String
+
+pub fn func_formatter((Double) -> String) -> Formatter
+
+pub fn index_formatter(Array[String]) -> Formatter
+
+pub fn linear_locator(count? : Int) -> Locator
+
+pub fn linear_ticks(@core.Limits, count? : Int) -> Array[Double]
+
+pub fn log_formatter(base? : Double, label_only_base? : Bool) -> Formatter raise @core.DataError
+
+pub fn log_locator(count? : Int, base? : Double, subs? : Array[Double], numdecs? : Int) -> Locator raise @core.DataError
+
+pub fn log_minor_locator(subdivisions? : Int, base? : Double) -> MinorLocator raise @core.DataError
+
+pub fn maxn_locator(count? : Int, integer? : Bool, symmetric? : Bool, prune? : String) -> Locator raise @core.DataError
+
+pub fn multiple_locator(base? : Double, offset? : Double) -> Locator raise @core.DataError
+
+pub fn null_formatter() -> Formatter
+
+pub fn parse_float_text(String) -> Double raise @core.DataError
+
+pub fn percent_formatter(xmax? : Double, decimals? : Int, symbol? : String) -> Formatter raise @core.DataError
+
+pub fn python_float_repr(Double) -> String
+
+pub fn python_string_repr(String) -> String
+
+pub fn scalar_formatter(use_offset? : Bool, use_math_text? : Bool, power_min? : Int, power_max? : Int) -> Formatter raise @core.DataError
+
+pub fn str_method_formatter(String) -> Formatter
+
+// Errors
+
+// Types and methods
+pub struct AsinhLocator {
+  // private fields
+}
+pub fn AsinhLocator::as_locator(Self) -> Locator
+pub fn AsinhLocator::as_minor_locator(Self) -> MinorLocator
+pub fn AsinhLocator::base(Self) -> Double
+pub fn AsinhLocator::bind_view_interval(Self, () -> (Double, Double) raise @core.DataError) -> Unit
+pub fn AsinhLocator::call(Self) -> Array[Double] raise @core.DataError
+pub fn AsinhLocator::copy(Self) -> Self
+pub fn AsinhLocator::linear_width(Self) -> Double
+pub fn AsinhLocator::new(Double, numticks? : LogNumTicks?, symthresh? : Double, base? : Double, subs? : AsinhSubs?) -> Self
+pub fn AsinhLocator::nonsingular(Self, Double, Double) -> (Double, Double)
+pub fn AsinhLocator::numticks(Self) -> LogNumTicks?
+pub fn AsinhLocator::set_base(Self, Double) -> Unit
+pub fn AsinhLocator::set_linear_width(Self, Double) -> Unit
+pub fn AsinhLocator::set_numticks(Self, LogNumTicks?) -> Unit
+pub fn AsinhLocator::set_params(Self, numticks? : LogNumTicks?, symthresh? : Double?, base? : Double?, subs? : AsinhSubs?) -> Unit raise @core.DataError
+pub fn AsinhLocator::set_subs(Self, AsinhSubs?) -> Unit
+pub fn AsinhLocator::set_symthresh(Self, Double) -> Unit
+pub fn AsinhLocator::subs(Self) -> AsinhSubs?
+pub fn AsinhLocator::symthresh(Self) -> Double
+pub fn AsinhLocator::tick_values(Self, Double, Double) -> Array[Double] raise @core.DataError
+pub fn AsinhLocator::view_interval_provider(Self) -> (() -> (Double, Double) raise @core.DataError)?
+pub fn AsinhLocator::view_limits(Self, Double, Double) -> (Double, Double)
+
+pub(all) enum AsinhSubs {
+  Sequence(Array[Double])
+  Tuple(AsinhSubsTuple)
+  NdArray(TickValues)
+  Number(Double)
+  Text(String)
+}
+pub fn AsinhSubs::to_repr(Self) -> @debug.Repr
+pub impl @debug.Debug for AsinhSubs
+
+pub struct AsinhSubsTuple {
+  // private fields
+}
+pub fn AsinhSubsTuple::equal(Self, Self) -> Bool
+pub fn AsinhSubsTuple::length(Self) -> Int
+pub fn AsinhSubsTuple::new(Array[Double]) -> Self
+pub fn AsinhSubsTuple::not_equal(Self, Self) -> Bool
+pub fn AsinhSubsTuple::to_repr(Self) -> @debug.Repr
+pub fn AsinhSubsTuple::values(Self) -> Array[Double]
+pub impl Eq for AsinhSubsTuple
+pub impl @debug.Debug for AsinhSubsTuple
+
+pub struct AutoLocator {
+  // private fields
+}
+pub fn AutoLocator::as_locator(Self) -> Locator
+pub fn AutoLocator::as_maxn_locator(Self) -> MaxNLocator
+pub fn AutoLocator::as_minor_locator(Self) -> MinorLocator
+pub fn AutoLocator::bind_tick_space(Self, () -> Double) -> Unit
+pub fn AutoLocator::bind_view_interval(Self, () -> (Double, Double) raise @core.DataError) -> Unit
+pub fn AutoLocator::call(Self) -> Array[Double] raise @core.DataError
+pub fn AutoLocator::copy(Self) -> Self
+pub fn AutoLocator::extended_steps(Self) -> Array[Double]
+pub fn AutoLocator::integer(Self) -> Bool
+pub fn AutoLocator::min_n_ticks(Self) -> Int
+pub fn AutoLocator::nbins(Self) -> MaxNBins
+pub fn AutoLocator::new() -> Self
+pub fn AutoLocator::nonsingular(Self, Double, Double) -> (Double, Double)
+pub fn AutoLocator::prune(Self) -> String?
+pub fn AutoLocator::set_params(Self, nbins? : MaxNBins, steps? : TickValues?, integer? : Bool, symmetric? : Bool, prune? : String?, min_n_ticks? : Int) -> Unit raise @core.DataError
+pub fn AutoLocator::steps(Self) -> TickValues
+pub fn AutoLocator::symmetric(Self) -> Bool
+pub fn AutoLocator::tick_space_provider(Self) -> (() -> Double)?
+pub fn AutoLocator::tick_values(Self, Double, Double) -> Array[Double] raise @core.DataError
+pub fn AutoLocator::view_interval_provider(Self) -> (() -> (Double, Double) raise @core.DataError)?
+pub fn AutoLocator::view_limits(Self, Double, Double) -> (Double, Double) raise @core.DataError
+
+pub struct AutoMinorLocator {
+  // private fields
+}
+pub fn AutoMinorLocator::as_minor_locator(Self) -> MinorLocator
+pub fn AutoMinorLocator::axis_name_provider(Self) -> (() -> String raise @core.DataError)?
+pub fn AutoMinorLocator::bind_axis_name(Self, () -> String raise @core.DataError) -> Unit
+pub fn AutoMinorLocator::bind_major_ticks(Self, () -> TickValues raise @core.DataError) -> Unit
+pub fn AutoMinorLocator::bind_scale(Self, () -> String raise @core.DataError) -> Unit
+pub fn AutoMinorLocator::bind_view_interval(Self, () -> (Double, Double) raise @core.DataError) -> Unit
+pub fn AutoMinorLocator::call(Self) -> Array[Double] raise @core.DataError
+pub fn AutoMinorLocator::copy(Self) -> Self
+pub fn AutoMinorLocator::major_ticks_provider(Self) -> (() -> TickValues raise @core.DataError)?
+pub fn AutoMinorLocator::ndivs(Self) -> @config.MinorTickDivisions?
+pub fn AutoMinorLocator::new(ndivs? : @config.MinorTickDivisions?) -> Self
+pub fn AutoMinorLocator::nonsingular(Self, Double, Double) -> (Double, Double)
+pub fn AutoMinorLocator::scale_provider(Self) -> (() -> String raise @core.DataError)?
+pub fn AutoMinorLocator::set_ndivs(Self, @config.MinorTickDivisions?) -> Unit
+pub fn AutoMinorLocator::set_params(Self) -> Unit
+pub fn AutoMinorLocator::tick_values(Self, Double, Double) -> Array[Double] raise @core.DataError
+pub fn AutoMinorLocator::view_interval_provider(Self) -> (() -> (Double, Double) raise @core.DataError)?
+pub fn AutoMinorLocator::view_limits(Self, Double, Double) -> (Double, Double)
+pub fn AutoMinorLocator::warnings(Self) -> Array[String]
+
+pub struct BaseFormatter {
+  // private fields
+}
+pub fn BaseFormatter::axis(Self) -> FormatterAxisBinding?
+pub fn BaseFormatter::call(Self, Double, pos? : Int) -> String raise @core.DataError
+pub fn BaseFormatter::copy(Self) -> Self
+pub fn BaseFormatter::create_dummy_axis(Self, minpos? : Double) -> Unit
+pub fn BaseFormatter::eng_formatter(Self) -> EngFormatter?
+pub fn BaseFormatter::fix_minus(String) -> String
+pub fn BaseFormatter::fixed_formatter(Self) -> FixedFormatter?
+pub fn BaseFormatter::format_data(Self, Double) -> String raise @core.DataError
+pub fn BaseFormatter::format_data_short(Self, Double) -> String raise @core.DataError
+pub fn BaseFormatter::format_str_formatter(Self) -> FormatStrFormatter?
+pub fn BaseFormatter::format_ticks(Self, Array[Double]) -> Array[String] raise @core.DataError
+pub fn BaseFormatter::format_ticks_integers(Self, Array[@bigint.BigInt]) -> Array[String] raise @core.DataError
+pub fn BaseFormatter::format_ticks_view(Self, TickValues) -> Array[String] raise @core.DataError
+pub fn BaseFormatter::func_formatter(Self) -> FuncFormatter?
+pub fn BaseFormatter::get_offset(Self) -> String
+pub fn BaseFormatter::get_offset_checked(Self) -> String raise @core.DataError
+pub fn BaseFormatter::locations(Self) -> FormatterLocations
+pub fn BaseFormatter::log_formatter(Self) -> LogFormatter?
+pub fn BaseFormatter::log_formatter_exponent(Self) -> LogFormatterExponent?
+pub fn BaseFormatter::log_formatter_mathtext(Self) -> LogFormatterMathtext?
+pub fn BaseFormatter::log_formatter_sci_notation(Self) -> LogFormatterSciNotation?
+pub fn BaseFormatter::logit_formatter(Self) -> LogitFormatter?
+pub fn BaseFormatter::new() -> Self
+pub fn BaseFormatter::null_formatter(Self) -> NullFormatter?
+pub fn BaseFormatter::percent_formatter(Self) -> PercentFormatter?
+pub fn BaseFormatter::scalar_formatter(Self) -> ScalarFormatter?
+pub fn BaseFormatter::set_axis(Self, FormatterAxisBinding?) -> Unit
+pub fn BaseFormatter::set_locs(Self, Array[Double]) -> Unit
+pub fn BaseFormatter::set_locs_checked(Self, Array[Double]) -> Unit raise @core.DataError
+pub fn BaseFormatter::set_locs_integers_checked(Self, Array[@bigint.BigInt]) -> Unit raise @core.DataError
+pub fn BaseFormatter::set_locs_view(Self, TickValues) -> Unit
+pub fn BaseFormatter::set_locs_view_checked(Self, TickValues) -> Unit raise @core.DataError
+pub fn BaseFormatter::str_method_formatter(Self) -> StrMethodFormatter?
+
+pub struct EngFormatter {
+  // private fields
+}
+pub fn EngFormatter::as_base_formatter(Self) -> BaseFormatter
+pub fn EngFormatter::as_scalar_formatter(Self) -> ScalarFormatter
+pub fn EngFormatter::axis(Self) -> FormatterAxisBinding?
+pub fn EngFormatter::call(Self, Double, pos? : Int) -> String raise @core.DataError
+pub fn EngFormatter::call_value(Self, ScalarNumber, pos? : Int) -> String raise @core.DataError
+pub fn EngFormatter::class_prefixes() -> EngPrefixes
+pub fn EngFormatter::clear_prefixes(Self) -> Unit
+pub fn EngFormatter::copy(Self) -> Self
+pub fn EngFormatter::create_dummy_axis(Self, minpos? : Double) -> Unit
+pub fn EngFormatter::format_data(Self, Double) -> String raise @core.DataError
+pub fn EngFormatter::format_data_short(Self, Double) -> String raise @core.DataError
+pub fn EngFormatter::format_data_short_masked(Self) -> String
+pub fn EngFormatter::format_data_short_value(Self, ScalarNumber) -> String raise @core.DataError
+pub fn EngFormatter::format_data_value(Self, ScalarNumber) -> String raise @core.DataError
+pub fn EngFormatter::format_eng(Self, Double) -> String raise @core.DataError
+pub fn EngFormatter::format_eng_value(Self, ScalarNumber) -> String raise @core.DataError
+pub fn EngFormatter::format_ticks(Self, Array[Double]) -> Array[String] raise @core.DataError
+pub fn EngFormatter::format_ticks_view(Self, TickValues) -> Array[String] raise @core.DataError
+pub fn EngFormatter::get_offset(Self) -> String raise @core.DataError
+pub fn EngFormatter::locations(Self) -> FormatterLocations
+pub fn EngFormatter::new(unit? : String, places? : ScalarNumber?, sep? : String, usetex? : Bool?, use_math_text? : Bool?, use_offset? : ScalarNumber?) -> Self
+pub fn EngFormatter::places(Self) -> ScalarNumber?
+pub fn EngFormatter::prefixes(Self) -> EngPrefixes
+pub fn EngFormatter::sep(Self) -> String
+pub fn EngFormatter::set_axis(Self, FormatterAxisBinding?) -> Unit
+pub fn EngFormatter::set_class_prefixes(EngPrefixes) -> Unit
+pub fn EngFormatter::set_locs(Self, Array[Double]) -> Unit raise @core.DataError
+pub fn EngFormatter::set_locs_view(Self, TickValues) -> Unit raise @core.DataError
+pub fn EngFormatter::set_places(Self, ScalarNumber?) -> Unit
+pub fn EngFormatter::set_prefixes(Self, EngPrefixes) -> Unit
+pub fn EngFormatter::set_sep(Self, String) -> Unit
+pub fn EngFormatter::set_unit(Self, String) -> Unit
+pub fn EngFormatter::unit(Self) -> String
+
+pub struct EngPrefixKey {
+  // private fields
+}
+pub fn EngPrefixKey::equal(Self, Self) -> Bool
+pub fn EngPrefixKey::new(ScalarNumber) -> Self
+pub fn EngPrefixKey::not_equal(Self, Self) -> Bool
+pub fn EngPrefixKey::to_repr(Self) -> @debug.Repr
+pub fn EngPrefixKey::value(Self) -> ScalarNumber
+pub impl Eq for EngPrefixKey
+pub impl @debug.Debug for EngPrefixKey
+
+pub struct EngPrefixes {
+  // private fields
+}
+pub fn EngPrefixes::copy(Self) -> Self
+pub fn EngPrefixes::get(Self, ScalarNumber) -> String? raise @core.DataError
+pub fn EngPrefixes::get_key(Self, EngPrefixKey) -> String? raise @core.DataError
+pub fn EngPrefixes::keys(Self) -> Array[EngPrefixKey]
+pub fn EngPrefixes::length(Self) -> Int
+pub fn EngPrefixes::new() -> Self
+pub fn EngPrefixes::remove(Self, ScalarNumber) -> Bool raise @core.DataError
+pub fn EngPrefixes::remove_key(Self, EngPrefixKey) -> Bool raise @core.DataError
+pub fn EngPrefixes::set(Self, ScalarNumber, String) -> Unit raise @core.DataError
+pub fn EngPrefixes::set_key(Self, EngPrefixKey, String) -> Unit raise @core.DataError
+pub fn EngPrefixes::si() -> Self
+
+pub struct FixedFormatter {
+  // private fields
+}
+pub fn FixedFormatter::as_base_formatter(Self) -> BaseFormatter
+pub fn FixedFormatter::axis(Self) -> FormatterAxisBinding?
+pub fn FixedFormatter::call(Self, Double, pos? : Int) -> String raise @core.DataError
+pub fn FixedFormatter::copy(Self) -> Self
+pub fn FixedFormatter::create_dummy_axis(Self, minpos? : Double) -> Unit
+pub fn FixedFormatter::format_data(Self, Double) -> String raise @core.DataError
+pub fn FixedFormatter::format_data_short(Self, Double) -> String raise @core.DataError
+pub fn FixedFormatter::format_ticks(Self, Array[Double]) -> Array[String] raise @core.DataError
+pub fn FixedFormatter::format_ticks_view(Self, TickValues) -> Array[String] raise @core.DataError
+pub fn FixedFormatter::get_offset(Self) -> String
+pub fn FixedFormatter::locations(Self) -> FormatterLocations
+pub fn FixedFormatter::new(Array[String]) -> Self
+pub fn FixedFormatter::seq(Self) -> Array[String]
+pub fn FixedFormatter::set_axis(Self, FormatterAxisBinding?) -> Unit
+pub fn FixedFormatter::set_locs(Self, Array[Double]) -> Unit
+pub fn FixedFormatter::set_locs_view(Self, TickValues) -> Unit
+pub fn FixedFormatter::set_offset_string(Self, String) -> Unit
+pub fn FixedFormatter::set_seq(Self, Array[String]) -> Unit
+
+pub struct FixedLocator {
+  // private fields
+}
+pub fn FixedLocator::as_locator(Self) -> Locator
+pub fn FixedLocator::as_minor_locator(Self) -> MinorLocator
+pub fn FixedLocator::copy(Self) -> Self
+pub fn FixedLocator::from_list(Array[Double], nbins? : Double) -> Self
+pub fn FixedLocator::from_view(TickValues, nbins? : Double) -> Self
+pub fn FixedLocator::locations(Self) -> TickValues
+pub fn FixedLocator::nbins(Self) -> Double?
+pub fn FixedLocator::new(Array[Double], nbins? : Double) -> Self
+pub fn FixedLocator::nonsingular(Self, Double, Double) -> (Double, Double)
+pub fn FixedLocator::set_params(Self, nbins? : Double) -> Unit
+pub fn FixedLocator::tick_values(Self, Double, Double) -> TickValues raise @core.DataError
+pub fn FixedLocator::values(Self) -> TickValues raise @core.DataError
+pub fn FixedLocator::view_limits(Self, Double, Double) -> (Double, Double)
+
+pub struct FormatStrFormatter {
+  // private fields
+}
+pub fn FormatStrFormatter::as_base_formatter(Self) -> BaseFormatter
+pub fn FormatStrFormatter::axis(Self) -> FormatterAxisBinding?
+pub fn FormatStrFormatter::call(Self, Double, pos? : Int) -> String raise @core.DataError
+pub fn FormatStrFormatter::copy(Self) -> Self
+pub fn FormatStrFormatter::create_dummy_axis(Self, minpos? : Double) -> Unit
+pub fn FormatStrFormatter::fmt(Self) -> String
+pub fn FormatStrFormatter::format_data(Self, Double) -> String raise @core.DataError
+pub fn FormatStrFormatter::format_data_short(Self, Double) -> String raise @core.DataError
+pub fn FormatStrFormatter::format_ticks(Self, Array[Double]) -> Array[String] raise @core.DataError
+pub fn FormatStrFormatter::format_ticks_view(Self, TickValues) -> Array[String] raise @core.DataError
+pub fn FormatStrFormatter::get_offset(Self) -> String
+pub fn FormatStrFormatter::locations(Self) -> FormatterLocations
+pub fn FormatStrFormatter::new(String) -> Self
+pub fn FormatStrFormatter::set_axis(Self, FormatterAxisBinding?) -> Unit
+pub fn FormatStrFormatter::set_fmt(Self, String) -> Unit
+pub fn FormatStrFormatter::set_locs(Self, Array[Double]) -> Unit
+pub fn FormatStrFormatter::set_locs_view(Self, TickValues) -> Unit
+
+pub(all) enum Formatter {
+  Scalar(use_offset~ : Bool, use_math_text~ : Bool, power_min~ : Int, power_max~ : Int)
+  Fixed(Array[String])
+  Index(Array[String])
+  Format(String)
+  StrMethod(String)
+  Eng(unit~ : String, places~ : Int, sep~ : String)
+  Percent(xmax~ : Double, decimals~ : Int, symbol~ : String)
+  Log(base~ : Double, label_only_base~ : Bool)
+  Null
+  Func((Double) -> String)
+}
+pub fn Formatter::copy(Self) -> Self
+pub fn Formatter::format_value(Self, Double) -> String
+pub fn Formatter::format_values(Self, Array[Double]) -> Array[String]
+pub fn Formatter::format_values_with_range(Self, Array[Double], Double) -> Array[String]
+pub fn Formatter::format_values_with_view(Self, Array[Double], @core.Limits?) -> Array[String]
+pub fn Formatter::offset(Self, Array[Double]) -> Double
+pub fn Formatter::offset_label(Self, Array[Double]) -> String
+pub fn Formatter::offset_label_with_view(Self, Array[Double], @core.Limits?) -> String
+pub fn Formatter::offset_with_view(Self, Array[Double], @core.Limits?) -> Double
+
+pub struct FormatterAxisBinding {
+  // private fields
+}
+pub fn FormatterAxisBinding::bind_short_format_delta(Self, (Double) -> Double raise @core.DataError) -> Unit
+pub fn FormatterAxisBinding::bind_transform_linthresh(Self, () -> ScalarNumber? raise @core.DataError) -> Unit
+pub fn FormatterAxisBinding::bind_view_interval(Self, () -> FormatterViewInterval raise @core.DataError) -> Unit
+pub fn FormatterAxisBinding::clear_short_format_delta(Self) -> Unit
+pub fn FormatterAxisBinding::clear_transform_linthresh(Self) -> Unit
+pub fn FormatterAxisBinding::dummy_minpos(Self) -> Double?
+pub fn FormatterAxisBinding::equal(Self, Self) -> Bool
+pub fn FormatterAxisBinding::is_dummy(Self) -> Bool
+pub fn FormatterAxisBinding::new() -> Self
+pub fn FormatterAxisBinding::not_equal(Self, Self) -> Bool
+pub fn FormatterAxisBinding::set_view_interval(Self, FormatterViewInterval) -> Unit
+pub fn FormatterAxisBinding::short_format_delta(Self, Double) -> Double? raise @core.DataError
+pub fn FormatterAxisBinding::to_repr(Self) -> @debug.Repr
+pub fn FormatterAxisBinding::transform_linthresh(Self) -> ScalarNumber? raise @core.DataError
+pub fn FormatterAxisBinding::view_interval(Self) -> FormatterViewInterval raise @core.DataError
+pub impl Eq for FormatterAxisBinding
+pub impl @debug.Debug for FormatterAxisBinding
+
+pub(all) enum FormatterLocations {
+  Sequence(Array[Double])
+  Integers(Array[@bigint.BigInt])
+  NdArray(TickValues)
+  Typed(NumericArray)
+}
+pub fn FormatterLocations::dtype(Self) -> String?
+pub fn FormatterLocations::get(Self, Int) -> Double raise @core.DataError
+pub fn FormatterLocations::get_value(Self, Int) -> ScalarNumber raise @core.DataError
+pub fn FormatterLocations::length(Self) -> Int
+
+pub(all) enum FormatterViewInterval {
+  Sequence(Array[Double])
+  Integers(Array[@bigint.BigInt])
+  NdArray(TickValues)
+}
+pub fn FormatterViewInterval::length(Self) -> Int
+
+pub struct FuncFormatter {
+  // private fields
+}
+pub fn FuncFormatter::as_base_formatter(Self) -> BaseFormatter
+pub fn FuncFormatter::axis(Self) -> FormatterAxisBinding?
+pub fn FuncFormatter::call(Self, Double, pos? : Int) -> String raise @core.DataError
+pub fn FuncFormatter::copy(Self) -> Self
+pub fn FuncFormatter::create_dummy_axis(Self, minpos? : Double) -> Unit
+pub fn FuncFormatter::format_data(Self, Double) -> String raise @core.DataError
+pub fn FuncFormatter::format_data_short(Self, Double) -> String raise @core.DataError
+pub fn FuncFormatter::format_ticks(Self, Array[Double]) -> Array[String] raise @core.DataError
+pub fn FuncFormatter::format_ticks_view(Self, TickValues) -> Array[String] raise @core.DataError
+pub fn FuncFormatter::func(Self) -> (Double, Int?) -> String raise @core.DataError
+pub fn FuncFormatter::get_offset(Self) -> String
+pub fn FuncFormatter::locations(Self) -> FormatterLocations
+pub fn FuncFormatter::new((Double, Int?) -> String raise @core.DataError) -> Self
+pub fn FuncFormatter::set_axis(Self, FormatterAxisBinding?) -> Unit
+pub fn FuncFormatter::set_func(Self, (Double, Int?) -> String raise @core.DataError) -> Unit
+pub fn FuncFormatter::set_locs(Self, Array[Double]) -> Unit
+pub fn FuncFormatter::set_locs_view(Self, TickValues) -> Unit
+pub fn FuncFormatter::set_offset_string(Self, String) -> Unit
+
+pub struct IndexLocator {
+  // private fields
+}
+pub fn IndexLocator::as_locator(Self) -> Locator
+pub fn IndexLocator::as_minor_locator(Self) -> MinorLocator
+pub fn IndexLocator::base(Self) -> Double
+pub fn IndexLocator::bind_data_interval(Self, () -> (Double, Double)) -> Unit
+pub fn IndexLocator::call(Self) -> Array[Double] raise @core.DataError
+pub fn IndexLocator::copy(Self) -> Self
+pub fn IndexLocator::new(base~ : Double, offset~ : Double) -> Self
+pub fn IndexLocator::nonsingular(Self, Double, Double) -> (Double, Double)
+pub fn IndexLocator::offset(Self) -> Double
+pub fn IndexLocator::set_params(Self, base? : Double, offset? : Double) -> Unit
+pub fn IndexLocator::tick_values(Self, Double, Double) -> Array[Double] raise @core.DataError
+pub fn IndexLocator::view_limits(Self, Double, Double) -> (Double, Double)
+
+pub struct LinearLocator {
+  // private fields
+}
+pub fn LinearLocator::as_locator(Self) -> Locator
+pub fn LinearLocator::as_minor_locator(Self) -> MinorLocator
+pub fn LinearLocator::configured_numticks(Self) -> Int?
+pub fn LinearLocator::copy(Self) -> Self
+pub fn LinearLocator::new(numticks? : Int, presets? : LinearLocatorPresets) -> Self
+pub fn LinearLocator::nonsingular(Self, Double, Double) -> (Double, Double)
+pub fn LinearLocator::numticks(Self) -> Int
+pub fn LinearLocator::presets(Self) -> LinearLocatorPresets
+pub fn LinearLocator::set_numticks(Self, Int?) -> Unit
+pub fn LinearLocator::set_params(Self, numticks? : Int, presets? : LinearLocatorPresets) -> Unit
+pub fn LinearLocator::tick_values(Self, Double, Double) -> TickValues raise @core.DataError
+pub fn LinearLocator::view_limits(Self, Double, Double) -> (Double, Double) raise @core.DataError
+
+pub struct LinearLocatorPresets {
+  // private fields
+}
+pub fn LinearLocatorPresets::clear(Self) -> Unit
+pub fn LinearLocatorPresets::get(Self, Double, Double) -> TickValues?
+pub fn LinearLocatorPresets::length(Self) -> Int
+pub fn LinearLocatorPresets::new() -> Self
+pub fn LinearLocatorPresets::set(Self, Double, Double, Array[Double]) -> Unit
+pub fn LinearLocatorPresets::set_view(Self, Double, Double, TickValues) -> Unit
+
+pub(all) enum Locator {
+  NamedLogit(LogitLocator)
+  NamedAsinh(AsinhLocator)
+  NamedSymLog(SymmetricalLogLocator)
+  NamedLog(LogLocator)
+  Null(NullLocator)
+  NamedMaxN(MaxNLocator)
+  NamedAuto(AutoLocator)
+  NamedLinear(LinearLocator)
+  Index(IndexLocator)
+  NamedFixed(FixedLocator)
+  Multiple(MultipleLocator)
+  Linear(count~ : Int)
+  MaxN(count~ : Int, integer~ : Bool, symmetric~ : Bool, prune~ : String)
+  Fixed(Array[Double])
+  Log(count~ : Int, base~ : Double)
+  LogWithSubs(count~ : Int, base~ : Double, subs~ : Array[Double], numdecs~ : Int)
+}
+pub fn Locator::asinh_locator(Self) -> AsinhLocator?
+pub fn Locator::auto_locator(Self) -> AutoLocator?
+pub fn Locator::checked_tick_values(Self, Double, Double) -> Array[Double] raise @core.DataError
+pub fn Locator::copy(Self) -> Self
+pub fn Locator::fixed_locator(Self) -> FixedLocator?
+pub fn Locator::fixed_values(Self) -> Array[Double]
+pub fn Locator::index_locator(Self) -> IndexLocator?
+pub fn Locator::linear_locator(Self) -> LinearLocator?
+pub fn Locator::log_locator(Self) -> LogLocator?
+pub fn Locator::logit_locator(Self) -> LogitLocator?
+pub fn Locator::maxn_locator(Self) -> MaxNLocator?
+pub fn Locator::multiple_locator(Self) -> MultipleLocator?
+pub fn Locator::null_locator(Self) -> NullLocator?
+pub fn Locator::symlog_locator(Self) -> SymmetricalLogLocator?
+pub fn Locator::tick_values(Self, Double, Double) -> Array[Double]
+pub fn Locator::tick_values_for_axis(Self, Double, Double) -> Array[Double] raise @core.DataError
+pub fn Locator::tick_view_for_axis(Self, Double, Double) -> TickValues raise @core.DataError
+
+pub struct LogFormatter {
+  // private fields
+}
+pub fn LogFormatter::as_base_formatter(Self) -> BaseFormatter
+pub fn LogFormatter::axis(Self) -> FormatterAxisBinding?
+pub fn LogFormatter::base(Self) -> Double
+pub fn LogFormatter::call(Self, Double, pos? : Int) -> String raise @core.DataError
+pub fn LogFormatter::call_value(Self, ScalarNumber, pos? : Int) -> String raise @core.DataError
+pub fn LogFormatter::copy(Self) -> Self
+pub fn LogFormatter::create_dummy_axis(Self, minpos? : Double) -> Unit
+pub fn LogFormatter::format_data(Self, Double) -> String raise @core.DataError
+pub fn LogFormatter::format_data_short(Self, Double) -> String raise @core.DataError
+pub fn LogFormatter::format_data_short_value(Self, ScalarNumber) -> String raise @core.DataError
+pub fn LogFormatter::format_data_value(Self, ScalarNumber) -> String raise @core.DataError
+pub fn LogFormatter::format_ticks(Self, Array[Double]) -> Array[String] raise @core.DataError
+pub fn LogFormatter::format_ticks_view(Self, TickValues) -> Array[String] raise @core.DataError
+pub fn LogFormatter::get_offset(Self) -> String
+pub fn LogFormatter::label_only_base(Self) -> LogValue
+pub fn LogFormatter::linthresh(Self) -> LogValue
+pub fn LogFormatter::locations(Self) -> FormatterLocations
+pub fn LogFormatter::minor_thresholds(Self) -> LogMinorThresholds?
+pub fn LogFormatter::new(base? : LogValue, label_only_base? : LogValue, minor_thresholds? : LogMinorThresholds?, linthresh? : LogValue) -> Self raise @core.DataError
+pub fn LogFormatter::set_axis(Self, FormatterAxisBinding?) -> Unit
+pub fn LogFormatter::set_base(Self, LogValue) -> Unit raise @core.DataError
+pub fn LogFormatter::set_label_minor(Self, LogValue) -> Unit
+pub fn LogFormatter::set_label_only_base(Self, LogValue) -> Unit
+pub fn LogFormatter::set_linthresh(Self, LogValue) -> Unit
+pub fn LogFormatter::set_locs(Self, locations? : Array[Double]) -> Unit raise @core.DataError
+pub fn LogFormatter::set_locs_view(Self, TickValues) -> Unit raise @core.DataError
+pub fn LogFormatter::set_minor_thresholds(Self, LogMinorThresholds?) -> Unit
+pub fn LogFormatter::sublabels(Self) -> Array[Double]? raise @core.DataError
+
+pub struct LogFormatterExponent {
+  // private fields
+}
+pub fn LogFormatterExponent::as_base_formatter(Self) -> BaseFormatter
+pub fn LogFormatterExponent::as_log_formatter(Self) -> LogFormatter
+pub fn LogFormatterExponent::axis(Self) -> FormatterAxisBinding?
+pub fn LogFormatterExponent::base(Self) -> Double
+pub fn LogFormatterExponent::call(Self, Double, pos? : Int) -> String raise @core.DataError
+pub fn LogFormatterExponent::call_value(Self, ScalarNumber, pos? : Int) -> String raise @core.DataError
+pub fn LogFormatterExponent::copy(Self) -> Self
+pub fn LogFormatterExponent::create_dummy_axis(Self, minpos? : Double) -> Unit
+pub fn LogFormatterExponent::format_data(Self, Double) -> String raise @core.DataError
+pub fn LogFormatterExponent::format_data_short(Self, Double) -> String raise @core.DataError
+pub fn LogFormatterExponent::format_data_short_value(Self, ScalarNumber) -> String raise @core.DataError
+pub fn LogFormatterExponent::format_data_value(Self, ScalarNumber) -> String raise @core.DataError
+pub fn LogFormatterExponent::format_ticks(Self, Array[Double]) -> Array[String] raise @core.DataError
+pub fn LogFormatterExponent::format_ticks_view(Self, TickValues) -> Array[String] raise @core.DataError
+pub fn LogFormatterExponent::get_offset(Self) -> String
+pub fn LogFormatterExponent::label_only_base(Self) -> LogValue
+pub fn LogFormatterExponent::linthresh(Self) -> LogValue
+pub fn LogFormatterExponent::locations(Self) -> FormatterLocations
+pub fn LogFormatterExponent::minor_thresholds(Self) -> LogMinorThresholds?
+pub fn LogFormatterExponent::new(base? : LogValue, label_only_base? : LogValue, minor_thresholds? : LogMinorThresholds?, linthresh? : LogValue) -> Self raise @core.DataError
+pub fn LogFormatterExponent::set_axis(Self, FormatterAxisBinding?) -> Unit
+pub fn LogFormatterExponent::set_base(Self, LogValue) -> Unit raise @core.DataError
+pub fn LogFormatterExponent::set_label_minor(Self, LogValue) -> Unit
+pub fn LogFormatterExponent::set_label_only_base(Self, LogValue) -> Unit
+pub fn LogFormatterExponent::set_linthresh(Self, LogValue) -> Unit
+pub fn LogFormatterExponent::set_locs(Self, locations? : Array[Double]) -> Unit raise @core.DataError
+pub fn LogFormatterExponent::set_locs_view(Self, TickValues) -> Unit raise @core.DataError
+pub fn LogFormatterExponent::set_minor_thresholds(Self, LogMinorThresholds?) -> Unit
+pub fn LogFormatterExponent::sublabels(Self) -> Array[Double]? raise @core.DataError
+
+pub struct LogFormatterMathtext {
+  // private fields
+}
+pub fn LogFormatterMathtext::as_base_formatter(Self) -> BaseFormatter
+pub fn LogFormatterMathtext::as_log_formatter(Self) -> LogFormatter
+pub fn LogFormatterMathtext::axis(Self) -> FormatterAxisBinding?
+pub fn LogFormatterMathtext::base(Self) -> Double
+pub fn LogFormatterMathtext::call(Self, Double, pos? : Int) -> String raise @core.DataError
+pub fn LogFormatterMathtext::call_value(Self, ScalarNumber, pos? : Int) -> String raise @core.DataError
+pub fn LogFormatterMathtext::copy(Self) -> Self
+pub fn LogFormatterMathtext::create_dummy_axis(Self, minpos? : Double) -> Unit
+pub fn LogFormatterMathtext::format_data(Self, Double) -> String raise @core.DataError
+pub fn LogFormatterMathtext::format_data_short(Self, Double) -> String raise @core.DataError
+pub fn LogFormatterMathtext::format_data_short_value(Self, ScalarNumber) -> String raise @core.DataError
+pub fn LogFormatterMathtext::format_data_value(Self, ScalarNumber) -> String raise @core.DataError
+pub fn LogFormatterMathtext::format_ticks(Self, Array[Double]) -> Array[String] raise @core.DataError
+pub fn LogFormatterMathtext::format_ticks_view(Self, TickValues) -> Array[String] raise @core.DataError
+pub fn LogFormatterMathtext::get_offset(Self) -> String
+pub fn LogFormatterMathtext::label_only_base(Self) -> LogValue
+pub fn LogFormatterMathtext::linthresh(Self) -> LogValue
+pub fn LogFormatterMathtext::locations(Self) -> FormatterLocations
+pub fn LogFormatterMathtext::minor_thresholds(Self) -> LogMinorThresholds?
+pub fn LogFormatterMathtext::new(base? : LogValue, label_only_base? : LogValue, minor_thresholds? : LogMinorThresholds?, linthresh? : LogValue) -> Self raise @core.DataError
+pub fn LogFormatterMathtext::set_axis(Self, FormatterAxisBinding?) -> Unit
+pub fn LogFormatterMathtext::set_base(Self, LogValue) -> Unit raise @core.DataError
+pub fn LogFormatterMathtext::set_label_minor(Self, LogValue) -> Unit
+pub fn LogFormatterMathtext::set_label_only_base(Self, LogValue) -> Unit
+pub fn LogFormatterMathtext::set_linthresh(Self, LogValue) -> Unit
+pub fn LogFormatterMathtext::set_locs(Self, locations? : Array[Double]) -> Unit raise @core.DataError
+pub fn LogFormatterMathtext::set_locs_view(Self, TickValues) -> Unit raise @core.DataError
+pub fn LogFormatterMathtext::set_minor_thresholds(Self, LogMinorThresholds?) -> Unit
+pub fn LogFormatterMathtext::sublabels(Self) -> Array[Double]? raise @core.DataError
+
+pub struct LogFormatterSciNotation {
+  // private fields
+}
+pub fn LogFormatterSciNotation::as_base_formatter(Self) -> BaseFormatter
+pub fn LogFormatterSciNotation::as_log_formatter(Self) -> LogFormatter
+pub fn LogFormatterSciNotation::as_mathtext_formatter(Self) -> LogFormatterMathtext
+pub fn LogFormatterSciNotation::axis(Self) -> FormatterAxisBinding?
+pub fn LogFormatterSciNotation::base(Self) -> Double
+pub fn LogFormatterSciNotation::call(Self, Double, pos? : Int) -> String raise @core.DataError
+pub fn LogFormatterSciNotation::call_value(Self, ScalarNumber, pos? : Int) -> String raise @core.DataError
+pub fn LogFormatterSciNotation::copy(Self) -> Self
+pub fn LogFormatterSciNotation::create_dummy_axis(Self, minpos? : Double) -> Unit
+pub fn LogFormatterSciNotation::format_data(Self, Double) -> String raise @core.DataError
+pub fn LogFormatterSciNotation::format_data_short(Self, Double) -> String raise @core.DataError
+pub fn LogFormatterSciNotation::format_data_short_value(Self, ScalarNumber) -> String raise @core.DataError
+pub fn LogFormatterSciNotation::format_data_value(Self, ScalarNumber) -> String raise @core.DataError
+pub fn LogFormatterSciNotation::format_ticks(Self, Array[Double]) -> Array[String] raise @core.DataError
+pub fn LogFormatterSciNotation::format_ticks_view(Self, TickValues) -> Array[String] raise @core.DataError
+pub fn LogFormatterSciNotation::get_offset(Self) -> String
+pub fn LogFormatterSciNotation::label_only_base(Self) -> LogValue
+pub fn LogFormatterSciNotation::linthresh(Self) -> LogValue
+pub fn LogFormatterSciNotation::locations(Self) -> FormatterLocations
+pub fn LogFormatterSciNotation::minor_thresholds(Self) -> LogMinorThresholds?
+pub fn LogFormatterSciNotation::new(base? : LogValue, label_only_base? : LogValue, minor_thresholds? : LogMinorThresholds?, linthresh? : LogValue) -> Self raise @core.DataError
+pub fn LogFormatterSciNotation::set_axis(Self, FormatterAxisBinding?) -> Unit
+pub fn LogFormatterSciNotation::set_base(Self, LogValue) -> Unit raise @core.DataError
+pub fn LogFormatterSciNotation::set_label_minor(Self, LogValue) -> Unit
+pub fn LogFormatterSciNotation::set_label_only_base(Self, LogValue) -> Unit
+pub fn LogFormatterSciNotation::set_linthresh(Self, LogValue) -> Unit
+pub fn LogFormatterSciNotation::set_locs(Self, locations? : Array[Double]) -> Unit raise @core.DataError
+pub fn LogFormatterSciNotation::set_locs_view(Self, TickValues) -> Unit raise @core.DataError
+pub fn LogFormatterSciNotation::set_minor_thresholds(Self, LogMinorThresholds?) -> Unit
+pub fn LogFormatterSciNotation::sublabels(Self) -> Array[Double]? raise @core.DataError
+
+pub struct LogLocator {
+  // private fields
+}
+pub fn LogLocator::as_locator(Self) -> Locator
+pub fn LogLocator::as_minor_locator(Self) -> MinorLocator
+pub fn LogLocator::base(Self) -> Double
+pub fn LogLocator::bind_minpos(Self, () -> Double raise @core.DataError) -> Unit
+pub fn LogLocator::bind_shared_minpos(Self, () -> Array[Double] raise @core.DataError) -> Unit
+pub fn LogLocator::bind_tick_space(Self, () -> LogTickSpace raise @core.DataError) -> Unit
+pub fn LogLocator::bind_view_interval(Self, () -> (Double, Double) raise @core.DataError) -> Unit
+pub fn LogLocator::call(Self) -> Array[Double] raise @core.DataError
+pub fn LogLocator::copy(Self) -> Self
+pub fn LogLocator::minpos_provider(Self) -> (() -> Double raise @core.DataError)?
+pub fn LogLocator::new(base? : Double, subs? : LogSubs?, numticks? : LogNumTicks?) -> Self raise @core.DataError
+pub fn LogLocator::nonsingular(Self, Double, Double) -> (Double, Double) raise @core.DataError
+pub fn LogLocator::numticks(Self) -> LogNumTicks
+pub fn LogLocator::set_numticks(Self, LogNumTicks) -> Unit
+pub fn LogLocator::set_params(Self, base? : Double?, subs? : LogSubs?, numticks? : LogNumTicks?) -> Unit raise @core.DataError
+pub fn LogLocator::shared_minpos_provider(Self) -> (() -> Array[Double] raise @core.DataError)?
+pub fn LogLocator::subs(Self) -> LogSubs
+pub fn LogLocator::tick_space_provider(Self) -> (() -> LogTickSpace raise @core.DataError)?
+pub fn LogLocator::tick_values(Self, Double, Double) -> Array[Double] raise @core.DataError
+pub fn LogLocator::view_interval_provider(Self) -> (() -> (Double, Double) raise @core.DataError)?
+pub fn LogLocator::view_limits(Self, Double, Double) -> (Double, Double) raise @core.DataError
+pub fn LogLocator::warnings(Self) -> Array[String]
+
+pub(all) enum LogMinorThresholds {
+  Tuple(LogThresholdTuple)
+  Sequence(Array[LogValue])
+  NdArray(TickValues)
+  Raw(LogValue)
+}
+pub fn LogMinorThresholds::to_repr(Self) -> @debug.Repr
+pub impl @debug.Debug for LogMinorThresholds
+
+pub(all) enum LogNumTicks {
+  Text(String)
+  Number(Double)
+  Integer(@bigint.BigInt)
+} derive(Eq, @debug.Debug)
+pub fn LogNumTicks::equal(Self, Self) -> Bool
+pub fn LogNumTicks::not_equal(Self, Self) -> Bool
+pub fn LogNumTicks::to_repr(Self) -> @debug.Repr
+
+pub(all) enum LogSubs {
+  Text(String)
+  Values(TickValues)
+}
+pub fn LogSubs::to_repr(Self) -> @debug.Repr
+pub impl @debug.Debug for LogSubs
+
+pub struct LogThresholdTuple {
+  // private fields
+}
+pub fn LogThresholdTuple::equal(Self, Self) -> Bool
+pub fn LogThresholdTuple::get(Self, Int) -> LogValue raise @core.DataError
+pub fn LogThresholdTuple::length(Self) -> Int
+pub fn LogThresholdTuple::new(Array[LogValue]) -> Self
+pub fn LogThresholdTuple::not_equal(Self, Self) -> Bool
+pub fn LogThresholdTuple::to_repr(Self) -> @debug.Repr
+pub fn LogThresholdTuple::values(Self) -> Array[LogValue]
+pub impl Eq for LogThresholdTuple
+pub impl @debug.Debug for LogThresholdTuple
+
+pub(all) enum LogTickSpace {
+  Integer(@bigint.BigInt)
+  Number(Double)
+} derive(Eq, @debug.Debug)
+pub fn LogTickSpace::equal(Self, Self) -> Bool
+pub fn LogTickSpace::from_integer(Double) -> Self raise @core.DataError
+pub fn LogTickSpace::not_equal(Self, Self) -> Bool
+pub fn LogTickSpace::to_repr(Self) -> @debug.Repr
+
+pub(all) enum LogValue {
+  Numeric(ScalarNumber)
+  Text(String)
+  NoneValue
+} derive(Eq, @debug.Debug)
+pub fn LogValue::equal(Self, Self) -> Bool
+pub fn LogValue::not_equal(Self, Self) -> Bool
+pub fn LogValue::to_repr(Self) -> @debug.Repr
+
+pub struct LogitFormatter {
+  // private fields
+}
+pub fn LogitFormatter::as_base_formatter(Self) -> BaseFormatter
+pub fn LogitFormatter::axis(Self) -> FormatterAxisBinding?
+pub fn LogitFormatter::call(Self, Double, pos? : Int) -> String raise @core.DataError
+pub fn LogitFormatter::call_key(Self, LogitKey, pos? : Int) -> String raise @core.DataError
+pub fn LogitFormatter::call_value(Self, ScalarNumber, pos? : Int) -> String raise @core.DataError
+pub fn LogitFormatter::copy(Self) -> Self
+pub fn LogitFormatter::create_dummy_axis(Self, minpos? : Double) -> Unit
+pub fn LogitFormatter::format_data(Self, Double) -> String raise @core.DataError
+pub fn LogitFormatter::format_data_key(Self, LogitKey) -> String raise @core.DataError
+pub fn LogitFormatter::format_data_short(Self, Double) -> String raise @core.DataError
+pub fn LogitFormatter::format_data_short_value(Self, ScalarNumber) -> String raise @core.DataError
+pub fn LogitFormatter::format_data_value(Self, ScalarNumber) -> String raise @core.DataError
+pub fn LogitFormatter::format_ticks(Self, Array[Double]) -> Array[String] raise @core.DataError
+pub fn LogitFormatter::format_ticks_keys(Self, Array[LogitKey]) -> Array[String] raise @core.DataError
+pub fn LogitFormatter::format_ticks_view(Self, TickValues) -> Array[String] raise @core.DataError
+pub fn LogitFormatter::get_offset(Self) -> String
+pub fn LogitFormatter::labelled(Self) -> Array[LogitKey]
+pub fn LogitFormatter::locations(Self) -> FormatterLocations
+pub fn LogitFormatter::minor(Self) -> LogValue
+pub fn LogitFormatter::minor_number(Self) -> LogValue
+pub fn LogitFormatter::minor_threshold(Self) -> LogValue
+pub fn LogitFormatter::new(use_overline? : LogValue, one_half? : LogValue, minor? : LogValue, minor_threshold? : LogValue, minor_number? : LogValue) -> Self
+pub fn LogitFormatter::one_half(Self) -> LogValue
+pub fn LogitFormatter::overline(Self) -> LogValue
+pub fn LogitFormatter::set_axis(Self, FormatterAxisBinding?) -> Unit
+pub fn LogitFormatter::set_locs(Self, Array[Double]) -> Unit raise @core.DataError
+pub fn LogitFormatter::set_locs_keys(Self, Array[LogitKey]) -> Unit raise @core.DataError
+pub fn LogitFormatter::set_locs_view(Self, TickValues) -> Unit raise @core.DataError
+pub fn LogitFormatter::set_minor_number(Self, LogValue) -> Unit
+pub fn LogitFormatter::set_minor_threshold(Self, LogValue) -> Unit
+pub fn LogitFormatter::set_one_half(Self, LogValue) -> Unit
+pub fn LogitFormatter::use_overline(Self, LogValue) -> Unit
+
+pub struct LogitKey {
+  // private fields
+}
+pub fn LogitKey::equal(Self, Self) -> Bool
+pub fn LogitKey::new(ScalarNumber) -> Self
+pub fn LogitKey::not_equal(Self, Self) -> Bool
+pub fn LogitKey::to_repr(Self) -> @debug.Repr
+pub fn LogitKey::value(Self) -> ScalarNumber
+pub impl Eq for LogitKey
+pub impl @debug.Debug for LogitKey
+
+pub struct LogitLocator {
+  // private fields
+}
+pub fn LogitLocator::as_locator(Self) -> Locator
+pub fn LogitLocator::as_maxn_locator(Self) -> MaxNLocator
+pub fn LogitLocator::as_minor_locator(Self) -> MinorLocator
+pub fn LogitLocator::bind_minpos(Self, () -> Double raise @core.DataError) -> Unit
+pub fn LogitLocator::bind_projection(Self, () -> String raise @core.DataError) -> Unit
+pub fn LogitLocator::bind_tick_space(Self, () -> Double) -> Unit
+pub fn LogitLocator::bind_view_interval(Self, () -> (Double, Double) raise @core.DataError) -> Unit
+pub fn LogitLocator::call(Self) -> Array[Double] raise @core.DataError
+pub fn LogitLocator::copy(Self) -> Self
+pub fn LogitLocator::minor(Self) -> Bool
+pub fn LogitLocator::minpos_provider(Self) -> (() -> Double raise @core.DataError)?
+pub fn LogitLocator::new(minor? : Bool, nbins? : MaxNBins?) -> Self raise @core.DataError
+pub fn LogitLocator::nonsingular(Self, Double, Double) -> (Double, Double) raise @core.DataError
+pub fn LogitLocator::projection_provider(Self) -> (() -> String raise @core.DataError)?
+pub fn LogitLocator::set_minor(Self, Bool?) -> Unit
+pub fn LogitLocator::set_params(Self, minor? : Bool?, nbins? : MaxNBins, steps? : TickValues?, integer? : Bool, symmetric? : Bool, prune? : String?, min_n_ticks? : Int) -> Unit raise @core.DataError
+pub fn LogitLocator::tick_space_provider(Self) -> (() -> Double)?
+pub fn LogitLocator::tick_values(Self, Double, Double) -> Array[Double] raise @core.DataError
+pub fn LogitLocator::view_interval_provider(Self) -> (() -> (Double, Double) raise @core.DataError)?
+pub fn LogitLocator::view_limits(Self, Double, Double) -> (Double, Double) raise @core.DataError
+pub fn LogitLocator::warnings(Self) -> Array[String]
+
+pub(all) enum MaxNBins {
+  Auto
+  Count(Int)
+} derive(Eq, @debug.Debug)
+pub fn MaxNBins::equal(Self, Self) -> Bool
+pub fn MaxNBins::not_equal(Self, Self) -> Bool
+pub fn MaxNBins::to_repr(Self) -> @debug.Repr
+
+pub struct MaxNLocator {
+  // private fields
+}
+pub fn MaxNLocator::as_locator(Self) -> Locator
+pub fn MaxNLocator::as_minor_locator(Self) -> MinorLocator
+pub fn MaxNLocator::bind_tick_space(Self, () -> Double) -> Unit
+pub fn MaxNLocator::bind_view_interval(Self, () -> (Double, Double) raise @core.DataError) -> Unit
+pub fn MaxNLocator::call(Self) -> Array[Double] raise @core.DataError
+pub fn MaxNLocator::copy(Self) -> Self
+pub fn MaxNLocator::extended_steps(Self) -> Array[Double]
+pub fn MaxNLocator::integer(Self) -> Bool
+pub fn MaxNLocator::min_n_ticks(Self) -> Int
+pub fn MaxNLocator::nbins(Self) -> MaxNBins
+pub fn MaxNLocator::new(nbins? : MaxNBins, steps? : TickValues, integer? : Bool, symmetric? : Bool, prune? : String, min_n_ticks? : Int) -> Self raise @core.DataError
+pub fn MaxNLocator::nonsingular(Self, Double, Double) -> (Double, Double)
+pub fn MaxNLocator::prune(Self) -> String?
+pub fn MaxNLocator::set_params(Self, nbins? : MaxNBins, steps? : TickValues?, integer? : Bool, symmetric? : Bool, prune? : String?, min_n_ticks? : Int) -> Unit raise @core.DataError
+pub fn MaxNLocator::steps(Self) -> TickValues
+pub fn MaxNLocator::symmetric(Self) -> Bool
+pub fn MaxNLocator::tick_space_provider(Self) -> (() -> Double)?
+pub fn MaxNLocator::tick_values(Self, Double, Double) -> Array[Double] raise @core.DataError
+pub fn MaxNLocator::view_interval_provider(Self) -> (() -> (Double, Double) raise @core.DataError)?
+pub fn MaxNLocator::view_limits(Self, Double, Double) -> (Double, Double) raise @core.DataError
+
+pub(all) enum MinorLocator {
+  NamedLogit(LogitLocator)
+  NamedAsinh(AsinhLocator)
+  NamedSymLog(SymmetricalLogLocator)
+  NamedLog(LogLocator)
+  Null(NullLocator)
+  NamedAutoMinor(AutoMinorLocator)
+  NamedMaxN(MaxNLocator)
+  NamedAuto(AutoLocator)
+  NamedLinear(LinearLocator)
+  Index(IndexLocator)
+  NamedFixed(FixedLocator)
+  Multiple(MultipleLocator)
+  Auto(subdivisions~ : Int)
+  Fixed(Array[Double])
+  Log(subdivisions~ : Int, base~ : Double)
+}
+pub fn MinorLocator::asinh_locator(Self) -> AsinhLocator?
+pub fn MinorLocator::auto_locator(Self) -> AutoLocator?
+pub fn MinorLocator::auto_minor_locator(Self) -> AutoMinorLocator?
+pub fn MinorLocator::checked_tick_values(Self, Array[Double], Double, Double) -> Array[Double] raise @core.DataError
+pub fn MinorLocator::copy(Self) -> Self
+pub fn MinorLocator::fixed_locator(Self) -> FixedLocator?
+pub fn MinorLocator::index_locator(Self) -> IndexLocator?
+pub fn MinorLocator::linear_locator(Self) -> LinearLocator?
+pub fn MinorLocator::log_locator(Self) -> LogLocator?
+pub fn MinorLocator::logit_locator(Self) -> LogitLocator?
+pub fn MinorLocator::maxn_locator(Self) -> MaxNLocator?
+pub fn MinorLocator::multiple_locator(Self) -> MultipleLocator?
+pub fn MinorLocator::null_locator(Self) -> NullLocator?
+pub fn MinorLocator::symlog_locator(Self) -> SymmetricalLogLocator?
+pub fn MinorLocator::tick_values(Self, Array[Double], Double, Double) -> Array[Double]
+pub fn MinorLocator::tick_values_for_axis(Self, Array[Double], Double, Double) -> Array[Double] raise @core.DataError
+
+pub struct MultipleLocator {
+  // private fields
+}
+pub fn MultipleLocator::as_locator(Self) -> Locator
+pub fn MultipleLocator::as_minor_locator(Self) -> MinorLocator
+pub fn MultipleLocator::base(Self) -> Double
+pub fn MultipleLocator::copy(Self) -> Self
+pub fn MultipleLocator::new(base? : Double, offset? : Double) -> Self raise @core.DataError
+pub fn MultipleLocator::nonsingular(Self, Double, Double) -> (Double, Double)
+pub fn MultipleLocator::offset(Self) -> Double
+pub fn MultipleLocator::set_params(Self, base? : Double, offset? : Double) -> Unit raise @core.DataError
+pub fn MultipleLocator::tick_values(Self, Double, Double) -> Array[Double] raise @core.DataError
+pub fn MultipleLocator::view_limits(Self, Double, Double) -> (Double, Double)
+
+pub struct NullFormatter {
+  // private fields
+}
+pub fn NullFormatter::as_base_formatter(Self) -> BaseFormatter
+pub fn NullFormatter::axis(Self) -> FormatterAxisBinding?
+pub fn NullFormatter::call(Self, Double, pos? : Int) -> String raise @core.DataError
+pub fn NullFormatter::copy(Self) -> Self
+pub fn NullFormatter::create_dummy_axis(Self, minpos? : Double) -> Unit
+pub fn NullFormatter::format_data(Self, Double) -> String raise @core.DataError
+pub fn NullFormatter::format_data_short(Self, Double) -> String raise @core.DataError
+pub fn NullFormatter::format_ticks(Self, Array[Double]) -> Array[String] raise @core.DataError
+pub fn NullFormatter::format_ticks_view(Self, TickValues) -> Array[String] raise @core.DataError
+pub fn NullFormatter::get_offset(Self) -> String
+pub fn NullFormatter::locations(Self) -> FormatterLocations
+pub fn NullFormatter::new() -> Self
+pub fn NullFormatter::set_axis(Self, FormatterAxisBinding?) -> Unit
+pub fn NullFormatter::set_locs(Self, Array[Double]) -> Unit
+pub fn NullFormatter::set_locs_view(Self, TickValues) -> Unit
+
+pub struct NullLocator {
+  // private fields
+}
+pub fn NullLocator::as_locator(Self) -> Locator
+pub fn NullLocator::as_minor_locator(Self) -> MinorLocator
+pub fn NullLocator::call(Self) -> Array[Double]
+pub fn NullLocator::copy(Self) -> Self
+pub fn NullLocator::new() -> Self
+pub fn NullLocator::nonsingular(Self, Double, Double) -> (Double, Double)
+pub fn NullLocator::set_params(Self) -> Unit
+pub fn NullLocator::tick_values(Self, Double, Double) -> Array[Double]
+pub fn NullLocator::view_limits(Self, Double, Double) -> (Double, Double)
+pub fn NullLocator::warnings(Self) -> Array[String]
+
+pub struct NumericArray {
+  // private fields
+}
+pub fn NumericArray::dtype(Self) -> String
+pub fn NumericArray::get(Self, Int) -> Double raise @core.DataError
+pub fn NumericArray::get_uint64(Self, Int) -> UInt64 raise @core.DataError
+pub fn NumericArray::get_value(Self, Int) -> ScalarNumber raise @core.DataError
+pub fn NumericArray::length(Self) -> Int
+
+pub(all) enum PercentDecimals {
+  Automatic
+  Number(Double)
+  Integer(@bigint.BigInt)
+  Text(String)
+  Boolean(Bool)
+} derive(Eq, @debug.Debug)
+pub fn PercentDecimals::equal(Self, Self) -> Bool
+pub fn PercentDecimals::not_equal(Self, Self) -> Bool
+pub fn PercentDecimals::to_repr(Self) -> @debug.Repr
+
+pub struct PercentFormatter {
+  // private fields
+}
+pub fn PercentFormatter::as_base_formatter(Self) -> BaseFormatter
+pub fn PercentFormatter::axis(Self) -> FormatterAxisBinding?
+pub fn PercentFormatter::call(Self, Double, pos? : Int) -> String raise @core.DataError
+pub fn PercentFormatter::convert_to_pct(Self, Double) -> Double raise @core.DataError
+pub fn PercentFormatter::copy(Self) -> Self
+pub fn PercentFormatter::create_dummy_axis(Self, minpos? : Double) -> Unit
+pub fn PercentFormatter::decimals(Self) -> PercentDecimals
+pub fn PercentFormatter::format_data(Self, Double) -> String raise @core.DataError
+pub fn PercentFormatter::format_data_short(Self, Double) -> String raise @core.DataError
+pub fn PercentFormatter::format_pct(Self, Double, Double) -> String raise @core.DataError
+pub fn PercentFormatter::format_ticks(Self, Array[Double]) -> Array[String] raise @core.DataError
+pub fn PercentFormatter::format_ticks_view(Self, TickValues) -> Array[String] raise @core.DataError
+pub fn PercentFormatter::get_offset(Self) -> String
+pub fn PercentFormatter::is_latex(Self) -> Bool
+pub fn PercentFormatter::locations(Self) -> FormatterLocations
+pub fn PercentFormatter::new(xmax? : PercentXMax, decimals? : PercentDecimals, symbol? : String?, is_latex? : Bool) -> Self raise @core.DataError
+pub fn PercentFormatter::raw_symbol(Self) -> String?
+pub fn PercentFormatter::set_axis(Self, FormatterAxisBinding?) -> Unit
+pub fn PercentFormatter::set_decimals(Self, PercentDecimals) -> Unit
+pub fn PercentFormatter::set_is_latex(Self, Bool) -> Unit
+pub fn PercentFormatter::set_locs(Self, Array[Double]) -> Unit
+pub fn PercentFormatter::set_locs_view(Self, TickValues) -> Unit
+pub fn PercentFormatter::set_symbol(Self, String?) -> Unit
+pub fn PercentFormatter::set_xmax(Self, PercentXMax) -> Unit
+pub fn PercentFormatter::symbol(Self) -> String
+pub fn PercentFormatter::xmax(Self) -> PercentXMax
+
+pub(all) enum PercentXMax {
+  Number(Double)
+  Integer(@bigint.BigInt)
+  Boolean(Bool)
+  NumpyFloat64(Double)
+  NumpyInt64(Int64)
+} derive(Eq, @debug.Debug)
+pub fn PercentXMax::equal(Self, Self) -> Bool
+pub fn PercentXMax::not_equal(Self, Self) -> Bool
+pub fn PercentXMax::to_repr(Self) -> @debug.Repr
+
+pub struct ScalarFormatter {
+  // private fields
+}
+pub fn ScalarFormatter::as_base_formatter(Self) -> BaseFormatter
+pub fn ScalarFormatter::axis(Self) -> FormatterAxisBinding?
+pub fn ScalarFormatter::call(Self, Double, pos? : Int) -> String raise @core.DataError
+pub fn ScalarFormatter::call_value(Self, ScalarNumber, pos? : Int) -> String raise @core.DataError
+pub fn ScalarFormatter::copy(Self) -> Self
+pub fn ScalarFormatter::create_dummy_axis(Self, minpos? : Double) -> Unit
+pub fn ScalarFormatter::format_data(Self, Double) -> String raise @core.DataError
+pub fn ScalarFormatter::format_data_short(Self, Double) -> String raise @core.DataError
+pub fn ScalarFormatter::format_data_short_masked(Self) -> String
+pub fn ScalarFormatter::format_data_short_value(Self, ScalarNumber) -> String raise @core.DataError
+pub fn ScalarFormatter::format_data_value(Self, ScalarNumber) -> String raise @core.DataError
+pub fn ScalarFormatter::format_pattern(Self) -> String
+pub fn ScalarFormatter::format_ticks(Self, Array[Double]) -> Array[String] raise @core.DataError
+pub fn ScalarFormatter::format_ticks_view(Self, TickValues) -> Array[String] raise @core.DataError
+pub fn ScalarFormatter::get_offset(Self) -> String raise @core.DataError
+pub fn ScalarFormatter::get_use_locale(Self) -> Bool
+pub fn ScalarFormatter::get_use_math_text(Self) -> Bool
+pub fn ScalarFormatter::get_use_offset(Self) -> Bool
+pub fn ScalarFormatter::get_usetex(Self) -> Bool
+pub fn ScalarFormatter::locations(Self) -> FormatterLocations
+pub fn ScalarFormatter::new(use_offset? : ScalarNumber?, use_math_text? : Bool?, use_locale? : Bool?, usetex? : Bool?) -> Self
+pub fn ScalarFormatter::offset(Self) -> ScalarNumber?
+pub fn ScalarFormatter::offset_threshold(Self) -> @bigint.BigInt
+pub fn ScalarFormatter::order_of_magnitude(Self) -> ScalarNumber
+pub fn ScalarFormatter::power_limits(Self) -> ScalarPowerLimits
+pub fn ScalarFormatter::scientific(Self) -> Bool
+pub fn ScalarFormatter::set_axis(Self, FormatterAxisBinding?) -> Unit
+pub fn ScalarFormatter::set_format_pattern(Self, String) -> Unit
+pub fn ScalarFormatter::set_locs(Self, Array[Double]) -> Unit raise @core.DataError
+pub fn ScalarFormatter::set_locs_view(Self, TickValues) -> Unit raise @core.DataError
+pub fn ScalarFormatter::set_offset(Self, ScalarNumber?) -> Unit
+pub fn ScalarFormatter::set_order_of_magnitude(Self, ScalarNumber) -> Unit
+pub fn ScalarFormatter::set_power_limits(Self, ScalarPowerLimits) -> Unit raise @core.DataError
+pub fn ScalarFormatter::set_scientific(Self, Bool) -> Unit
+pub fn ScalarFormatter::set_use_locale(Self, Bool?) -> Unit
+pub fn ScalarFormatter::set_use_math_text(Self, Bool?) -> Unit
+pub fn ScalarFormatter::set_use_offset(Self, ScalarNumber?) -> Unit
+pub fn ScalarFormatter::set_usetex(Self, Bool?) -> Unit
+
+pub(all) enum ScalarNumber {
+  Number(Double)
+  Integer(@bigint.BigInt)
+  Boolean(Bool)
+  NumpyFloat64(Double)
+  NumpyInt64(Int64)
+  NumpyBool(Bool)
+} derive(Eq, @debug.Debug)
+pub fn ScalarNumber::equal(Self, Self) -> Bool
+pub fn ScalarNumber::not_equal(Self, Self) -> Bool
+pub fn ScalarNumber::to_repr(Self) -> @debug.Repr
+
+pub(all) enum ScalarPowerLimits {
+  Sequence(Array[Double])
+  Integers(Array[@bigint.BigInt])
+  Values(Array[ScalarNumber])
+  NdArray(TickValues)
+}
+pub fn ScalarPowerLimits::to_repr(Self) -> @debug.Repr
+pub impl @debug.Debug for ScalarPowerLimits
+
+pub struct StrMethodFormatter {
+  // private fields
+}
+pub fn StrMethodFormatter::as_base_formatter(Self) -> BaseFormatter
+pub fn StrMethodFormatter::axis(Self) -> FormatterAxisBinding?
+pub fn StrMethodFormatter::call(Self, Double, pos? : Int) -> String raise @core.DataError
+pub fn StrMethodFormatter::copy(Self) -> Self
+pub fn StrMethodFormatter::create_dummy_axis(Self, minpos? : Double) -> Unit
+pub fn StrMethodFormatter::fmt(Self) -> String
+pub fn StrMethodFormatter::format_data(Self, Double) -> String raise @core.DataError
+pub fn StrMethodFormatter::format_data_short(Self, Double) -> String raise @core.DataError
+pub fn StrMethodFormatter::format_ticks(Self, Array[Double]) -> Array[String] raise @core.DataError
+pub fn StrMethodFormatter::format_ticks_view(Self, TickValues) -> Array[String] raise @core.DataError
+pub fn StrMethodFormatter::get_offset(Self) -> String
+pub fn StrMethodFormatter::locations(Self) -> FormatterLocations
+pub fn StrMethodFormatter::new(String) -> Self
+pub fn StrMethodFormatter::set_axis(Self, FormatterAxisBinding?) -> Unit
+pub fn StrMethodFormatter::set_fmt(Self, String) -> Unit
+pub fn StrMethodFormatter::set_locs(Self, Array[Double]) -> Unit
+pub fn StrMethodFormatter::set_locs_view(Self, TickValues) -> Unit
+
+pub(all) enum SymLogSubs {
+  Text(String)
+  Number(Double)
+  Values(TickValues)
+}
+pub fn SymLogSubs::to_repr(Self) -> @debug.Repr
+pub impl @debug.Debug for SymLogSubs
+
+pub struct SymmetricalLogLocator {
+  // private fields
+}
+pub fn SymmetricalLogLocator::as_locator(Self) -> Locator
+pub fn SymmetricalLogLocator::as_minor_locator(Self) -> MinorLocator
+pub fn SymmetricalLogLocator::base(Self) -> Double
+pub fn SymmetricalLogLocator::bind_view_interval(Self, () -> (Double, Double) raise @core.DataError) -> Unit
+pub fn SymmetricalLogLocator::call(Self) -> Array[Double] raise @core.DataError
+pub fn SymmetricalLogLocator::copy(Self) -> Self
+pub fn SymmetricalLogLocator::linthresh(Self) -> Double
+pub fn SymmetricalLogLocator::new(transform? : @scale.Scale, base? : Double, linthresh? : Double, subs? : SymLogSubs?) -> Self raise @core.DataError
+pub fn SymmetricalLogLocator::nonsingular(Self, Double, Double) -> (Double, Double)
+pub fn SymmetricalLogLocator::numticks(Self) -> LogNumTicks
+pub fn SymmetricalLogLocator::set_numticks(Self, LogNumTicks) -> Unit
+pub fn SymmetricalLogLocator::set_params(Self, subs? : SymLogSubs, numticks? : LogNumTicks) -> Unit
+pub fn SymmetricalLogLocator::subs(Self) -> SymLogSubs
+pub fn SymmetricalLogLocator::tick_values(Self, Double, Double) -> Array[Double] raise @core.DataError
+pub fn SymmetricalLogLocator::view_interval_provider(Self) -> (() -> (Double, Double) raise @core.DataError)?
+pub fn SymmetricalLogLocator::view_limits(Self, Double, Double) -> (Double, Double) raise @core.DataError
+
+pub struct TickValues {
+  // private fields
+}
+pub fn TickValues::copy(Self) -> Self raise @core.DataError
+pub fn TickValues::from_array(Array[Double]) -> Self
+pub fn TickValues::from_int64_array(Array[Int64]) -> Self
+pub fn TickValues::get(Self, Int) -> Double raise @core.DataError
+pub fn TickValues::length(Self) -> Int
+pub fn TickValues::select_mask(Self, Array[Bool]) -> Self raise @core.DataError
+pub fn TickValues::set(Self, Int, Double) -> Unit raise @core.DataError
+pub fn TickValues::to_array(Self) -> Array[Double] raise @core.DataError
+pub fn TickValues::view(Self, Int, Int, Int) -> Self raise @core.DataError
+
+// Type aliases
+
+// Traits

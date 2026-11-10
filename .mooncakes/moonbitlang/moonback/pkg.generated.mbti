@@ -1,0 +1,195 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitlang/moonback"
+
+import {
+  "moonbitlang/async/http",
+  "moonbitlang/async/io",
+  "moonbitlang/async/socket",
+  "moonbitlang/async/websocket",
+}
+
+// Values
+pub async fn default_handler(Request, Responder) -> Unit
+
+pub async fn listen(reuse_addr? : Bool, dual_stack? : Bool, host? : String, port? : UInt16) -> @http.Server
+
+// Errors
+pub suberror DependencyError {
+  MissingDependency(name~ : String)
+  DuplicateDependency(name~ : String)
+}
+
+pub suberror RouterError {
+  RouteConflict(path~ : StringView)
+}
+
+// Types and methods
+pub struct App {
+  // private fields
+}
+pub async fn App::App(Module, config? : Config) -> Self
+pub fn App::close(Self) -> Unit
+pub fn App::config(Self) -> Config
+pub async fn App::handle_request(Self, Request, Responder) -> Unit
+pub async fn App::serve(Self, &Listener, take_ownership? : Bool) -> Unit
+
+pub struct Config {
+  max_connections : Int?
+  stop_timeout : Double
+  trust_proxy : Bool
+  // private fields
+}
+pub fn Config::Config(max_connections? : Int, stop_timeout? : Double, trust_proxy? : Bool, custom? : ArrayView[CustomConfigEntry]) -> Self
+pub fn[T] Config::custom(TypedKey[T], T) -> CustomConfigEntry
+pub fn Config::default() -> Self
+pub fn[T] Config::get_custom(Self, TypedKey[T]) -> T?
+pub impl Default for Config
+
+type Context
+pub fn[T] Context::get_userdata(Self, TypedKey[T]) -> T?
+pub fn[T] Context::set_userdata(Self, TypedKey[T], T) -> Unit
+pub fn Context::with_middlewares(Self, ArrayView[Middleware], async (Request, Responder) -> Unit) -> async (Request, Responder) -> Unit
+
+type CustomConfigEntry
+
+type Headers
+pub fn Headers::Headers() -> Self
+pub fn Headers::default() -> Self
+pub fn Headers::from(&ToHeaders) -> Self
+pub fn Headers::get(Self, String) -> StringView?
+pub fn Headers::get_all(Self, String) -> ReadOnlyArray[StringView]
+pub fn Headers::get_list(Self, String) -> ReadOnlyArray[StringView]
+pub fn Headers::iter(Self) -> Iter[(String, String)]
+pub fn Headers::to_headers(Self) -> Self
+pub fn Headers::to_mut(Self) -> MutHeaders
+pub impl Default for Headers
+pub impl ToHeaders for Headers
+
+type Html
+pub fn Html::Html(async (HtmlBuilder) -> Unit) -> Self
+pub fn Html::escape(String) -> Self
+pub fn Html::raw(String) -> Self
+pub fn Html::raw_utf8_chunk(Bytes) -> Self
+pub async fn Html::write_to(Self, HtmlBuilder) -> Unit
+pub impl WriteToHtmlBuilder for Html
+
+type HtmlBuilder
+pub async fn HtmlBuilder::write_string(Self, String) -> Unit
+pub async fn[T : WriteToHtmlBuilder] HtmlBuilder::write_string_interpolation(Self, T) -> Unit
+
+pub(all) struct Middleware((async (Request, Responder) -> Unit) -> async (Request, Responder) -> Unit)
+pub fn Middleware::chain(ArrayView[Self]) -> Self
+pub fn Middleware::compose(Self, Self) -> Self
+pub fn Middleware::pass_through() -> Self
+
+pub(all) struct Module(async (ModuleContext) -> Unit)
+pub async fn Module::initialize(Self, ModuleContext) -> Unit
+pub impl Extension for Module
+
+type ModuleContext
+pub fn ModuleContext::add_middleware(Self, Middleware) -> Unit
+pub fn ModuleContext::add_route(Self, @http.RequestMethod, String, async (Request, Responder) -> Unit) -> Unit raise RouterError
+pub fn ModuleContext::config(Self) -> Config
+pub fn ModuleContext::get(Self, String, async (Request, Responder) -> Unit) -> Unit raise RouterError
+pub fn ModuleContext::mount(Self, String, App, take_ownership? : Bool, error_mode? : MountErrorMode) -> Unit raise RouterError
+pub fn ModuleContext::on_close(Self, () -> Unit) -> Unit
+pub fn ModuleContext::post(Self, String, async (Request, Responder) -> Unit) -> Unit raise RouterError
+pub fn[T] ModuleContext::provide(Self, TypedKey[T], T) -> Unit raise DependencyError
+pub fn[T] ModuleContext::require(Self, TypedKey[T]) -> T raise DependencyError
+pub fn[T] ModuleContext::resolve(Self, TypedKey[T]) -> T?
+pub async fn ModuleContext::use_(Self, &Extension) -> Unit
+
+pub(all) enum MountErrorMode {
+  Propagate
+  Isolate
+}
+
+type MutHeaders
+pub fn MutHeaders::MutHeaders() -> Self
+pub fn MutHeaders::add(Self, String, String) -> Unit
+pub fn MutHeaders::add_set_cookie(Self, @http.Cookie) -> Unit
+pub fn MutHeaders::from(&ToHeaders) -> Self
+pub fn MutHeaders::get(Self, String) -> StringView?
+pub fn MutHeaders::get_all(Self, String) -> ReadOnlyArray[StringView]
+pub fn MutHeaders::iter(Self) -> Iter[(String, String)]
+pub fn MutHeaders::remove(Self, String) -> Unit
+pub fn MutHeaders::set(Self, String, String) -> Unit
+pub fn MutHeaders::to_headers(Self) -> Headers
+pub fn MutHeaders::to_immut(Self) -> Headers
+pub impl ToHeaders for MutHeaders
+
+pub struct QueryParams {
+  // private fields
+}
+pub fn QueryParams::get(Self, StringView) -> String?
+pub fn QueryParams::get_all(Self, StringView) -> ReadOnlyArray[String]
+pub fn QueryParams::has(Self, StringView) -> Bool
+pub fn QueryParams::iter(Self) -> Iter[(String, String)]
+
+pub(all) struct Request {
+  ctx : Context
+  meth : @http.RequestMethod
+  path : StringView
+  search : StringView?
+  headers : Headers
+  params : Map[StringView, StringView]
+  body : RequestBody
+}
+pub fn Request::app(Self) -> App
+pub fn Request::cookie(Self) -> Map[String, String]
+pub fn Request::ip(Self) -> StringView?
+pub fn Request::ips(Self) -> ArrayView[StringView]
+pub fn Request::query(Self) -> QueryParams
+
+type RequestBody
+pub async fn RequestBody::binary(Self) -> Bytes
+pub async fn RequestBody::json(Self) -> Json
+pub fn RequestBody::reader(Self, no_buffer? : Bool) -> &@io.Reader raise
+pub async fn RequestBody::text(Self) -> String
+
+pub(all) struct Responder(async (Int, Headers) -> &WriteFlusher)
+pub async fn Responder::respond(Self, status? : Int, headers? : &ToHeaders) -> &WriteFlusher
+pub async fn Responder::send_html(Self, Html, status? : Int, headers? : &ToHeaders) -> Unit
+pub async fn Responder::send_json(Self, Json, status? : Int, headers? : &ToHeaders, indent? : Int) -> Unit
+pub async fn Responder::send_text(Self, String, status? : Int, headers? : &ToHeaders) -> Unit
+pub async fn Responder::send_void(Self, status? : Int, headers? : &ToHeaders) -> Unit
+pub async fn Responder::upgrade(Self, Request) -> @websocket.Conn
+
+pub extenum TypedBox {
+}
+
+type TypedKey[T]
+pub fn[T] TypedKey::TypedKey(name? : String, box~ : (T) -> TypedBox, unbox~ : (TypedBox) -> T?) -> Self[T]
+pub fn[T] TypedKey::name(Self[T]) -> String
+
+// Type aliases
+pub type Handler = async (Request, Responder) -> Unit
+
+// Traits
+pub(open) trait Extension {
+  async fn initialize(Self, ModuleContext) -> Unit
+}
+
+pub(open) trait Flusher {
+  async fn flush(Self) -> Unit
+}
+
+pub(open) trait Listener {
+  async fn accept(Self) -> (@http.ServerConnection, @socket.Addr)
+  fn close(Self) -> Unit
+}
+pub impl Listener for @http.Server
+
+pub trait ToHeaders {
+  fn to_headers(Self) -> Headers
+}
+pub impl ToHeaders for Array[(String, String)]
+pub impl ToHeaders for Map[String, String]
+
+pub(open) trait WriteFlusher : @io.Writer + Flusher {
+}
+
+pub trait WriteToHtmlBuilder {
+  async fn write_to(Self, HtmlBuilder) -> Unit
+}
+pub impl WriteToHtmlBuilder for String

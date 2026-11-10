@@ -1,0 +1,10 @@
+import {
+  "Lampese/mathplotlib/core",
+  "Lampese/mathplotlib/drawing",
+  "Lampese/mathplotlib/core/colors",
+  "Lampese/mathplotlib/scene/axis",
+  "Lampese/mathplotlib/scene/boxplot",
+  "Lampese/mathplotlib/scene/colorbar",
+  "Lampese/mathplotlib/scene/gridspec",
+  "Lampese/mathplotlib/ticker",
+}

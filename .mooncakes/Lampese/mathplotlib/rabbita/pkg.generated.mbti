@@ -1,0 +1,42 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Lampese/mathplotlib/rabbita"
+
+import {
+  "Lampese/mathplotlib/drawing",
+  "moonbit-community/rabbita/cmd",
+  "moonbit-community/rabbita/html",
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn legend_item(String, String, String, Bool) -> LegendItem
+
+pub fn view(@drawing.Drawing, id~ : String, on_event~ : (Interaction) -> @cmd.Cmd, hovered? : @drawing.HitPoint, selected? : @drawing.HitPoint, legend? : Array[LegendItem], hit_radius? : Double, hit_mode? : @drawing.HitMode, tooltip? : (@drawing.HitInfo) -> @html.Html, tooltip_visible? : Bool, tooltip_class? : String) -> @html.Html raise AdapterError
+
+// Errors
+pub(all) suberror AdapterError {
+  InvalidSvg(String)
+  UnsupportedElement(String)
+  UnsupportedAttribute(String, String)
+} derive(Eq, @debug.Debug)
+pub fn AdapterError::equal(Self, Self) -> Bool
+pub fn AdapterError::not_equal(Self, Self) -> Bool
+pub fn AdapterError::to_repr(Self) -> @debug.Repr
+
+// Types and methods
+pub(all) enum Interaction {
+  Hover(@drawing.HitPoint?)
+  Click(@drawing.HitPoint?)
+  ToggleSeries(String)
+} derive(Eq, @debug.Debug)
+pub fn Interaction::equal(Self, Self) -> Bool
+pub fn Interaction::not_equal(Self, Self) -> Bool
+pub fn Interaction::to_repr(Self) -> @debug.Repr
+
+pub struct LegendItem {
+  // private fields
+}
+
+// Type aliases
+
+// Traits

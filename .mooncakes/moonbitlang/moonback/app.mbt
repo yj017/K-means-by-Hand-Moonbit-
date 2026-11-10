@@ -1,0 +1,242 @@
+///|
+priv struct AppInst {
+  config : Config
+  router : Router
+  mut middlewares : Array[Middleware]
+  mut close_hook : Array[() -> Unit]
+  mut dependencies : @immut/sorted_map.SortedMap[Int, TypedBox]
+}
+
+///|
+/// A configured application that can handle requests and serve listeners.
+pub struct App {
+  priv inst : AppInst
+}
+
+///|
+async fn AppInst::init(root : Module, config : Config) -> AppInst {
+  let inst : AppInst = {
+    config,
+    router: Router::new(),
+    middlewares: [],
+    close_hook: [],
+    dependencies: @immut/sorted_map.SortedMap::new(),
+  }
+  (root.0)({ inst, })
+  inst
+}
+
+///|
+fn AppInst::on_close(self : AppInst) -> Unit {
+  self.middlewares = []
+  let funcs = self.close_hook
+  self.close_hook = []
+  for func in funcs.rev() {
+    func()
+  }
+  guard self.close_hook.is_empty() else { panic() }
+  self.dependencies = @immut/sorted_map.SortedMap::new()
+}
+
+///|
+async fn AppInst::dispatch_request(
+  self : AppInst,
+  req : Request,
+  res : Responder,
+) -> Unit {
+  let handler = match self.router.route(req.meth, req.path) {
+    None => default_handler
+    Some({ handler, params, }) => (req, res) => handler({ ..req, params, }, res)
+  }
+  Middleware::chain(self.middlewares)(handler)(req, res)
+}
+
+///|
+async fn AppInst::handle_request(
+  self : AppInst,
+  req : Request,
+  res : Responder,
+) -> Unit {
+  let committed : Ref[Bool] = { val: false, }
+  let res = res.track_committed(committed)
+  self.dispatch_request(req, res) catch {
+    ClientDisconnected => ()
+    err if req.ctx.connection_unusable() => raise err
+    _ => {
+      // TODO: log the error
+      guard !committed.val else { return }
+      guard !(req.ctx.conn_info is Upgraded(_, _)) else { return }
+      res.send_void(status=500)
+    }
+  }
+}
+
+///|
+/// Creates an app from the root module and configuration.
+///
+/// The root module is the composition entry of the application. It can register
+/// routes directly, or assemble the app from smaller reusable modules through
+/// `ModuleContext::use_`.
+///
+/// This returns after the root module has finished loading.
+pub async fn App::App(
+  root : Module,
+  config? : Config = Config::default(),
+) -> App {
+  let inst = AppInst::init(root, config)
+  { inst, }
+}
+
+///|
+/// Returns the application's configuration.
+pub fn App::config(self : App) -> Config {
+  self.inst.config
+}
+
+///|
+/// Handles a prepared request with this app.
+pub async fn App::handle_request(
+  self : App,
+  req : Request,
+  res : Responder,
+) -> Unit {
+  self.inst.handle_request(req, res)
+}
+
+///|
+async fn App::serve_on_connection(
+  self : App,
+  conn : @http.ServerConnection,
+  peer_addr : @socket.Addr,
+  no_protect~ : @async.CondVar,
+) -> Unit {
+  let tracked_conn = TrackedServerConnection::new(conn)
+  let mut reusable = true
+  for ; reusable; {
+    let raw_req = tracked_conn.read_request()
+    @async.protect_from_cancel(() => {
+      @async.with_task_group(group => {
+        let (path, search) = split_path_search(raw_req.path)
+        let req : Request = {
+          ctx: Context::new(self, Normal(raw_req, tracked_conn, peer_addr)),
+          meth: raw_req.meth,
+          path,
+          search,
+          headers: Headers::from_request(raw_req.headers),
+          params: {},
+          body: RequestBody::from_ready_stream(tracked_conn, group~),
+        }
+        group.spawn_bg(no_wait=true, () => {
+          no_protect.wait()
+          group.return_immediately(())
+        })
+        let task = group.spawn(() => {
+          self.handle_request(req, Responder::from_conn(tracked_conn))
+        })
+        let unsubscribe = tracked_conn.on_close(() => task.cancel())
+        defer unsubscribe()
+        task.wait() catch {
+          ClientDisconnected => ()
+          @async.TaskCancelled if tracked_conn.is_client_disconnected() => ()
+          err => raise err
+        }
+        if req.ctx.conn_info is Upgraded(_, _) || tracked_conn.is_unusable() {
+          reusable = false
+        } else {
+          tracked_conn.end_response()
+        }
+      })
+    })
+  }
+}
+
+///|
+/// Starts accepting connections from `listener` and serves requests on them.
+/// Cancellation propagates after in-flight connections have been shut down.
+///
+/// If `take_ownership` is true (`true` by default), `listener.close()` is
+/// called before waiting for in-flight connections to finish.
+///
+/// On cancellation, in-flight connections are given up to
+/// `Config.stop_timeout` seconds to finish gracefully.
+pub async fn App::serve(
+  self : App,
+  listener : &Listener,
+  take_ownership? : Bool = true,
+) -> Unit {
+  let no_protect = @async.CondVar::Cond()
+  let connection_finished = @async.CondVar::Cond()
+  let mut active_connections = 0
+  @async.with_task_group(group => {
+    errdefer {
+      if take_ownership {
+        listener.close()
+      }
+      defer no_protect.broadcast()
+      if @async.is_being_cancelled() &&
+        self.inst.config.stop_timeout is timeout &&
+        timeout > 0 {
+        // The serving group is already cancelled, including any new child tasks.
+        @async.protect_from_cancel(() => {
+          ignore(
+            @async.with_timeout_opt((timeout * 1000).to_int(), () => {
+              while active_connections > 0 {
+                connection_finished.wait()
+              }
+            }),
+          )
+        })
+      }
+    }
+    if self.inst.config.max_connections is Some(limit) {
+      let limit = @async.Semaphore(limit)
+      for ;; {
+        let (conn, peer_addr) = listener.accept()
+        {
+          errdefer conn.close()
+          limit.acquire()
+        }
+        active_connections += 1
+        group.spawn_bg(allow_failure=true, () => {
+          defer {
+            conn.close()
+            limit.release()
+            active_connections -= 1
+            connection_finished.broadcast()
+          }
+          self.serve_on_connection(conn, peer_addr, no_protect~)
+        })
+      }
+    } else {
+      for ;; {
+        let (conn, peer_addr) = listener.accept()
+        active_connections += 1
+        group.spawn_bg(allow_failure=true, () => {
+          defer {
+            conn.close()
+            active_connections -= 1
+            connection_finished.broadcast()
+          }
+          self.serve_on_connection(conn, peer_addr, no_protect~)
+        })
+      }
+    }
+    if take_ownership {
+      listener.close()
+    }
+  })
+}
+
+///|
+/// Unload root module - run registered on_close hooks.
+/// The app should not be used after this.
+///
+/// Example:
+/// ```moonbit nocheck
+/// let app = @moonback.App((ctx) => { ... })
+/// defer app.close()
+/// app.serve(@moonback.listen())
+/// ```
+pub fn App::close(self : App) -> Unit {
+  self.inst.on_close()
+}

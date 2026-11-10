@@ -1,0 +1,379 @@
+///|
+/// Pluggable column-storage seam. `ColumnStorage` is the closed enum a
+/// `Series` holds instead of a bare `BuiltinColumn`: one arm per backend,
+/// each forwarding the shared
+/// accessor surface to the column it wraps.
+///
+/// The design discipline is **transparent forwarding**: every accessor here
+/// matches both arms and delegates to the identically-named method on the
+/// underlying column, so a caller reads a column the same way whichever
+/// backend it sits on. Who those callers are is a layering rule rather than a
+/// list: `ColumnStorage` is consumed directly by `series` and
+/// the kernel layer only, and every package above them reaches column
+/// capability through engine seams that return a `Series`, a scalar, or a
+/// freshly built array — never this buffer. The `Numeric` arm has no stored
+/// bitmap, so `validity()` synthesises an all-valid one on demand
+/// (`Bitmap::all_valid(len)`) — the one point the two backends diverge.
+///
+/// Two shapes of accessor:
+///   * **structural / value reads** (`dtype` / `len` / `get` / `slice` /
+///     `take` / `data` / `validity` …) forward to both arms; `slice` / `take` keep
+///     the backend (a sub-range of an all-valid `Numeric` column is itself
+///     all-valid, so it stays `Numeric` — the fast path survives the
+///     transform).
+///   * **cross-dtype transforms** (`cast`) widen to the `Builtin` backend
+///     first, package-privately, and let `BuiltinColumn` do the work rather
+///     than re-implementing the whole cast machine on the `Numeric` arm. This
+///     keeps `NumericColumn`'s surface lean (the numeric fast path only), and
+///     the result comes back `Builtin`-backed.
+///
+/// Convergence runs the other way and lives above this package:
+/// `@series.try_column_to_numeric` moves an all-valid Int / Float column onto
+/// `NumericColumn` and leaves every other column as it is. Nothing here
+/// selects a backend for a caller — a column's backend follows its content.
+
+///|
+/// Which backend a `ColumnStorage` (or `Series`) currently uses. A third
+/// `ArrowLike` variant is intentionally absent: `Builtin` *is* the Arrow layout
+/// (data buffer + validity bitmap, `1 = valid`), so a separate variant would be
+/// an empty shell.
+pub(all) enum StorageKind {
+  Builtin
+  Numeric
+} derive(Eq, Debug)
+
+///|
+pub extend StorageKind with Eq::{equal, not_equal}
+
+///|
+pub extend StorageKind with Debug::{to_repr}
+
+///|
+/// A column behind one of the pluggable backends. `Builtin` is the
+/// general-purpose Arrow column (any dtype, nullable); `Numeric` is the
+/// all-valid unboxed numeric fast path.
+pub(all) enum ColumnStorage {
+  Builtin(BuiltinColumn)
+  Numeric(NumericColumn)
+} derive(Debug)
+
+///|
+pub extend ColumnStorage with Eq::{equal, not_equal}
+
+///|
+pub extend ColumnStorage with Debug::{to_repr}
+
+///|
+/// Content-based structural equality: two columns are equal when they have the
+/// same dtype, the same length, and — cell by cell — the same null-ness and (at
+/// the valid cells) the same value, *regardless of backend*. So a `Builtin` and
+/// a `Numeric` column holding the same all-valid Int / Float data compare
+/// equal, where a backend-tag-sensitive `derive(Eq)` reported two logically
+/// identical columns unequal merely because one took the `Numeric` fast path
+/// and the other did not (`gather` vs `slice`, `from_ints` vs an all-`Some`
+/// `from_int_options`, …). This drives `Series` and `DataFrame` equality (both
+/// `derive(Eq)` over their fields, reaching here), so `df.head(2) ==
+/// df.filter(.)` reflects content, not representation. A valid `NaN` cell
+/// still makes a column unequal to an identical one (`NaN != NaN`, matching
+/// `Double` equality); only null-ness and equal values decide the rest.
+pub impl Eq for ColumnStorage with fn equal(self, other) {
+  // The dtype decides first: the `I64` buffer is shared by four dtypes
+  // (`Int`, `Date`, `Timestamp`, `Decimal(scale)`), so equal buffers under
+  // different dtypes are different columns — a `Date` is not the `Int` count
+  // of its days, and the same unscaled bits are different decimals at
+  // different scales. `DataType`'s equality carries the scale, so this one
+  // check settles the whole identity question before representation is
+  // even read.
+  if self.dtype() != other.dtype() {
+    return false
+  }
+  if self.len() != other.len() {
+    return false
+  }
+  match (self.data(), other.data()) {
+    (ColumnData::I64(a), ColumnData::I64(b)) =>
+      storage_cells_equal(a.length(), self, other, i => a[i] == b[i])
+    (ColumnData::F64(a), ColumnData::F64(b)) =>
+      storage_cells_equal(a.length(), self, other, i => a[i] == b[i])
+    (ColumnData::Bool(a), ColumnData::Bool(b)) =>
+      storage_cells_equal(a.length(), self, other, i => a[i] == b[i])
+    (ColumnData::Utf8(a), ColumnData::Utf8(b)) =>
+      // Byte-wise cell equality over the UTF-8 buffers: no decode, and UTF-8
+      // byte equality is exactly `String` equality. The same shared loop —
+      // a `Utf8Array` is not an `ArrayView`, so the cell verdict arrives as
+      // a closure instead.
+      storage_cells_equal(a.len(), self, other, i => a.cell_eq(i, b, i))
+    // A mixed pair never reaches the value comparison: the dtype identity
+    // check above already returned `false` (a column's dtype decides its
+    // `ColumnData` variant, so same dtype implies same variant). The arm
+    // stands for exhaustiveness only — a new `ColumnData` variant still
+    // fails compilation against the four named pairs above, and its dtype
+    // would have to answer the identity question in turn. (The in-package
+    // test below builds a representation that disagrees with its dtype —
+    // the one shape that reaches here — and pins the defensive `false`.)
+    _ => false
+  }
+}
+
+///|
+/// Per-cell equality for `ColumnStorage::equal`: the two columns read one
+/// validity slot at a time, each slot's value verdict supplied as `eq(i)` (a
+/// closure, so the `Utf8` arm's two-buffer `cell_eq` rides the same loop the
+/// `ArrayView`-backed arms give an inline comparison). A cell pair is equal
+/// when both are null, or both valid with `eq`-equal values; a valid-vs-null
+/// pair is unequal. `eq` is the dtype's value comparison, so `Float` keeps
+/// `NaN != NaN`.
+///
+/// Taking the columns rather than two dense `Array[Bool]` masks is what keeps a
+/// comparison allocation-free: materialising both masks meant two `n`-entry
+/// arrays *before* the dtypes had even been compared, so a `Series` or
+/// `DataFrame` equality — which reaches here once per column — paid for them on
+/// every column, and a mismatched pair paid before answering `false`.
+fn storage_cells_equal(
+  n : Int32,
+  sa : ColumnStorage,
+  sb : ColumnStorage,
+  eq : (Int32) -> Bool,
+) -> Bool {
+  // Single-slot validity read, **total** (an out-of-range index reads as null
+  // rather than raising, like `Bitmap::is_valid_total`): the `Numeric` arm
+  // has no bitmap and every slot present by construction; the `Builtin` arm
+  // reads one bit out of the buffer it already owns. Neither allocates — the
+  // dense `validity()` materialisation is for callers that walk every slot
+  // anyway.
+  fn valid_at(s : ColumnStorage, index : Int32) -> Bool {
+    match s {
+      Builtin(c) => c.validity().is_valid_total(index)
+      Numeric(_) => true
+    }
+  }
+
+  for i in 0..<n {
+    let valid = valid_at(sa, i)
+    if valid != valid_at(sb, i) {
+      return false
+    }
+    if valid && !eq(i) {
+      return false
+    }
+  }
+  true
+}
+
+// ── Inspection (transparent forwarding, both arms) ────────────────────
+
+///|
+/// Which backend is in use — the discriminant `Series::storage_kind`
+/// surfaces (S3).
+pub fn ColumnStorage::kind(self : ColumnStorage) -> StorageKind {
+  match self {
+    Builtin(_) => StorageKind::Builtin
+    Numeric(_) => StorageKind::Numeric
+  }
+}
+
+///|
+/// The column's logical `DataType`, forwarded to the active backend.
+pub fn ColumnStorage::dtype(self : ColumnStorage) -> @types.DataType {
+  match self {
+    Builtin(c) => c.dtype()
+    Numeric(c) => c.dtype()
+  }
+}
+
+///|
+/// Number of cells, forwarded to the active backend.
+pub fn ColumnStorage::len(self : ColumnStorage) -> Int32 {
+  match self {
+    Builtin(c) => c.len()
+    Numeric(c) => c.len()
+  }
+}
+
+///|
+/// `true` when the column has no cells.
+pub fn ColumnStorage::is_empty(self : ColumnStorage) -> Bool {
+  match self {
+    Builtin(c) => c.is_empty()
+    Numeric(c) => c.is_empty()
+  }
+}
+
+///|
+/// Number of null cells — always `0` on the `Numeric` arm — forwarded to the
+/// active backend.
+pub fn ColumnStorage::null_count(self : ColumnStorage) -> Int32 {
+  match self {
+    Builtin(c) => c.null_count()
+    Numeric(c) => c.null_count()
+  }
+}
+
+///|
+/// The raw backing storage, discriminated by dtype, forwarded to whichever
+/// backend the column is on. The bulk read behind the vectorized kernels:
+/// the kernel layer matches this to walk a column's cells without boxing one
+/// `Scalar` per row. It is not a read for the verb layer — `frame` reaches a
+/// column through `Series`, and the layering guard refuses the import that
+/// would let it do otherwise.
+///
+/// This hands out the column's *live* buffer with no copy, as an
+/// `ArrayView` — readable and indexable, but with no `op_set` and none of
+/// `Array`'s in-place methods, so a consumer cannot write through it. That is
+/// the point: a column is logically immutable and buffers are shared by
+/// zero-copy slicing, so one index assignment would corrupt this column and
+/// every column sharing the buffer, with no signature or import changing to
+/// show it. The view makes that a compile error rather than a convention.
+/// `ColumnData` stays `pub(all)` so the engine can `match` it across packages.
+pub fn ColumnStorage::data(self : ColumnStorage) -> ColumnData {
+  match self {
+    Builtin(c) => c.data()
+    Numeric(c) => c.data()
+  }
+}
+
+///|
+/// The validity bitmap (`1 = valid`). The `Numeric` arm has no stored
+/// bitmap, so it synthesises an all-valid one sized to the column — the one
+/// point the two backends diverge. The other half of the bulk read: `data()`
+/// hands back a dense buffer whose null slots hold a placeholder, and this
+/// says which slots those are.
+pub fn ColumnStorage::validity(self : ColumnStorage) -> @buffer.Bitmap {
+  match self {
+    Builtin(c) => c.validity()
+    Numeric(c) => @buffer.Bitmap::all_valid(c.len())
+  }
+}
+
+// ── Cell access ───────────────────────────────────────────────────────
+
+///|
+/// Whether cell `index` is null. Out-of-bounds index `raise
+/// IndexOutOfBounds`. The `Numeric` arm is structurally always valid (its
+/// `is_null` only does the bounds check), so the two backends agree on the
+/// diagnostic.
+pub fn ColumnStorage::is_null(
+  self : ColumnStorage,
+  index : Int32,
+) -> Bool raise @types.DataError {
+  match self {
+    Builtin(c) => c.is_null(index)
+    Numeric(c) => c.is_null(index)
+  }
+}
+
+///|
+/// Read a single cell as a `Scalar`. Out-of-bounds index
+/// `raise IndexOutOfBounds`.
+pub fn ColumnStorage::get(
+  self : ColumnStorage,
+  index : Int32,
+) -> @types.Scalar raise @types.DataError {
+  match self {
+    Builtin(c) => c.get(index)
+    Numeric(c) => c.get(index)
+  }
+}
+
+// ── Sub-views (backend-preserving) ────────────────────────────────────
+
+///|
+/// Total `[start, end)` slice — the one slice entry the storage layer has.
+/// Keeps the backend and shares the validity buffer (zero-copy view) on the
+/// `Builtin` arm, with out-of-range bounds clamped into `[0, len]` (and
+/// `end` lifted to at least `start`) so it never aborts on a stray index.
+/// Every caller — the window verbs `head` / `tail` / `slice` — saturates its
+/// window against the frame height before reaching here, so the clamp is a
+/// no-op for all of them, while keeping this public entry abort-free for
+/// any other caller (`feedback_lib_no_abort`).
+pub fn ColumnStorage::slice_total(
+  self : ColumnStorage,
+  start : Int32,
+  end : Int32,
+) -> ColumnStorage {
+  let len = self.len()
+  let s = clamp_bound(start, len)
+  let e0 = clamp_bound(end, len)
+  let e = if e0 < s { s } else { e0 }
+  match self {
+    Builtin(c) => Builtin(c.slice_unchecked(s, e))
+    Numeric(c) => {
+      // The raw sub-range copy — no bitmap to repack, the construction win
+      // of a Numeric slice (an all-valid column stays all-valid). `s` / `e`
+      // are already clamped to `[0, len]` with `s <= e`.
+      let n = e - s
+      Numeric({
+        data: match c.data {
+          NumericData::Int(a) =>
+            NumericData::Int(Array::makei(n, i => a[s + i]))
+          NumericData::Float(a) =>
+            NumericData::Float(Array::makei(n, i => a[s + i]))
+        },
+      })
+    }
+  }
+}
+
+///|
+/// Clamp an index into `[0, len]` — the valid range for a half-open slice
+/// bound. Backs `slice_total`'s total guarantee.
+fn clamp_bound(i : Int32, len : Int32) -> Int32 {
+  if i < 0 {
+    0
+  } else if i > len {
+    len
+  } else {
+    i
+  }
+}
+
+///|
+/// Gather: output cell `i` is `self[indices[i]]`, keeping the backend (a
+/// gather of an all-valid `Numeric` column is still all-valid). Any
+/// out-of-bounds index `raise IndexOutOfBounds(idx)`.
+pub fn ColumnStorage::take(
+  self : ColumnStorage,
+  indices : Array[Int32],
+) -> ColumnStorage raise @types.DataError {
+  match self {
+    Builtin(c) => Builtin(c.take(indices))
+    Numeric(c) => Numeric(c.take(indices))
+  }
+}
+
+// ── Cross-dtype transforms (borrow the Builtin road) ──────────────────
+
+///|
+/// Cast to `target` — the single cross-dtype conversion — routing through
+/// the `Builtin` backend so `BuiltinColumn`'s cast machine is reused rather
+/// than duplicated on the `Numeric` arm: a `Builtin` column is already one,
+/// and a `Numeric` widens losslessly via `NumericColumn::to_builtin` (an
+/// all-valid bitmap is synthesised). The result is `Builtin`-backed;
+/// `@series.try_column_to_numeric` re-converges it if a numeric target should
+/// land back on the fast path. Supported targets and failure modes match
+/// `BuiltinColumn::cast`.
+pub fn ColumnStorage::cast(
+  self : ColumnStorage,
+  target : @types.DataType,
+) -> ColumnStorage raise @types.DataError {
+  let widened : BuiltinColumn = match self {
+    Builtin(c) => c
+    Numeric(c) => c.to_builtin()
+  }
+  ColumnStorage::Builtin(widened.cast(target))
+}
+
+///|
+/// Validate gather `indices` against a column of length `len`: the first
+/// out-of-range index `raise IndexOutOfBounds(idx)`. Shared by both backends'
+/// `take` so the diagnostic is identical.
+fn validate_gather_indices(
+  indices : Array[Int32],
+  len : Int32,
+) -> Unit raise @types.DataError {
+  for i in indices {
+    if i < 0 || i >= len {
+      raise @types.DataError::IndexOutOfBounds(i)
+    }
+  }
+}

@@ -1,0 +1,31 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Lampese/mathplotlib/scene/boxplot"
+
+import {
+  "Lampese/mathplotlib/core",
+}
+
+// Values
+pub fn box_stats(Array[Double]) -> BoxStats raise @core.DataError
+
+// Errors
+
+// Types and methods
+pub struct BoxStats {
+  lower_whisker : Double
+  q1 : Double
+  median : Double
+  q3 : Double
+  upper_whisker : Double
+  fliers : Array[Double]
+}
+pub fn BoxStats::fliers(Self) -> Array[Double]
+pub fn BoxStats::lower_whisker(Self) -> Double
+pub fn BoxStats::median(Self) -> Double
+pub fn BoxStats::q1(Self) -> Double
+pub fn BoxStats::q3(Self) -> Double
+pub fn BoxStats::upper_whisker(Self) -> Double
+
+// Type aliases
+
+// Traits

@@ -1,0 +1,38 @@
+///|
+fn main raise {
+  let names = ["line", "scatter", "bar", "barh", "histogram", "pie", "heatmap", "pcolormesh", "hist2d", "hexbin", "boxplot", "violin", "errorbar", "fill_between", "stackplot", "contour", "quiver", "stem", "ecdf"]
+  let xs = [1.0, 2.0, 3.0]
+  let ys = [2.0, 4.0, 3.0]
+  let matrix = [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]]
+  let groups = [[1.0, 2.0, 2.0, 3.0, 4.0], [2.0, 3.0, 3.0, 4.0, 5.0]]
+  for index, name in names {
+    let fig = @plot.figure(width=480, height=320)
+    fig.legend([])
+    match index {
+      0 => fig.plot(xs, ys, label="Series")
+      1 => fig.scatter([@plot.point(1.0, 2.0), @plot.point(2.0, 4.0), @plot.point(3.0, 3.0)], label="Series")
+      2 => fig.bar_category(["A", "B", "C"], ys, label="Series")
+      3 => fig.bar_category_y(ys, ["A", "B", "C"], label="Series")
+      4 => ignore(fig.hist([1.0, 1.2, 2.1, 2.5, 3.0], bins=3, label="Series"))
+      5 => ignore(fig.pie(ys, labels=["A", "B", "C"]))
+      6 => fig.imshow(matrix)
+      7 => fig.pcolormesh(matrix)
+      8 => fig.hist2d(xs, ys, bins_x=2, bins_y=2)
+      9 => ignore(fig.hexbin(xs, ys, gridsize=3, label="Series"))
+      10 => ignore(fig.boxplot(groups, label="Series"))
+      11 => ignore(fig.violinplot(groups, label="Series"))
+      12 => fig.errorbar(xs, ys, yerr=[0.1, 0.2, 0.3], label="Series")
+      13 => fig.fill_between(xs, ys, [1.0, 1.0, 1.0], label="Series")
+      14 => ignore(fig.stackplot(xs, [ys, [1.0, 2.0, 1.0]], labels=["A", "B"]))
+      15 => ignore(fig.contour(matrix, levels=[2.0, 4.0, 6.0, 8.0], label="Series"))
+      16 => fig.quiver(xs, ys, [1.0, 0.5, 1.0], [0.5, 1.0, -0.5], label="Series")
+      17 => fig.stem(ys, locs=xs, label="Series")
+      _ => ignore(fig.ecdf(ys, label="Series"))
+    }
+    let snapshot = fig.to_drawing()
+    let svg = snapshot.svg()
+    assert_eq(svg, fig.to_svg_checked())
+    println("AUDIT\t\{name}\t\{snapshot.points().length()}\t\{snapshot.targets().length()}")
+    println(svg)
+  }
+}

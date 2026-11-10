@@ -1,0 +1,26 @@
+import {
+  "Lampese/mathplotlib/config",
+  "Lampese/mathplotlib/core",
+  "Lampese/mathplotlib/core/colors",
+  "Lampese/mathplotlib/drawing",
+  "Lampese/mathplotlib/scene/axis",
+  "Lampese/mathplotlib/scene/boxplot",
+  "Lampese/mathplotlib/scene/colorbar",
+  "Lampese/mathplotlib/scene/gridspec",
+  "Lampese/mathplotlib/ticker/scale",
+  "Lampese/mathplotlib/ticker",
+  "Lampese/mathplotlib/ticker/date",
+  "Lampese/mathplotlib/transforms",
+  "Lampese/mathplotlib/backend/svg",
+  "Lampese/mathplotlib/internal/render",
+  "Lampese/mathplotlib/internal/color_names",
+  "moonbitlang/core/math",
+  "moonbitlang/core/ref",
+  "moonbitlang/core/debug",
+}
+
+import {
+  "moonbitlang/core/bigint",
+  "moonbitlang/core/double",
+  "Lampese/mathplotlib/ticker/date/tzdb",
+} for "test"

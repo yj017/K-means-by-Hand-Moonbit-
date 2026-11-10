@@ -1,0 +1,13 @@
+import {
+  "moonbitlang/core/buffer",
+  "moonbitlang/core/cmp",
+  "moonbitlang/core/encoding/utf8" @encoding/utf8,
+}
+
+import {
+  "moonbitlang/core/encoding/utf8" @encoding/utf8,
+} for "test"
+
+options(
+  "is-main": false,
+)

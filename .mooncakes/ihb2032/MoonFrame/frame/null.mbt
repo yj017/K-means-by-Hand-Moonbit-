@@ -1,0 +1,208 @@
+// The null-handling verbs on a frame: `fill_null` fills every null cell of
+// the dtype-compatible columns with a scalar, and `drop_nulls` drops every
+// row in which a gating column holds a null — the two ways to deal with a
+// missing cell at frame scope.
+
+///|
+/// Fill every null cell of the **dtype-compatible** columns with `value`,
+/// leaving the rest of the frame verbatim. A column is compatible when its
+/// dtype
+/// matches `value`'s variant: an `Int` value fills `Int` columns, a `Float`
+/// value fills `Float` columns, and so on. Columns of any other dtype are
+/// left untouched (not an error), and so are **all** columns when `value` is
+/// `Scalar::Null` — filling nulls with null is a no-op, so it skips
+/// everything and returns the frame unchanged.
+///
+/// Per-column control, cross-dtype fills (an `Int` value into a `Float`
+/// column, say), or filling with a computed value go through the expression
+/// form instead: `df.with_columns([col("c").fill_null(lit(value))])`.
+///
+/// Filling rewrites cells in place — each filled column keeps its name and
+/// dtype (a compatible fill is dtype-preserving) and every other column is
+/// untouched — so names, dtypes, and the row count are unchanged. The
+/// returned frame therefore reuses `self`'s schema and `O(1)` name→index
+/// cache verbatim (the same same-schema rebuild `head` / `tail` / `reverse`
+/// use) rather than re-deriving them through `DataFrame::DataFrame`.
+///
+/// `raise`-typed because `Series::fill_null` is, but the compatibility gate
+/// means it is only ever called on a column it cannot fail on (a matching
+/// non-null value), so no error is actually produced here.
+pub fn DataFrame::fill_null(
+  self : DataFrame,
+  value : @types.Scalar,
+) -> DataFrame raise @types.DataError {
+  let new_cols = self.columns.map(s => {
+    // The frame-wide value fills a column only when it is a concrete value
+    // of the column's own dtype (so the fill is always dtype-preserving; the
+    // null value fills nothing). And skip a dtype-compatible column that has
+    // no nulls: filling it would rebuild the whole column into an identical
+    // copy. `null_count` is O(1) for a `Numeric` column, mirroring
+    // `drop_nulls`' short-circuit.
+    let fills = match value {
+      @types.Scalar::Null => false
+      v => v.dtype() == s.dtype()
+    }
+    if fills && s.null_count() != 0 {
+      s.fill_null(value)
+    } else {
+      s
+    }
+  })
+  self.with_same_schema(new_cols, self.nrows)
+}
+
+///|
+/// Drop every row in which a gating column has a null cell. The schema
+/// (column names, dtypes, order) is preserved verbatim; only the row
+/// count shrinks.
+///
+/// `subset` selects the gating columns — MoonFrame's single null-dropping
+/// verb:
+/// - **omitted** → every column gates (drop a row null in **any** column).
+///   An `N×0` frame is the degenerate case: no column's validity can fail, so
+///   all `N` rows pass and the output is structurally identical to the input.
+///   (`DataFrame::DataFrame([])` is the `N = 0` instance of that, not a rule of
+///   its own — a column-less frame built through `select([])` keeps its height.)
+/// - **`Some(keys)`** → only the columns named by `keys` gate; a row null in
+///   an unlisted column is kept. Each key is an `Expr` resolved to a column
+///   name through `Expr::output_name` — a bare
+///   `col("x")` names `"x"`. The `Array[Expr]` container mirrors `drop` and
+///   leaves room for a future column selector; today only `col` / aliased
+///   keys are meaningful and the expression is never evaluated.
+/// - **`Some([])`** → no gating columns, so every row passes: a no-op
+///   identity, schema preserved.
+///
+/// Duplicate keys are tolerated and act idempotently; asking the same
+/// column to gate twice is the same as asking once.
+///
+/// Raises:
+/// - `ColumnNotFound(name)` — a resolved name does not exist in `self`.
+///   Reported on the first offending key in `subset` order. (Cannot arise
+///   when `subset` is omitted: the names come straight from the frame.)
+pub fn DataFrame::drop_nulls(
+  self : DataFrame,
+  subset? : Array[@expr.Expr],
+) -> DataFrame raise @types.DataError {
+  // Resolve the gating columns, in order: an omitted `subset` gates on every
+  // column (always resolvable); a present `subset` resolves each key by its
+  // `output_name`, raising `ColumnNotFound` on the first unknown name so a bad
+  // name surfaces before any per-row work. A repeated key resolves the same
+  // column twice, which the AND below absorbs — drops stay idempotent.
+  let gating = match subset {
+    None => self.column_series()
+    Some(keys) => self.resolve_subset_columns(keys)
+  }
+  // No gating column carries a null (so also: an empty gate set) → no row can
+  // be dropped. Return `self` rather than materialising masks and gathering
+  // an identical copy; `null_count` is O(1) for a `Numeric` column.
+  if gating.all(c => c.null_count() == 0) {
+    return self
+  }
+  // Materialise each gating column's validity mask (`validity_bools` skips the
+  // throwaway bitmap for any `Numeric` gating column in the mix).
+  let masks = gating.map(c => c.validity_bools())
+  // Keep row `i` when every gating mask is valid there. The kept indices come
+  // straight from `[0, nrows)`, so `gather` cannot fail.
+  let kept = Array::makei(self.nrows(), i => i).filter(i => masks.all(m => m[i]))
+  self.gather(kept)
+}
+
+///|
+/// The shared directional-fill driver: every column of the frame filled
+/// through the positional kernel, nulls taking the nearest present value in
+/// the fill's direction. Dtype-generic — each column keeps its own dtype and
+/// copies its own cells; `limit?` caps the consecutive null slots one
+/// present value may fill (`None` = unlimited), a cap below 1 raising
+/// `InvalidOperation`. Names, dtypes, and the row count are unchanged, so
+/// the same-schema rebuild applies.
+fn DataFrame::fill_null_directional(
+  self : DataFrame,
+  backward : Bool,
+  limit? : Int32,
+) -> DataFrame raise @types.DataError {
+  // The limit check runs at the entry, not in the kernel a column with
+  // nulls reaches: a frame whose columns happen to carry no null would
+  // otherwise skip the validation and pass silently where the expression
+  // form (`col(n).forward_fill(limit=0)`) raises.
+  match limit {
+    Some(k) =>
+      if k < 1 {
+        raise @types.DataError::InvalidOperation(
+          "fill limit must be at least 1",
+        )
+      }
+    None => ()
+  }
+  let op : @ir.PositionalOp = if backward {
+    @ir.PositionalOp::BackwardFill(limit)
+  } else {
+    @ir.PositionalOp::ForwardFill(limit)
+  }
+  let new_cols = self.columns.map(s => {
+    // Skip a column with no nulls: filling it would rebuild an identical
+    // copy (the `fill_null` short-circuit's rule).
+    if s.null_count() == 0 {
+      s
+    } else {
+      @kernel.eval_positional(op, s)
+    }
+  })
+  self.with_same_schema(new_cols, self.nrows)
+}
+
+///|
+/// Fill every column's nulls from above — each null cell takes the nearest
+/// present value above it, a leading null run staying null; `limit?` caps
+/// the consecutive slots one value may fill.
+pub fn DataFrame::fill_null_forward(
+  self : DataFrame,
+  limit? : Int32,
+) -> DataFrame raise @types.DataError {
+  self.fill_null_directional(false, limit?)
+}
+
+///|
+/// Fill every column's nulls from below — `fill_null_forward`'s mirror.
+pub fn DataFrame::fill_null_backward(
+  self : DataFrame,
+  limit? : Int32,
+) -> DataFrame raise @types.DataError {
+  self.fill_null_directional(true, limit?)
+}
+
+///|
+/// Replace every `NaN` cell of the **`Float`** columns with `value`,
+/// leaving every other column verbatim — `NaN` is a value, not a missing
+/// cell, so only the float domain can hold one. Null cells are untouched —
+/// they are missing, not `NaN`. Names, dtypes, and the row count are
+/// unchanged.
+pub fn DataFrame::fill_nan(
+  self : DataFrame,
+  value : Double,
+) -> DataFrame raise @types.DataError {
+  let new_cols = self.columns.map(s => {
+    // Only a `Float` column can hold a `NaN`, and only a present cell can
+    // hold one — `has_nan` scans the buffer directly (no boxing), so a
+    // NaN-free column returns verbatim instead of paying the full
+    // re-materialisation below.
+    if !s.has_nan() {
+      s
+    } else {
+      let cells = s
+        .to_scalars()
+        .map(c => {
+          match c {
+            @types.Scalar::Float(v) =>
+              if v.is_nan() {
+                @types.Scalar::Float(value)
+              } else {
+                c
+              }
+            other => other
+          }
+        })
+      @series.scalars_to_series(@types.DataType::Float, s.name(), cells)
+    }
+  })
+  self.with_same_schema(new_cols, self.nrows)
+}

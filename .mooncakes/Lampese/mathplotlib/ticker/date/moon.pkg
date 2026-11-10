@@ -1,0 +1,20 @@
+import {
+  "Lampese/mathplotlib/internal/tick_grid",
+  "Lampese/mathplotlib/config",
+  "Lampese/mathplotlib/internal/date_epoch" @epoch_data,
+  "Lampese/mathplotlib/internal/date_host",
+  "caijiewei295/tzif-engine" @tzif,
+  "caijiewei295/tzif-engine/types" @tztypes,
+  "caijiewei295/tzif-engine/posix" @tzposix,
+  "caijiewei295/tzif-engine/parser" @tzparser,
+  "moonbitlang/core/env",
+  "moonbitlang/core/encoding/utf8",
+  "moonbitlang/core/priority_queue",
+  "moonbitlang/core/debug",
+  "moonbitlang/core/bigint",
+  "moonbitlang/core/string",
+}
+
+options(
+  targets: { "parser_browser_js_wbtest.mbt": [ "js" ] },
+)
